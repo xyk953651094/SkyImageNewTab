@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/skynewtab-next.iml" filepath="$PROJECT_DIR$/.idea/skynewtab-next.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SkyNewTab-Next.iml" filepath="$PROJECT_DIR$/.idea/SkyNewTab-Next.iml" />
     </modules>
   </component>
 </project>

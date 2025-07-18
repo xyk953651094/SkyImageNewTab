@@ -196,13 +196,9 @@ export function fixPreference(preference: PreferenceInterface) {
             isFixed = true;
         }
     }
-
-    setDefaultIfUndefinedOrNull(preference, "imageQuality", defaultPreference.imageQuality);
+    
     setDefaultIfUndefinedOrNull(preference, "imageTopics", defaultPreference.imageTopics);
     setDefaultIfUndefinedOrNull(preference, "customTopic", defaultPreference.customTopic);
-    setDefaultIfUndefinedOrNull(preference, "changeImageTime", defaultPreference.changeImageTime);
-    setDefaultIfUndefinedOrNull(preference, "buttonShape", defaultPreference.buttonShape);
-    setDefaultIfUndefinedOrNull(preference, "accessKey", defaultPreference.accessKey);
 
     if (isFixed) {
         localStorage.setItem("preference", JSON.stringify(preference));  // 重新保存设置
@@ -336,8 +332,37 @@ export function changeTheme(element: string, backgroundColor: string, fontColor:
         throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#'.");
     }
     
+    // const Element = document.getElementById(element);
+    // if (Element && Element as HTMLElement) {
+    //     Element.style.backgroundColor = backgroundColor;
+    //     Element.style.color = fontColor;
+    // }
+    
     $(element).animate({
         backgroundColor: backgroundColor,
         color: fontColor,
     }, {queue: false, duration: time});
+}
+
+// 按钮鼠标悬停与离开事件
+export function btnMouseOver(hoverColor: string, e: any) {
+    if (!colorRegExp.test(hoverColor)) {
+        throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#'.");
+    }
+    
+    if (e.currentTarget && (e.currentTarget as HTMLElement).style) {
+        (e.currentTarget as HTMLElement).style.backgroundColor = hoverColor;
+        (e.currentTarget as HTMLElement).style.color = getFontColor(hoverColor);
+    }
+}
+
+export function btnMouseOut(fontColor: string, e: any) {
+    if (!colorRegExp.test(fontColor)) {
+        throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#'.");
+    }
+    
+    if (e.currentTarget && (e.currentTarget as HTMLElement).style) {
+        (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+        (e.currentTarget as HTMLElement).style.color = fontColor;
+    }
 }

@@ -8,41 +8,36 @@ export const colorRegExp = /^#[0-9A-Fa-f]{6}$/;
 export const clientId = "ntHZZmwZUkhiLBMvwqqzmOG29nyXSCXlX7x_i-qhVHM";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
+export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时
 
 export let defaultPreference: PreferenceInterface = {
-    imageQuality: "full",
-    imageTopics: ["bo8jQKTaE0Y"],
+    imageTopics: ["wallpapers"],
     customTopic: "",
-    changeImageTime: "3600000",
-    buttonShape: "default",
-    accessKey: ""
 }
 
-// 图片主题
+// 图片主题，TODO: 换成英文
 export let imageTopics = [
-    "Fzo3zuOHN6w",
-    "bo8jQKTaE0Y",
-    "CDwuwXJAbEw",
-    "iUIsnVtjB0Y",
-    "qPYsDzvJOYc",
-    "rnSKDHwwYUk",
-    "6sMVjTLSkeQ",
-    "aeu6rL-j6ew",
-    "S4MKLAsBB74",
-    "hmenvQhUmxM",
-    "xjPR4hlkBGA",
-    "_hb-dl4Q-4U",
-    "towJZFskpGg",
-    "R_Fyn-Gwtlw",
-    "xHxYTMHLgOc",
-    "Jpg6Kidl-Hk",
-    "_8zFHuhRhyo",
-    "bDo48cUhwnY",
-    "dijpbw99kQQ",
-    "Bn-DjrcBrwo"
+    "travel",
+    "wallpapers",
+    "3d-renders",
+    "textures-patterns",
+    "experimental",
+    "architecture-interior",
+    "nature",
+    "business-work",
+    "fashion-beauty",
+    "film",
+    "food-drink",
+    "health",
+    "people",
+    "interiors",
+    "street-photography",
+    "animals",
+    "spirituality",
+    "sports"
 ]
 
-// 主题颜色
+// 主题颜色，TODO: 不需要这么多，刘一个就行
 export const lightColors: string[] = [
     // "#A04F3C",
     // "#A0875A",

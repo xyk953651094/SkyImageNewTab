@@ -13,9 +13,6 @@ import MenuPreferenceComponent from "./MenuComponents/MenuPreferenceComponent";
 const {Text} = Typography;
 
 function MenuComponent(props: any) {
-    const [hoverColor, setHoverColor] = useState<string>("");
-    const [backgroundColor, setBackgroundColor] = useState<string>("");
-    const [fontColor, setFontColor] = useState<string>("");
     const [displayDrawer, setDisplayDrawer] = useState<boolean>(false);
     const [drawerPosition, setDrawerPosition] = React.useState<"right" | "bottom">("right");
     
@@ -33,24 +30,21 @@ function MenuComponent(props: any) {
             setDrawerPosition("bottom");
         }
         
-        if (!isEmpty(props.theme.mainColor) && !isEmpty(props.theme.backgroundColor) && !isEmpty(props.theme.fontColor)) {
-            setHoverColor(props.theme.mainColor);
-            setBackgroundColor(props.theme.backgroundColor);
-            setFontColor(props.theme.fontColor);
-            changeTheme("#imageHistoryBtn", props.theme.backgroundColor, props.theme.fontColor);
+        if (!isEmpty(props.theme)) {
+            changeTheme("#imageHistoryBtn", props.theme.secondaryColor, props.theme.secondaryFontColor);
         }
-    }, [props.theme.backgroundColor, props.theme.fontColor, props.theme.mainColor]);
+    }, [props.theme]);
     
     return (
         <>
-            <Tooltip title={<Text style={{color: fontColor}}>{"菜单栏"}</Text>} placement={"bottomRight"} color={backgroundColor}>
+            <Tooltip title={<Text style={{color: props.theme.secondaryFontColor}}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
                 <Button icon={<MenuOutlined/>} size={"large"}
                         onClick={showDrawerBtnOnClick}
                         id={"preferenceBtn"}
                         className={"componentTheme zIndexHigh"}
                         style={{
-                            backgroundColor: backgroundColor,
-                            color: props.theme.fontColor
+                            backgroundColor: props.theme.secondaryColor,
+                            color: props.theme.secondaryFontColor
                         }}
                 />
             </Tooltip>
@@ -64,46 +58,38 @@ function MenuComponent(props: any) {
                 closeIcon={false}
                 styles={{
                     mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                    header: {color: fontColor, borderBottomColor: fontColor},
-                    content: {backgroundColor: backgroundColor},
+                    header: {color: props.theme.secondaryFontColor, borderBottomColor: props.theme.secondaryFontColor},
+                    content: {backgroundColor: props.theme.secondaryColor},
                     footer: {
-                        backgroundColor: backgroundColor,
-                        borderTopColor: fontColor,
+                        backgroundColor: props.theme.secondaryColor,
+                        borderTopColor: props.theme.secondaryFontColor,
                         textAlign: "center"
                     }
                 }}
                 title={
                     <MenuHeaderComponent
-                        hoverColor={hoverColor}
-                        fontColor={fontColor}
+                        theme={props.theme}
                         preference={props.preference}/>
                 }
                 footer={
                     <MenuFooterComponent
-                        hoverColor={hoverColor}
-                        fontColor={fontColor}
+                        theme={props.theme}
                         preference={props.preference}/>
                 }
             >
                 <Space direction={"vertical"} size={"large"} id={"drawerContent"}>
                     <MenuPreferenceComponent
-                        hoverColor={hoverColor}
-                        backgroundColor={backgroundColor}
-                        fontColor={fontColor}
+                        theme={props.theme}
+                        preference={props.preference}
                         getPreference={props.getPreference}/>
                     <MenuInfoComponent
-                        hoverColor={hoverColor}
-                        backgroundColor={backgroundColor}
-                        fontColor={fontColor}
+                        theme={props.theme}
                         preference={props.preference}/>
                     <MenuContactComponent
-                        hoverColor={hoverColor}
-                        backgroundColor={backgroundColor}
-                        fontColor={fontColor}
+                        theme={props.theme}
                         preference={props.preference}/>
                     <MenuToTopComponent
-                        hoverColor={hoverColor}
-                        fontColor={fontColor}
+                        theme={props.theme}
                         preference={props.preference}/>
                 </Space>
             </Drawer>

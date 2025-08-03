@@ -2,15 +2,12 @@ import React, {useEffect, useState} from "react";
 import {Button, Carousel, Col, Empty, Image, List, message, Popover, Row, Space, Spin, Typography} from "antd";
 import {HomeOutlined, HistoryOutlined} from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
-import {btnMouseOut, btnMouseOver, changeTheme, isEmpty} from "../TypeScripts/PublicFunctions";
+import {changeButtonTheme, changeTheme, isEmpty} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
 
 const {Text} = Typography;
 
 function HistoryComponent(props: any) {
-    const [hoverColor, setHoverColor] = useState<string>("");
-    const [backgroundColor, setBackgroundColor] = useState<string>("");
-    const [fontColor, setFontColor] = useState<string>("");
     const [imageHistory, setImageHistory] = useState<any[]>([]);
     const [imageLink, setImageLink] = useState<string>("");
     
@@ -27,33 +24,29 @@ function HistoryComponent(props: any) {
     }
     
     useEffect(() => {
-        if (!isEmpty(props.theme.mainColor) && !isEmpty(props.theme.backgroundColor) && !isEmpty(props.theme.fontColor)) {
-            setHoverColor(props.theme.mainColor);
-            setBackgroundColor(props.theme.backgroundColor);
-            setFontColor(props.theme.fontColor);
-            changeTheme("#imageHistoryBtn", props.theme.backgroundColor, props.theme.fontColor);
+        if (!isEmpty(props.theme)) {
+            changeTheme("#imageHistoryBtn", props.theme.secondaryColor, props.theme.secondaryFontColor);
         }
         
         if (!isEmpty(props.imageHistory) && !isEmpty(props.imageHistory[0].imageLink)) {
             setImageHistory(props.imageHistory);
             setImageLink(props.imageHistory[0].imageLink)
         }
-    }, [props.imageHistory, props.theme.backgroundColor, props.theme.fontColor, props.theme.mainColor]);
+    }, [props.imageHistory, props.theme]);
     
     const popoverTitle = (
         <Row align={"middle"}>
             <Col span={8}>
-                <Text style={{color: fontColor, fontSize: "16px"}}>{"历史记录"}</Text>
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"历史记录"}</Text>
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>
                     <Button type={"text"} 
                             icon={<HomeOutlined />} size={"large"}
-                            style={{color: fontColor}}
+                            style={{color: props.theme.secondaryFontColor}}
                             onClick={imageLinkBtnOnClick}
-                            onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                            onMouseOut={(e) => btnMouseOut(fontColor, e)}
-                            >
+                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                         {"图片主页"}
                     </Button>
                 </Space>
@@ -101,15 +94,15 @@ function HistoryComponent(props: any) {
     
     return (
         <Popover title={popoverTitle} content={popoverContent} placement={"topRight"}
-                 color={backgroundColor}
+                 color={props.theme.secondaryColor}
                  overlayStyle={{minWidth: "400px"}}>
             <Button icon={<HistoryOutlined/>} size={"large"}
                     id={"imageHistoryBtn"}
                     className={"componentTheme zIndexHigh"}
                     style={{
                         cursor: "default",
-                        backgroundColor: props.theme.backgroundColor,
-                        color: props.theme.fontColor
+                        backgroundColor: props.theme.secondaryColor,
+                        color: props.theme.secondaryFontColor
                     }}
             />
         </Popover>

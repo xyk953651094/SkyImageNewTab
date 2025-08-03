@@ -1,55 +1,50 @@
 import React, {useEffect, useState} from "react";
-
-// import MenuComponent from "./Components/MenuComponent";
 import WallpaperComponent from "./Components/WallpaperComponent";
-
-import {Col, Layout, notification, Row, Space} from "antd";
-import "./StyleSheets/PublicStyles.scss"
-import {
-    getExtensionStorage,
-    getFontColor,
-    getPreferenceStorage,
-    getReverseColor,
-    setExtensionStorage,
-    setThemeColor,
-    changeTheme,
-    getImageHistoryStorage, isEmpty
-} from "./TypeScripts/PublicFunctions";
-import {PreferenceInterface, ThemeInterface} from "./TypeScripts/PublicInterface";
-
-import $ from "jquery";
-import {imageTopics} from "./TypeScripts/PublicConstants";
+import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
 import HistoryComponent from "./Components/HistoryComponent";
-import MenuComponent from "./Components/MenuComponent";
+
+import {Col, Layout, Row, Space} from "antd";
+import "./StyleSheets/PublicStyles.scss"
+import {
+    getFontColor,
+    getReverseColor,
+    getRandomTheme,
+    changeTheme,
+} from "./TypeScripts/PublicFunctions";
+import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
+import {PreferenceInterface, ThemeInterface} from "./TypeScripts/PublicInterface";
+import {defaultPreference} from "./TypeScripts/PublicConstants";
 
 const {Header, Content, Footer} = Layout;
 
 function App() {
     const [theme, setTheme] = useState({
-        "mainColor": "",
-        "backgroundColor": "",
-        "fontColor": "",
+        primaryColor: "",
+        secondaryColor: "",
+        primaryFontColor: "",
+        secondaryFontColor: "",
     });
-    const [imageData, setImageData] = useState(null);
-    const [imageHistory, setImageHistory] = useState(getImageHistoryStorage(),);
-    const [preference, setPreference] = useState(getPreferenceStorage());
+    const [imageData, setImageData] = useState<any>(null);
+    const [imageHistory, setImageHistory] = useState<any>([]);
+    const [preference, setPreference] = useState<PreferenceInterface>(defaultPreference);
     
     function getImageData(imageData: any) {
         setImageData(imageData);
         // 修改主题颜色
         if (imageData.color !== null) {
-            let bodyBackgroundColor = imageData.color;
-            let bodyFontColor = getFontColor(bodyBackgroundColor);
-            changeTheme("body", bodyBackgroundColor, bodyFontColor);
-            
-            let backgroundColor = getReverseColor(imageData.color);
-            let fontColor = getFontColor(backgroundColor);
+            let primaryColor = imageData.color;
+            let secondaryColor = getReverseColor(imageData.color);
+            let primaryFontColor = getFontColor(imageData.color);
+            let secondaryFontColor = getFontColor(secondaryColor);
             setTheme({
-                "mainColor": imageData.color,
-                "backgroundColor": backgroundColor,
-                "fontColor": fontColor,
+                primaryColor: primaryColor,
+                secondaryColor: secondaryColor,
+                primaryFontColor: primaryFontColor,
+                secondaryFontColor: secondaryFontColor,
             });
+            
+            changeTheme("body", primaryColor, primaryFontColor);
         }
     }
     
@@ -63,11 +58,24 @@ function App() {
     
     useEffect(() => {
         // 未加载图片前随机设置颜色主题
-        // if (isEmpty(theme.mainColor)) {
-        //     const tempTheme: ThemeInterface = setThemeColor();
-        //     setTheme(tempTheme);
-        // }
-    }, [theme.mainColor]);
+        if (imageData === null) {
+            const tempTheme: ThemeInterface = getRandomTheme();
+            changeTheme("body", tempTheme.primaryColor, tempTheme.primaryFontColor);
+            setTheme(tempTheme);
+        }
+        
+        // 获取图片历史
+        getExtensionStorage(["imageHistory"]).then((result) => {
+            let [imageHistoryStorage] = result;
+            setImageHistory(imageHistoryStorage.reverse());
+        })
+        
+        // 获取用户设置
+        getExtensionStorage(["preference"]).then((result)=> {
+            let [preferenceStorage] = result;
+            setPreference(fixPreference(preferenceStorage));
+        })
+    }, []);
     
     return (
         <Layout>

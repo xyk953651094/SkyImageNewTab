@@ -1,4 +1,4 @@
-import {PreferenceInterface} from './PublicInterface'
+import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface'
 import {getBrowserType, getDeviceType} from "./PublicFunctions";
 
 // 常用变量
@@ -9,13 +9,19 @@ export const clientId = "ntHZZmwZUkhiLBMvwqqzmOG29nyXSCXlX7x_i-qhVHM";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
 export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时
+export let environment = "development";  // "development" 或 "production"
 
 export let defaultPreference: PreferenceInterface = {
     imageTopics: ["wallpapers"],
     customTopic: "",
 }
 
-// 图片主题，TODO: 换成英文
+// TODO:
+export let defaultExtensionData: ExtensionDataInterface = {
+    Preference: defaultPreference
+}
+
+// 图片主题
 export let imageTopics = [
     "travel",
     "wallpapers",
@@ -37,7 +43,7 @@ export let imageTopics = [
     "sports"
 ]
 
-// 主题颜色，TODO: 不需要这么多，刘一个就行
+// 主题颜色，TODO: 不需要这么多，留一个就行
 export const lightColors: string[] = [
     // "#A04F3C",
     // "#A0875A",

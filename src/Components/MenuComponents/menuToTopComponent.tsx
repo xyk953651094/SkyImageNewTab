@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Row} from "antd";
 import {ToTopOutlined} from "@ant-design/icons";
-import {btnMouseOut, btnMouseOver} from "../../TypeScripts/PublicFunctions";
+import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
 
 function MenuToTopComponent(props: any) {
     function toTopBtnOnClick() {
@@ -15,10 +15,10 @@ function MenuToTopComponent(props: any) {
         <Row justify={"center"}>
             <Button type={"text"}
                     icon={<ToTopOutlined/>} size={"large"}
-                    style={{color: props.fontColor}}
+                    style={{color: props.theme.secondaryFontColor}}
                     onClick={toTopBtnOnClick}
-                    onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                    onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                 {"回到顶部"}
             </Button>
         </Row>

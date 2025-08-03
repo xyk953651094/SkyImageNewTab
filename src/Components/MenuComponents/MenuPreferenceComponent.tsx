@@ -1,32 +1,23 @@
 import React, {useState} from "react";
 import {
     Button,
-    Card, Checkbox,
+    Card,
     Col,
     Form, Input,
     message, Modal,
-    Radio,
-    RadioChangeEvent,
     Row, Select,
     Space,
-    Switch,
     Typography,
-    Upload
 } from "antd";
 import {
     TagOutlined,
     RedoOutlined,
     SettingOutlined,
-    ImportOutlined,
-    ExportOutlined,
     CheckOutlined,
     CloseOutlined
 } from "@ant-design/icons";
-import {
-    btnMouseOut,
-    btnMouseOver,
-    getPreferenceStorage, getTimeDetails, isEmpty,
-} from "../../TypeScripts/PublicFunctions";
+import {changeButtonTheme, isEmpty} from "../../TypeScripts/PublicFunctions";
+import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from "../../TypeScripts/StorageFunctions";
 import {PreferenceInterface} from "../../TypeScripts/PublicInterface";
 import {defaultPreference} from "../../TypeScripts/PublicConstants";
 
@@ -41,7 +32,7 @@ function MenuPreferenceComponent(props: any) {
     const [customTopicInputValue, setCustomTopicInputValue] = useState<string>("");
     const [displayResetPreferenceModal, setDisplayResetPreferenceModal] = useState<boolean>(false);
     const [displayClearStorageModal, setDisplayClearStorageModal] = useState<boolean>(false);
-    const [preference, setPreference] = useState<PreferenceInterface>(getPreferenceStorage());
+    const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
     
     function refreshWindow() {
         setTimeout(() => {
@@ -56,7 +47,7 @@ function MenuPreferenceComponent(props: any) {
     // 预设主题
      function imageTopicsSelectOnChange(selectedValues: string) {
          setPreference(changePreference({imageTopics: selectedValues}));
-         localStorage.setItem("preference", JSON.stringify(preference));
+         setExtensionStorage("preference", preference);
          props.getPreference(preference);
          message.success("已更换图片主题，下次切换图片时生效");
          if (selectedValues.length === 0) {
@@ -80,7 +71,7 @@ function MenuPreferenceComponent(props: any) {
             setDisableImageTopic(!isEmpty(customTopicInputValue));
             setImageTopicStatus(isEmpty(customTopicInputValue)? "已启用图片主题" : "已禁用图片主题");
             setCustomTopicStatus(isEmpty(customTopicInputValue)? "已禁用自定主题" : "已启用自定主题");
-            localStorage.setItem("preference", JSON.stringify(preference));
+            setExtensionStorage("preference", preference);
             props.getPreference(preference);
             
             if(!isEmpty(customTopicInputValue)) {
@@ -97,7 +88,7 @@ function MenuPreferenceComponent(props: any) {
             setDisableImageTopic(false);
             setImageTopicStatus("已启用图片主题");
             setCustomTopicStatus("已禁用自定主题");
-            localStorage.setItem("preference", JSON.stringify(preference));
+            setExtensionStorage("preference", preference);
             props.getPreference(preference);
             message.success("已禁用自定主题，一秒后刷新页面");
             refreshWindow();
@@ -110,19 +101,21 @@ function MenuPreferenceComponent(props: any) {
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
-        let resetTimeStampStorage = localStorage.getItem("resetTimeStamp");
-        if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
-            message.error("操作过于频繁，请稍后再试");
-        } else {
-            setDisplayResetPreferenceModal(true);
-        }
+        getExtensionStorage(["resetTimeStamp"]).then((result)=> {
+            let [resetTimeStampStorage] = result;
+            if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
+                message.error("操作过于频繁，请稍后再试");
+            } else {
+                setDisplayResetPreferenceModal(true);
+            }
+        })
     }
     
     function resetPreferenceOkBtnOnClick() {
         setFormDisabled(true);
         setDisplayResetPreferenceModal(false);
-        localStorage.setItem("preference", JSON.stringify(defaultPreference));
-        localStorage.setItem("resetTimeStamp", JSON.stringify(new Date().getTime()));
+        setExtensionStorage("preference", defaultPreference);
+        setExtensionStorage("resetTimeStamp", new Date().getTime());
         message.success("已重置设置，一秒后刷新页面");
         refreshWindow();
     }
@@ -133,19 +126,21 @@ function MenuPreferenceComponent(props: any) {
     
     // 重置插件
     function clearStorageBtnOnClick() {
-        let resetTimeStampStorage = localStorage.getItem("resetTimeStamp");
-        if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
-            message.error("操作过于频繁，请稍后再试");
-        } else {
-            setDisplayClearStorageModal(true);
-        }
+        getExtensionStorage(["resetTimeStamp"]).then((result)=> {
+            let [resetTimeStampStorage] = result;
+            if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
+                message.error("操作过于频繁，请稍后再试");
+            } else {
+                setDisplayClearStorageModal(true);
+            }
+        })
     }
     
     function clearStorageOkBtnOnClick() {
         setFormDisabled(true);
         setDisplayClearStorageModal(false);
-        localStorage.clear();
-        localStorage.setItem("resetTimeStamp", JSON.stringify(new Date().getTime()));
+        clearExtensionStorage();
+        setExtensionStorage("resetTimeStamp", new Date().getTime());
         message.success("已重置插件，一秒后刷新页面");
         refreshWindow();
     }
@@ -156,23 +151,23 @@ function MenuPreferenceComponent(props: any) {
     
     return (
         <>
-            <Card title={<Text style={{color: props.fontColor, fontSize: "16px"}}>{"偏好设置"}</Text>}
-                  extra={<SettingOutlined style={{color: props.fontColor, fontSize: "16px"}}/>}
-                  style={{border: "1px solid " + props.fontColor}}
+            <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"偏好设置"}</Text>}
+                  extra={<SettingOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+                  style={{border: "1px solid " + props.theme.secondaryFontColor}}
                   styles={{
                       header: {
-                          backgroundColor: props.backgroundColor,
-                          color: props.fontColor,
-                          borderBottom: "2px solid " + props.fontColor
+                          backgroundColor: props.theme.secondaryColor,
+                          color: props.theme.secondaryFontColor,
+                          borderBottom: "2px solid " + props.theme.secondaryFontColor
                       },
                       body: {
-                          backgroundColor: props.backgroundColor
+                          backgroundColor: props.theme.secondaryColor
                       }
                   }}
             >
                 <Form colon={false} initialValues={preference} disabled={formDisabled}>
-                    <Form.Item name={"imageTopics"} label={<Text style={{color: props.fontColor, fontSize: "16px"}}>{"预设主题"}</Text>}
-                               extra={<Text style={{color: props.fontColor}}>{imageTopicStatus}</Text>}>
+                    <Form.Item name={"imageTopics"} label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}
+                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{imageTopicStatus}</Text>}>
                         <Select size={"large"} mode="multiple" allowClear
                                 defaultValue={"wallpapers"}
                                 onChange={imageTopicsSelectOnChange}
@@ -199,34 +194,34 @@ function MenuPreferenceComponent(props: any) {
                                 ]}
                         />
                     </Form.Item>
-                    <Form.Item label={<Text style={{color: props.fontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
-                               extra={<Text style={{color: props.fontColor}}>{customTopicStatus}</Text>}>
+                    <Form.Item label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
+                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{customTopicStatus}</Text>}>
                         <Button type={"text"} icon={<TagOutlined />} size={"large"}
-                                style={{color: props.fontColor}}
+                                style={{color: props.theme.secondaryFontColor}}
                                 onClick={customTopicBtnOnClick}
-                                onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                             {"自定义 Unsplash 图片主题"}
                         </Button>
                     </Form.Item>
                     <Form.Item name={"clearStorageButton"}
-                               label={<Text style={{color: props.fontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
-                               extra={<Text style={{color: props.fontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
+                               label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
+                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
                         <Space>
                             <Button type={"text"}
                                     icon={<RedoOutlined/>} size={"large"}
-                                    style={{color: props.fontColor}}
+                                    style={{color: props.theme.secondaryFontColor}}
                                     onClick={resetPreferenceBtnOnClick}
-                                    onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 重置设置
                             </Button>
                             <Button type={"text"}
                                     icon={<RedoOutlined/>} size={"large"}
-                                    style={{color: props.fontColor}}
+                                    style={{color: props.theme.secondaryFontColor}}
                                     onClick={clearStorageBtnOnClick}
-                                    onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 重置插件
                             </Button>
                         </Space>
@@ -236,12 +231,12 @@ function MenuPreferenceComponent(props: any) {
             <Modal title={
                 <Row align={"middle"}>
                     <Col span={12}>
-                        <Text style={{color: props.fontColor, fontSize: "16px"}}>
+                        <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                             {"自定义 Unsplash 图片主题"}
                         </Text>
                     </Col>
                     <Col span={12} style={{textAlign: "right"}}>
-                        <TagOutlined style={{color: props.fontColor, fontSize: "16px"}}/>
+                        <TagOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>
                     </Col>
                 </Row>
             }
@@ -250,18 +245,18 @@ function MenuPreferenceComponent(props: any) {
                        <Space>
                            <Button type={"text"}
                                    icon={<CloseOutlined />} size={"large"}
-                                   style={{color: props.fontColor}}
+                                   style={{color: props.theme.secondaryFontColor}}
                                    onClick={customTopicCancelBtnOnClick}
-                                   onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                   onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                {"取消"}
                            </Button>
                            <Button type={"text"}
                                    icon={<CheckOutlined />} size={"large"}
-                                   style={{color: props.fontColor}}
+                                   style={{color: props.theme.secondaryFontColor}}
                                    onClick={customTopicOkBtnOnClick}
-                                   onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                   onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                {"确定"}
                            </Button>
                        </Space>
@@ -271,14 +266,14 @@ function MenuPreferenceComponent(props: any) {
                    destroyOnHidden={true}
                    styles={{
                        mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                       header: {color: props.fontColor, backgroundColor: props.backgroundColor},
-                       content: {backgroundColor: props.backgroundColor}
+                       header: {color: props.theme.secondaryFontColor, backgroundColor: props.theme.secondaryColor},
+                       content: {backgroundColor: props.theme.secondaryColor}
                    }}
             >
                 <Form initialValues={preference} colon={false} >
-                    <Form.Item label={<Text style={{color: props.fontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
+                    <Form.Item label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
                                name={"customTopic"}
-                               extra={<Text style={{color: props.fontColor}}>{"自定义图片主题为空时将使用预设主题"}</Text>}>
+                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{"自定义图片主题为空时将使用预设主题"}</Text>}>
                         <Input size={"large"} placeholder="请输入自定义 Unsplash 图片主题"
                                value={customTopicInputValue}
                                onChange={customTopicInputOnChange}
@@ -289,12 +284,12 @@ function MenuPreferenceComponent(props: any) {
             <Modal title={
                 <Row align={"middle"}>
                     <Col span={12}>
-                        <Text style={{color: props.fontColor, fontSize: "16px"}}>
+                        <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                             {"确定重置设置？"}
                         </Text>
                     </Col>
                     <Col span={12} style={{textAlign: "right"}}>
-                        <RedoOutlined style={{color: props.fontColor, fontSize: "16px"}}/>
+                        <RedoOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>
                     </Col>
                 </Row>
             }
@@ -303,18 +298,18 @@ function MenuPreferenceComponent(props: any) {
                        <Space>
                            <Button type={"text"}
                                    icon={<CloseOutlined />} size={"large"}
-                                   style={{color: props.fontColor}}
+                                   style={{color: props.theme.secondaryFontColor}}
                                    onClick={resetPreferenceCancelBtnOnClick}
-                                   onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                   onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                {"取消"}
                            </Button>
                            <Button type={"text"}
                                    icon={<CheckOutlined />} size={"large"}
-                                   style={{color: props.fontColor}}
+                                   style={{color: props.theme.secondaryFontColor}}
                                    onClick={resetPreferenceOkBtnOnClick}
-                                   onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                   onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                {"确定"}
                            </Button>
                        </Space>
@@ -324,23 +319,23 @@ function MenuPreferenceComponent(props: any) {
                    destroyOnHidden={true}
                    styles={{
                        mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                       header: {color: props.fontColor, backgroundColor: props.backgroundColor},
-                       content: {backgroundColor: props.backgroundColor}
+                       header: {color: props.theme.secondaryFontColor, backgroundColor: props.theme.secondaryColor},
+                       content: {backgroundColor: props.theme.secondaryColor}
                    }}
             >
-                <Text style={{color: props.fontColor, fontSize: "16px"}}>
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                     {"注意：所有设置项将被重置为默认值"}
                 </Text>
             </Modal>
             <Modal title={
                 <Row align={"middle"}>
                     <Col span={12}>
-                        <Text style={{color: props.fontColor, fontSize: "16px"}}>
+                        <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                             {"确定重置插件？"}
                         </Text>
                     </Col>
                     <Col span={12} style={{textAlign: "right"}}>
-                        <RedoOutlined  style={{color: props.fontColor, fontSize: "16px"}}/>
+                        <RedoOutlined  style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>
                     </Col>
                 </Row>
             }
@@ -349,18 +344,18 @@ function MenuPreferenceComponent(props: any) {
                        <Space>
                            <Button type={"text"}
                                    icon={<CloseOutlined />} size={"large"}
-                                   style={{color: props.fontColor}}
+                                   style={{color: props.theme.secondaryFontColor}}
                                    onClick={clearStorageCancelBtnOnClick}
-                                   onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                   onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                {"取消"}
                            </Button>
                            <Button type={"text"}
                                    icon={<CheckOutlined />} size={"large"}
-                                   style={{color: props.fontColor}}
+                                   style={{color: props.theme.secondaryFontColor}}
                                    onClick={clearStorageOkBtnOnClick}
-                                   onMouseOver={(e) => btnMouseOver(props.hoverColor, e)}
-                                   onMouseOut={(e) => btnMouseOut(props.fontColor, e)}>
+                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                {"确定"}
                            </Button>
                        </Space>
@@ -370,11 +365,11 @@ function MenuPreferenceComponent(props: any) {
                    destroyOnHidden={true}
                    styles={{
                        mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                       header: {color: props.fontColor, backgroundColor: props.backgroundColor},
-                       content: {backgroundColor: props.backgroundColor}
+                       header: {color: props.theme.secondaryFontColor, backgroundColor: props.theme.secondaryColor},
+                       content: {backgroundColor: props.theme.secondaryColor}
                    }}
             >
-                <Text style={{color: props.fontColor, fontSize: "16px"}}>
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                     {"注意：所有设置项将被重置为默认值，其他所有数据将被清空"}
                 </Text>
             </Modal>

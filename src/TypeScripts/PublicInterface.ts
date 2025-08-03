@@ -4,7 +4,12 @@ export interface PreferenceInterface {
 }
 
 export interface ThemeInterface {
-    mainColor: string,
-    backgroundColor: string,
-    fontColor: string,
+    primaryColor: string,
+    secondaryColor: string,
+    primaryFontColor: string,
+    secondaryFontColor: string,
+}
+
+export interface ExtensionDataInterface {
+    Preference: PreferenceInterface
 }

@@ -8,8 +8,7 @@ import {
 } from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
 import {
-    btnMouseOut,
-    btnMouseOver,
+    changeButtonTheme,
     changeTheme,
     isEmpty
 } from "../TypeScripts/PublicFunctions";
@@ -19,9 +18,6 @@ const {Text} = Typography;
 const btnMaxSize = 50;
 
 function AuthorComponent(props: any) {
-    const [hoverColor, setHoverColor] = useState<string>("");
-    const [backgroundColor, setBackgroundColor] = useState<string>("");
-    const [fontColor, setFontColor] = useState<string>("");
     const [authorName, setAuthorName] = useState<any>("暂无信息");
     const [authorLink, setAuthorLink] = useState<string>("");
     const [authorIconUrl, setAuthorIconUrl] = useState<string>("");
@@ -42,11 +38,8 @@ function AuthorComponent(props: any) {
     }
     
     useEffect(() => {
-        if(!isEmpty(props.theme.mainColor) && !isEmpty(props.theme.backgroundColor) && !isEmpty(props.theme.fontColor)) {
-            setHoverColor(props.theme.mainColor);
-            setBackgroundColor(props.theme.backgroundColor);
-            setFontColor(props.theme.fontColor);
-            changeTheme("#authorBtn", props.theme.backgroundColor, props.theme.fontColor);
+        if(!isEmpty(props.theme)) {
+            changeTheme("#authorBtn", props.theme.secondaryColor, props.theme.secondaryFontColor);
         }
         
         if(!isEmpty(props.imageData)) {
@@ -66,16 +59,16 @@ function AuthorComponent(props: any) {
     const popoverTitle = (
         <Row align={"middle"}>
             <Col span={10}>
-                <Text style={{color: fontColor, fontSize: "16px"}}>{"摄影师与照片信息"}</Text>
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"摄影师与照片信息"}</Text>
             </Col>
             <Col span={14} style={{textAlign: "right"}}>
                 <Space>
                     <Button type={"text"}
                             icon={<HomeOutlined/>} size={"large"}
-                            style={{color: fontColor}}
+                            style={{color: props.theme.secondaryFontColor}}
                             onClick={imageLinkBtnOnClick}
-                            onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                            onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                         {"图片主页"}
                     </Button>
                 </Space>
@@ -91,33 +84,33 @@ function AuthorComponent(props: any) {
                     <Space direction={"vertical"}>
                         <Button type={"text"}
                                 icon={<CameraOutlined/>} size={"large"}
-                                style={{color: fontColor, cursor: "default"}}
-                                onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                                onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                                style={{color: props.theme.secondaryFontColor, cursor: "default"}}
+                                onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                             {"由 Unsplash 的 " + (authorName.length < btnMaxSize ? authorName : authorName.substring(0, btnMaxSize) + "...") + " 拍摄"}
                         </Button>
                         <Space>
                             <Button type={"text"} 
                                     icon={<i className="bi bi-collection"></i>} size={"large"}
-                                    style={{color: fontColor, cursor: "default"}}
-                                    onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 {" " + authorCollections + " 个合集"}
                             </Button>
-                            <Divider type="vertical" style={{borderColor: fontColor}}/>
+                            <Divider type="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
                             <Button type={"text"} 
                                     icon={<i className="bi bi-heart"></i>} size={"large"}
-                                    style={{color: fontColor, cursor: "default"}}
-                                    onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 {" " + authorLikes + " 个点赞"}
                             </Button>
-                            <Divider type="vertical" style={{borderColor: fontColor}}/>
+                            <Divider type="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
                             <Button type={"text"} 
                                     icon={<i className="bi bi-images"></i>} size={"large"}
-                                    style={{color: fontColor, cursor: "default"}}
-                                    onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 {" " + authorPhotos + " 张照片"}
                             </Button>
                         </Space>
@@ -131,16 +124,16 @@ function AuthorComponent(props: any) {
                         <Space direction={"vertical"}>
                             <Button type={"text"} 
                                     icon={<InfoCircleOutlined/>} size={"large"}
-                                    style={{color: fontColor, cursor: "default"}}
-                                    onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 {imageDescription.length < btnMaxSize ? imageDescription : imageDescription.substring(0, btnMaxSize) + "..."}
                             </Button>
                             <Button type={"text"} 
                                     icon={<EnvironmentOutlined/>} size={"large"}
-                                    style={{color: fontColor, cursor: "default"}}
-                                    onMouseOver={(e) => btnMouseOver(hoverColor, e)}
-                                    onMouseOut={(e) => btnMouseOut(fontColor, e)}>
+                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
+                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
+                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
                                 {imageLocation.length < btnMaxSize ? imageLocation : imageLocation.substring(0, btnMaxSize) + "..."}
                             </Button>
                         </Space>
@@ -152,12 +145,12 @@ function AuthorComponent(props: any) {
     
     return (
         <Popover title={popoverTitle} content={popoverContent} placement={"topRight"}
-                 color={backgroundColor}
+                 color={props.theme.secondaryColor}
                  overlayStyle={{minWidth: "600px"}}>
             <Button icon={<CameraOutlined/>} size={"large"}
                     id={"authorBtn"}
                     className={"componentTheme zIndexHigh"}
-                    style={{cursor: "default", backgroundColor: props.theme.backgroundColor, color: props.theme.fontColor}}
+                    style={{cursor: "default", backgroundColor: props.theme.secondaryColor, color: props.theme.secondaryFontColor}}
             >
                 {"由 Unsplash 的 " + (authorName.length < btnMaxSize ? authorName : authorName.substring(0, btnMaxSize) + "...") + " 拍摄"}
             </Button>

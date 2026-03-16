@@ -39,14 +39,14 @@ export function isEmpty(param: any) {
         // 遍历对象的所有属性
         for (const key in param) {
             if (param.hasOwnProperty(key)) {
-                // 如果有任何属性不为null或undefined，则不为空
-                if (param[key] === null || param[key] === undefined || param[key].length === 0) {
-                    return true;
+                // 如果有任何属性不为null或undefined，且length不为0，则不为空
+                if (param[key] !== null && param[key] !== undefined && param[key].length !== 0) {
+                    return false;
                 }
             }
         }
-        // 只要有一个属性为 null 或 undefined，则返回空
-        return false;
+        // 所有属性为 null 或 undefined 或 length 为 0，则返回空
+        return true;
     }
     
     return false;

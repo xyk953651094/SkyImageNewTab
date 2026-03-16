@@ -2,12 +2,11 @@ import React, {useEffect, useState} from "react";
 import "../StyleSheets/WallpaperComponent.scss"
 import "../StyleSheets/PublicStyles.scss"
 import {Image, message} from "antd";
-import {isEmpty} from "../TypeScripts/PublicFunctions";
+import {getFontColor, getReverseColor, isEmpty} from "../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
 import {httpRequest} from "../TypeScripts/RequestFunctions";
 import {clientId, deviceType, imageHistoryMaxSize, imageSwitchingInterval} from "../TypeScripts/PublicConstants";
 import {decode} from "blurhash";
-
 import $ from "jquery";
 
 function WallpaperComponent(props: any) {
@@ -34,7 +33,6 @@ function WallpaperComponent(props: any) {
                 backgroundCanvas.className = "backgroundCanvas wallpaperFadeIn";
             }
         }
-        
     }
     
     function getWallpaper() {
@@ -65,18 +63,28 @@ function WallpaperComponent(props: any) {
                 
                 // 缓存历史图片
                 getExtensionStorage(["lastImage", "imageHistory"]).then((result) => {
-                    let [lastImageStorage, imageHistoryStorage] = result;
-                    if (lastImageStorage !== null) {
-                        let imageHistoryJsonItem = {
+                   let [lastImageStorage, imageHistoryStorage = []] = result;
+                    if (!isEmpty(lastImageStorage) && !isEmpty(imageHistoryStorage)) {
+                        let imageHistoryItem = {
                             index: new Date().getTime(),
                             imageUrl: lastImageStorage.urls.regular,
                             imageLink: lastImageStorage.links.html,
                         };
                         
-                        if (imageHistoryStorage.length === imageHistoryMaxSize) { // 满了就把第一个删掉
-                            imageHistoryStorage.shift();
+                        // 检查是否已存在相同的图片URL
+                        const isDuplicate = imageHistoryStorage.some((item: any) =>
+                            item.imageUrl === imageHistoryItem.imageUrl
+                        );
+                        
+                        // 只有当不是重复图片时才添加到历史记录中
+                        if (!isDuplicate) {
+                            // 满了就把第一个删掉
+                            if (imageHistoryStorage.length === imageHistoryMaxSize) {
+                                imageHistoryStorage.shift();
+                            }
+                            
+                            imageHistoryStorage.push(imageHistoryItem);
                         }
-                        imageHistoryStorage.push(imageHistoryJsonItem);
                     }
                     setExtensionStorage("imageHistory", imageHistoryStorage);
                     props.getImageHistory(imageHistoryStorage);  // 传递给历史图片组件
@@ -93,7 +101,7 @@ function WallpaperComponent(props: any) {
                 // 请求失败时使用上一次请求结果
                 getExtensionStorage(["lastImage"]).then((result) => {
                     let [lastImageStorage] = result;
-                    if (lastImageStorage) {
+                    if (!isEmpty(lastImageStorage)) {
                         message.loading({content: "获取图片失败，正在加载缓存图片", duration: 0, key: "message3"});
                         setWallpaper(lastImageStorage);
                     } else {
@@ -109,16 +117,16 @@ function WallpaperComponent(props: any) {
         getExtensionStorage(["lastImageRequestTime", "lastImage"]).then((result) => {
             let [lastImageRequestTimeStorage, lastImageStorage] = result;
             let nowTimeStamp = new Date().getTime();
-            if (lastImageRequestTimeStorage === null) {  // 第一次请求时 lastRequestTime 为 null，因此直接进行请求赋值 lastRequestTime
+            if (isEmpty(lastImageRequestTimeStorage)) {  // 第一次请求时 lastRequestTime 为 null，因此直接进行请求赋值 lastRequestTime
                 getWallpaper();
             } else if (nowTimeStamp - parseInt(lastImageRequestTimeStorage) > imageSwitchingInterval) {  // 必须多于切换间隔才能进行新的请求
                 getWallpaper();
             } else {  // 切换间隔内使用上一次请求结果
-                if (lastImageStorage) {
+                if (!isEmpty(lastImageStorage)) {
                     message.loading({content: "正在加载缓存图片", duration: 0, key: "message4"});
                     setWallpaper(lastImageStorage);
                 } else {
-                    message.error("无缓存图片可加载，请尝试重置插件");
+                    message.error("获取图片失败，请检查网络连接");
                 }
             }
         });

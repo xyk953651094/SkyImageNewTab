@@ -4,7 +4,7 @@ import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
 import HistoryComponent from "./Components/HistoryComponent";
 
-import {Col, Layout, message, Row, Space} from "antd";
+import {Col, Layout, Row, Space} from "antd";
 import "./StyleSheets/PublicStyles.scss"
 import {
     getFontColor,
@@ -15,7 +15,6 @@ import {
 import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
 import {PreferenceInterface, ThemeInterface} from "./TypeScripts/PublicInterface";
 import {defaultPreference} from "./TypeScripts/PublicConstants";
-import $ from "jquery";
 
 const {Header, Content, Footer} = Layout;
 
@@ -82,31 +81,31 @@ function App() {
         })
         
         // 修改各类弹窗样式
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                // 插入节点时
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    // message
-                    // let messageEle = $(".ant-message");
-                    // if (messageEle.length && messageEle.length > 0) {
-                    //     $(".ant-message-notice-content").css({
-                    //         "backgroundColor": theme.secondaryColor,
-                    //         "color": theme.secondaryFontColor
-                    //     });
-                    //     $(".ant-message-custom-content > .anticon").css("color", theme.secondaryFontColor);
-                    // }
-                    
-                    // drawer
-                    let drawerEle = $(".ant-drawer");
-                    if (drawerEle.length && drawerEle.length > 0) {
-                        $(".ant-select-selection-item").css("backgroundColor", theme.secondaryColor);
-                        $(".ant-select-selection-item-content").css("color", theme.secondaryFontColor);
-                        $(".ant-select-selection-item-remove").css("color", theme.secondaryFontColor);
-                    }
-                }
-            });
-        });
-        observer.observe(document.body, {childList: true});
+        // const observer = new MutationObserver((mutations) => {
+        //     mutations.forEach((mutation) => {
+        //         // 插入节点时
+        //         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+        //             // message
+        //             // let messageEle = $(".ant-message");
+        //             // if (messageEle.length && messageEle.length > 0) {
+        //             //     $(".ant-message-notice-content").css({
+        //             //         "backgroundColor": theme.secondaryColor,
+        //             //         "color": theme.secondaryFontColor
+        //             //     });
+        //             //     $(".ant-message-custom-content > .anticon").css("color", theme.secondaryFontColor);
+        //             // }
+        //
+        //             // drawer
+        //             // let drawerEle = $(".ant-drawer");
+        //             // if (drawerEle.length && drawerEle.length > 0) {
+        //             //     $(".ant-select-selection-item").css("backgroundColor", theme.secondaryColor);
+        //             //     $(".ant-select-selection-item-content").css("color", theme.secondaryFontColor);
+        //             //     $(".ant-select-selection-item-remove").css("color", theme.secondaryFontColor);
+        //             // }
+        //         }
+        //     });
+        // });
+        // observer.observe(document.body, {childList: true});
     }, [theme]);
     
     return (

@@ -17,7 +17,7 @@ function MenuHeaderComponent(props: any) {
                         style={{color: props.theme.secondaryFontColor, cursor: "default"}}
                         onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
                         onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                    {"当前版本：V" + require("../../../package.json").version}
+                    {"版本：V" + require("../../../package.json").version}
                 </Button>
             </Col>
         </Row>

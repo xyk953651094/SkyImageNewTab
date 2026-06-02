@@ -49,9 +49,7 @@ function MenuComponent(props: any) {
                 />
             </Tooltip>
             <Drawer
-                size={"default"}
-                width={420}
-                height={500}
+                size={420}
                 placement={drawerPosition}
                 onClose={drawerOnClose}
                 open={displayDrawer}
@@ -59,7 +57,7 @@ function MenuComponent(props: any) {
                 styles={{
                     mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
                     header: {color: props.theme.secondaryFontColor, borderBottomColor: props.theme.secondaryFontColor},
-                    content: {backgroundColor: props.theme.secondaryColor},
+                    section: {backgroundColor: props.theme.secondaryColor},
                     footer: {
                         backgroundColor: props.theme.secondaryColor,
                         borderTopColor: props.theme.secondaryFontColor,

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState, useCallback} from "react";
 import {Avatar, Button, Col, Divider, List, message, Popover, Row, Space, Typography} from "antd";
 import {
     CameraOutlined,
@@ -7,152 +7,155 @@ import {
     InfoCircleOutlined
 } from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
-import {
-    changeButtonTheme,
-    changeTheme,
-    isEmpty
-} from "../TypeScripts/PublicFunctions";
+import {isEmpty, truncateText} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
+import {ThemeInterface, UnsplashImageData} from "../TypeScripts/PublicInterface";
+import {DisplayButton, HoverButton} from "./PublicComponents/PublicButton";
 
 const {Text} = Typography;
 const btnMaxSize = 50;
 
-function AuthorComponent(props: any) {
-    const [authorName, setAuthorName] = useState<any>("暂无信息");
-    const [authorLink, setAuthorLink] = useState<string>("");
-    const [authorIconUrl, setAuthorIconUrl] = useState<string>("");
-    const [authorCollections, setAuthorCollections] = useState<number>(0);
-    const [authorLikes, setAuthorLikes] = useState<number>(0);
-    const [authorPhotos, setAuthorPhotos] = useState<number>(0);
-    const [imageLink, setImageLink] = useState<string>("");
-    const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
-    const [imageLocation, setImageLocation] = useState<string>("");
-    const [imageDescription, setImageDescription] = useState<string>("");
+interface AuthorComponentProps {
+    theme: ThemeInterface;
+    imageData: UnsplashImageData | null;
+}
+
+interface AuthorInfo {
+    name: string;
+    link: string;
+    iconUrl: string;
+    collections: number;
+    likes: number;
+    photos: number;
+}
+
+interface ImageInfo {
+    link: string;
+    previewUrl: string;
+    location: string;
+    description: string;
+}
+
+const defaultAuthor: AuthorInfo = {
+    name: "暂无信息",
+    link: "",
+    iconUrl: "",
+    collections: 0,
+    likes: 0,
+    photos: 0,
+};
+
+const defaultImage: ImageInfo = {
+    link: "",
+    previewUrl: "",
+    location: "",
+    description: "",
+};
+
+function AuthorComponent(props: AuthorComponentProps) {
+    const [author, setAuthor] = useState<AuthorInfo>(defaultAuthor);
+    const [image, setImage] = useState<ImageInfo>(defaultImage);
     
-    function imageLinkBtnOnClick() {
-        if (!isEmpty(imageLink)) {
-            window.open(imageLink + unsplashUrl, "_self");
+    const imageLinkBtnOnClick = useCallback(() => {
+        if (!isEmpty(image.link)) {
+            window.open(image.link + unsplashUrl, "_self");
         } else {
             message.error("无跳转链接");
         }
-    }
+    }, [image.link]);
     
     useEffect(() => {
-        if(!isEmpty(props.theme)) {
-            changeTheme("#authorBtn", props.theme.secondaryColor, props.theme.secondaryFontColor);
+        if (props.imageData) {
+            const {user, links, urls, location, alt_description} = props.imageData;
+            setAuthor({
+                name: user.name,
+                link: user.links.html,
+                iconUrl: user.profile_image.large,
+                collections: user.total_collections,
+                likes: user.total_likes,
+                photos: user.total_photos,
+            });
+            setImage({
+                link: links.html,
+                previewUrl: urls.regular,
+                location: location.name ?? "暂无信息",
+                description: alt_description ?? "暂无信息",
+            });
         }
-        
-        if(!isEmpty(props.imageData)) {
-            setAuthorName(props.imageData.user.name);
-            setAuthorLink(props.imageData.user.links.html);
-            setAuthorIconUrl(props.imageData.user.profile_image.large);
-            setAuthorCollections(props.imageData.user.total_collections);
-            setAuthorLikes(props.imageData.user.total_likes);
-            setAuthorPhotos(props.imageData.user.total_photos);
-            setImageLink(props.imageData.links.html);
-            setImagePreviewUrl(props.imageData.urls.regular);
-            setImageLocation(isEmpty(props.imageData.location.name) ? "暂无信息" : props.imageData.location.name);
-            setImageDescription(isEmpty(props.imageData.alt_description) ? "暂无信息" : props.imageData.alt_description);
-        }
-    }, [props.imageData, props.theme]);
+    }, [props.imageData]);
     
-    const popoverTitle = (
+    const popoverTitle = useMemo(() => (
         <Row align={"middle"}>
             <Col span={10}>
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"摄影师与照片信息"}</Text>
             </Col>
             <Col span={14} style={{textAlign: "right"}}>
                 <Space>
-                    <Button type={"text"}
-                            icon={<HomeOutlined/>} size={"large"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onClick={imageLinkBtnOnClick}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
+                    <HoverButton theme={props.theme} icon={<HomeOutlined/>} onClick={imageLinkBtnOnClick}>
                         {"图片主页"}
-                    </Button>
+                    </HoverButton>
                 </Space>
             </Col>
         </Row>
-    )
+    ), [props.theme, imageLinkBtnOnClick]);
     
-    const popoverContent = (
+    const popoverContent = useMemo(() => (
         <List>
             <List.Item>
                 <Space align={"center"}>
-                    <Avatar size={90} src={authorIconUrl} alt={"作者"}/>
-                    <Space direction={"vertical"}>
-                        <Button type={"text"}
-                                icon={<CameraOutlined/>} size={"large"}
-                                style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                                onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                            {"由 Unsplash 的 " + (authorName.length < btnMaxSize ? authorName : authorName.substring(0, btnMaxSize) + "...") + " 拍摄"}
-                        </Button>
+                    <Avatar size={90} src={author.iconUrl} alt={"作者"}/>
+                    <Space orientation={"vertical"}>
+                        <DisplayButton theme={props.theme} icon={<CameraOutlined/>}>
+                            {"由 Unsplash 的 " + truncateText(author.name, btnMaxSize) + " 拍摄"}
+                        </DisplayButton>
                         <Space>
-                            <Button type={"text"} 
-                                    icon={<i className="bi bi-collection"></i>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                                {" " + authorCollections + " 个合集"}
-                            </Button>
-                            <Divider type="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
-                            <Button type={"text"} 
-                                    icon={<i className="bi bi-heart"></i>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                                {" " + authorLikes + " 个点赞"}
-                            </Button>
-                            <Divider type="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
-                            <Button type={"text"} 
-                                    icon={<i className="bi bi-images"></i>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                                {" " + authorPhotos + " 张照片"}
-                            </Button>
+                            <DisplayButton theme={props.theme} icon={<i className="bi bi-collection"></i>}>
+                                {" " + author.collections + " 个合集"}
+                            </DisplayButton>
+                            <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
+                            <DisplayButton theme={props.theme} icon={<i className="bi bi-heart"></i>}>
+                                {" " + author.likes + " 个点赞"}
+                            </DisplayButton>
+                            <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
+                            <DisplayButton theme={props.theme} icon={<i className="bi bi-images"></i>}>
+                                {" " + author.photos + " 张照片"}
+                            </DisplayButton>
                         </Space>
                     </Space>
                 </Space>
             </List.Item>
             <List.Item>
-                <Space direction={"vertical"}>
+                <Space orientation={"vertical"}>
                     <Space>
-                        <Avatar size={90} shape={"square"} src={imagePreviewUrl} alt={"信息"}/>
-                        <Space direction={"vertical"}>
-                            <Button type={"text"} 
-                                    icon={<InfoCircleOutlined/>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                                {imageDescription.length < btnMaxSize ? imageDescription : imageDescription.substring(0, btnMaxSize) + "..."}
-                            </Button>
-                            <Button type={"text"} 
-                                    icon={<EnvironmentOutlined/>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                                {imageLocation.length < btnMaxSize ? imageLocation : imageLocation.substring(0, btnMaxSize) + "..."}
-                            </Button>
+                        <Avatar size={90} shape={"square"} src={image.previewUrl} alt={"信息"}/>
+                        <Space orientation={"vertical"}>
+                            <DisplayButton theme={props.theme} icon={<InfoCircleOutlined/>}>
+                                {truncateText(image.description, btnMaxSize)}
+                            </DisplayButton>
+                            <DisplayButton theme={props.theme} icon={<EnvironmentOutlined/>}>
+                                {truncateText(image.location, btnMaxSize)}
+                            </DisplayButton>
                         </Space>
                     </Space>
                 </Space>
             </List.Item>
         </List>
-    );
+    ), [props.theme, author, image]);
     
     return (
         <Popover title={popoverTitle} content={popoverContent} placement={"topRight"}
                  color={props.theme.secondaryColor}
-                 overlayStyle={{minWidth: "600px"}}>
+                 styles={{root: {minWidth: "600px"}}}>
             <Button icon={<CameraOutlined/>} size={"large"}
                     id={"authorBtn"}
                     className={"componentTheme zIndexHigh"}
-                    style={{cursor: "default", backgroundColor: props.theme.secondaryColor, color: props.theme.secondaryFontColor}}
+                    style={{
+                        cursor: "default",
+                        backgroundColor: props.theme.secondaryColor,
+                        color: props.theme.secondaryFontColor
+                    }}
             >
-                {"由 Unsplash 的 " + (authorName.length < btnMaxSize ? authorName : authorName.substring(0, btnMaxSize) + "...") + " 拍摄"}
+                {"由 Unsplash 的 " + truncateText(author.name, btnMaxSize) + " 拍摄"}
             </Button>
         </Popover>
     );

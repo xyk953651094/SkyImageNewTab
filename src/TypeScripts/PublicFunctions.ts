@@ -193,3 +193,7 @@ export function changeButtonTheme(backgroundColor: string, fontColor: string, e:
         (e.currentTarget as HTMLElement).style.color = fontColor;
     }
 }
+
+export function truncateText(text: string, maxLength: number): string {
+    return text.length < maxLength ? text : text.substring(0, maxLength) + "...";
+}

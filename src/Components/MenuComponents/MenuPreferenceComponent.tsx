@@ -7,7 +7,7 @@ import {
     message, Modal,
     Radio,
     Row, Select,
-    Space, Switch,
+    Space,
     Typography,
 } from "antd";
 import {
@@ -49,7 +49,6 @@ function MenuPreferenceComponent(props: any) {
         let topicType= e.target.value;
         if (topicType === "presetTopics") {
             setDisableImageTopic(false);
-            
         }
         else {
             setDisableImageTopic(true);
@@ -63,12 +62,20 @@ function MenuPreferenceComponent(props: any) {
          props.getPreference(preference);
          message.success({content: "已更换图片主题，下次切换图片时生效",
              styles: {
-                 root: {color: props.theme.secondaryColor},
-                 content: {color: props.theme.secondaryFontColor}
+                 root: {backgroundColor: props.theme.secondaryColor},
+                 icon: {color: props.theme.secondaryFontColor},
+                 title: {color: props.theme.secondaryFontColor}
              }
          });
          if (selectedValues.length === 0) {
-             message.info("全不选与全选的效果一样");
+             message.info({
+                 content: "全不选与全选的效果一样",
+                 styles: {
+                     root: {backgroundColor: props.theme.secondaryColor},
+                     icon: {color: props.theme.secondaryFontColor},
+                     title: {color: props.theme.secondaryFontColor}
+                 }
+             });
          }
     }
     
@@ -189,8 +196,8 @@ function MenuPreferenceComponent(props: any) {
                             size={"large"}
                             onChange={topicRadioOnChange}
                             options={[
-                                { value: "presetTopics", label: "预设主题" },
-                                { value: "customTopics", label: "自定主题" }
+                                { value: "presetTopics", label: "预设主题", style: { color: props.theme.secondaryFontColor } },
+                                { value: "customTopics", label: "自定主题", style: { color: props.theme.secondaryFontColor } }
                             ]}
                         />
                     </Form.Item>
@@ -232,13 +239,6 @@ function MenuPreferenceComponent(props: any) {
                     <Form.Item label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
                                extra={<Text style={{color: props.theme.secondaryFontColor}}>{customTopicStatus}</Text>}>
                         <Input size="large" placeholder="large size" disabled={!disableImageTopic}/>
-                        {/*<Button type={"text"} icon={<TagOutlined />} size={"large"}*/}
-                        {/*        style={{color: props.theme.secondaryFontColor}}*/}
-                        {/*        onClick={customTopicBtnOnClick}*/}
-                        {/*        onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}*/}
-                        {/*        onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>*/}
-                        {/*    {"自定义 Unsplash 图片主题"}*/}
-                        {/*</Button>*/}
                     </Form.Item>
                     <Divider/>
                     <Form.Item name={"clearStorageButton"}

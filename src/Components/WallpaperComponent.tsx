@@ -2,17 +2,17 @@ import React, {useEffect, useState} from "react";
 import "../StyleSheets/WallpaperComponent.scss"
 import "../StyleSheets/PublicStyles.scss"
 import {Image, message} from "antd";
-import {getFontColor, getReverseColor, isEmpty} from "../TypeScripts/PublicFunctions";
+import {isEmpty} from "../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
 import {httpRequest} from "../TypeScripts/RequestFunctions";
 import {clientId, deviceType, imageHistoryMaxSize, imageSwitchingInterval} from "../TypeScripts/PublicConstants";
 import {decode} from "blurhash";
-import $ from "jquery";
 
 function WallpaperComponent(props: any) {
     const [imageLink, setImageLink] = useState("");
     const [displayImage, setDisplayImage] = useState("block");
     const [displayCanvas, setDisplayCanvas] = useState("block");
+    const [canvasClass, setCanvasClass] = useState("backgroundCanvas");
     
     function setWallpaper(imageData: any) {
         props.getImageData(imageData);
@@ -30,7 +30,7 @@ function WallpaperComponent(props: any) {
                 }
                 
                 setDisplayCanvas("block");
-                backgroundCanvas.className = "backgroundCanvas wallpaperFadeIn";
+                setCanvasClass("backgroundCanvas wallpaperFadeIn");
             }
         }
     }
@@ -56,7 +56,7 @@ function WallpaperComponent(props: any) {
         };
         
         message.loading({content: "正在获取图片", duration: 0, key: "message1"});
-        httpRequest(headers, url, data, "GET")
+        httpRequest(url, {method: "GET", headers: headers, data: data})
             .then(function (resultData: any) {
                 message.destroy("message1");
                 message.loading({content: "正在加载图片", duration: 0, key: "message2"});
@@ -113,7 +113,7 @@ function WallpaperComponent(props: any) {
     }
     
     useEffect(() => {
-        // 防抖节流
+        // 请求间隔控制
         getExtensionStorage(["lastImageRequestTime", "lastImage"]).then((result) => {
             let [lastImageRequestTimeStorage, lastImageStorage] = result;
             let nowTimeStamp = new Date().getTime();
@@ -140,7 +140,7 @@ function WallpaperComponent(props: any) {
                 backgroundImage.onload = () => {
                     backgroundImage.style.width = "102%";
                     setDisplayImage("block");
-                    $("#backgroundCanvas").removeClass("wallpaperFadeIn").addClass("wallpaperFadeOut");
+                    setCanvasClass("backgroundCanvas wallpaperFadeOut");
                     message.destroy("message2");
                     message.destroy("message3");
                     message.destroy("message4");
@@ -168,7 +168,7 @@ function WallpaperComponent(props: any) {
                 src={imageLink}
                 style={{display: displayImage}}
             />
-            <canvas id="backgroundCanvas" style={{display: displayCanvas}} className={"backgroundCanvas"}/>
+            <canvas id="backgroundCanvas" style={{display: displayCanvas}} className={canvasClass}/>
         </>
     );
 }

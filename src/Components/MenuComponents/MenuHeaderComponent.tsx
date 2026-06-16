@@ -2,10 +2,15 @@ import React from "react";
 import {Button, Col, Row, Typography} from "antd";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
+import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 
 const {Text} = Typography;
 
-function MenuHeaderComponent(props: any) {
+interface MenuHeaderComponentProps {
+    theme: ThemeInterface;
+}
+
+function MenuHeaderComponent(props: MenuHeaderComponentProps) {
     return (
         <Row align={"middle"}>
             <Col span={6}>

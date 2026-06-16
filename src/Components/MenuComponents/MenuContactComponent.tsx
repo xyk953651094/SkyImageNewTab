@@ -2,9 +2,15 @@ import React from "react";
 import {Button, Card, Col, Row, Typography} from "antd";
 import {DislikeOutlined, GithubOutlined, GitlabOutlined, LikeOutlined, MailOutlined} from "@ant-design/icons";
 import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
+import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 
 const {Text} = Typography;
-function MenuContactComponent(props: any) {
+
+interface MenuContactComponentProps {
+    theme: ThemeInterface;
+}
+
+function MenuContactComponent(props: MenuContactComponentProps) {
     return (
         <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"联系作者"}</Text>}
               extra={<MailOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}

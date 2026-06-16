@@ -16,28 +16,13 @@ export function HoverButton({theme, icon, children, onClick, href, target}: Hove
     return (
         <Button type={"text"} size={"large"}
                 icon={icon}
-                style={{color: theme.secondaryFontColor}}
+                style={{
+                    color: theme.secondaryFontColor,
+                    cursor: onClick || href ? "pointer" : "default"
+                }}
                 onClick={onClick}
                 href={href}
                 target={target}
-                onMouseOver={(e) => changeButtonTheme(theme.primaryColor, theme.primaryFontColor, e)}
-                onMouseOut={(e) => changeButtonTheme("transparent", theme.secondaryFontColor, e)}>
-            {children}
-        </Button>
-    );
-}
-
-interface DisplayButtonProps {
-    theme: ThemeInterface;
-    icon?: React.ReactNode;
-    children?: React.ReactNode;
-}
-
-export function DisplayButton({theme, icon, children}: DisplayButtonProps) {
-    return (
-        <Button type={"text"} size={"large"}
-                icon={icon}
-                style={{color: theme.secondaryFontColor, cursor: "default"}}
                 onMouseOver={(e) => changeButtonTheme(theme.primaryColor, theme.primaryFontColor, e)}
                 onMouseOut={(e) => changeButtonTheme("transparent", theme.secondaryFontColor, e)}>
             {children}

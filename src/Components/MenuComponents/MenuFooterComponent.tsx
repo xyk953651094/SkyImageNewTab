@@ -2,8 +2,13 @@ import React from "react";
 import {Button} from "antd";
 import {StarOutlined} from "@ant-design/icons";
 import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
+import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 
-function MenuFooterComponent(props: any) {
+interface MenuFooterComponentProps {
+    theme: ThemeInterface;
+}
+
+function MenuFooterComponent(props: MenuFooterComponentProps) {
     return (
         <Button type={"text"} 
                 icon={<StarOutlined />} size={"large"}

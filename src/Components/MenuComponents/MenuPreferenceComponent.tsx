@@ -17,7 +17,7 @@ import {
     CheckOutlined,
     CloseOutlined
 } from "@ant-design/icons";
-import {changeButtonTheme, isEmpty} from "../../TypeScripts/PublicFunctions";
+import {changeButtonTheme, createThemedMessage, isEmpty} from "../../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from "../../TypeScripts/StorageFunctions";
 import {PreferenceInterface} from "../../TypeScripts/PublicInterface";
 import {defaultPreference} from "../../TypeScripts/PublicConstants";
@@ -34,6 +34,8 @@ function MenuPreferenceComponent(props: any) {
     const [displayResetPreferenceModal, setDisplayResetPreferenceModal] = useState<boolean>(false);
     const [displayClearStorageModal, setDisplayClearStorageModal] = useState<boolean>(false);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
+    
+    const themedMessage = createThemedMessage(props.theme, message);
     
     function refreshWindow() {
         setTimeout(() => {
@@ -60,22 +62,10 @@ function MenuPreferenceComponent(props: any) {
          setPreference(changePreference({imageTopics: selectedValues}));
          setExtensionStorage("preference", preference);
          props.getPreference(preference);
-         message.success({content: "已更换图片主题，下次切换图片时生效",
-             styles: {
-                 root: {backgroundColor: props.theme.secondaryColor},
-                 icon: {color: props.theme.secondaryFontColor},
-                 title: {color: props.theme.secondaryFontColor}
-             }
-         });
+         
+         themedMessage.success("已更换图片主题，下次切换图片时生效");
          if (selectedValues.length === 0) {
-             message.info({
-                 content: "全不选与全选的效果一样",
-                 styles: {
-                     root: {backgroundColor: props.theme.secondaryColor},
-                     icon: {color: props.theme.secondaryFontColor},
-                     title: {color: props.theme.secondaryFontColor}
-                 }
-             });
+             themedMessage.info("全不选与全选的效果一样");
          }
     }
     
@@ -99,10 +89,10 @@ function MenuPreferenceComponent(props: any) {
             props.getPreference(preference);
             
             if(!isEmpty(customTopicInputValue)) {
-                message.success("已使用自定主题，下次切换图片时生效");
+                themedMessage.success("已使用自定主题，下次切换图片时生效");
             } else {
                 setFormDisabled(true);
-                message.success("已禁用自定主题，一秒后刷新页面");
+                themedMessage.success("已禁用自定主题，一秒后刷新页面");
                 refreshWindow();
             }
         } else {
@@ -114,7 +104,7 @@ function MenuPreferenceComponent(props: any) {
             setCustomTopicStatus("已禁用自定主题");
             setExtensionStorage("preference", preference);
             props.getPreference(preference);
-            message.success("已禁用自定主题，一秒后刷新页面");
+            themedMessage.success("已禁用自定主题，一秒后刷新页面");
             refreshWindow();
         }
     }
@@ -128,7 +118,7 @@ function MenuPreferenceComponent(props: any) {
         getExtensionStorage(["resetTimeStamp"]).then((result)=> {
             let [resetTimeStampStorage] = result;
             if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
-                message.error("操作过于频繁，请稍后再试");
+                themedMessage.error("操作过于频繁，请稍后再试");
             } else {
                 setDisplayResetPreferenceModal(true);
             }
@@ -140,7 +130,7 @@ function MenuPreferenceComponent(props: any) {
         setDisplayResetPreferenceModal(false);
         setExtensionStorage("preference", defaultPreference);
         setExtensionStorage("resetTimeStamp", new Date().getTime());
-        message.success("已重置设置，一秒后刷新页面");
+        themedMessage.success("已重置设置，一秒后刷新页面");
         refreshWindow();
     }
     
@@ -153,7 +143,7 @@ function MenuPreferenceComponent(props: any) {
         getExtensionStorage(["resetTimeStamp"]).then((result)=> {
             let [resetTimeStampStorage] = result;
             if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
-                message.error("操作过于频繁，请稍后再试");
+                themedMessage.error("操作过于频繁，请稍后再试");
             } else {
                 setDisplayClearStorageModal(true);
             }
@@ -165,7 +155,8 @@ function MenuPreferenceComponent(props: any) {
         setDisplayClearStorageModal(false);
         clearExtensionStorage();
         setExtensionStorage("resetTimeStamp", new Date().getTime());
-        message.success("已重置插件，一秒后刷新页面");
+        themedMessage.success("已重置插件，一秒后刷新页面");
+        
         refreshWindow();
     }
     

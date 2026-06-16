@@ -8,7 +8,7 @@ export const colorRegExp = /^#[0-9A-Fa-f]{6}$/;
 export const clientId = "ntHZZmwZUkhiLBMvwqqzmOG29nyXSCXlX7x_i-qhVHM";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
-export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
+export const imageSwitchingInterval = 0;  // 图片切换间隔默认一小时 3600000
 export let environment = "development";  // "development" 或 "production"
 
 export let defaultPreference: PreferenceInterface = {

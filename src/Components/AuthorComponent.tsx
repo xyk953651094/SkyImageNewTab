@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState, useCallback} from "react";
+import React, {useEffect, useState} from "react";
 import {Avatar, Button, Col, Divider, List, message, Popover, Row, Space, Typography} from "antd";
 import {
     CameraOutlined,
@@ -7,10 +7,10 @@ import {
     InfoCircleOutlined
 } from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
-import {isEmpty, truncateText} from "../TypeScripts/PublicFunctions";
+import {createThemedMessage, isEmpty, truncateText} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
 import {ThemeInterface, UnsplashImageData} from "../TypeScripts/PublicInterface";
-import {DisplayButton, HoverButton} from "./PublicComponents/PublicButton";
+import {HoverButton} from "./PublicComponents/PublicButton";
 
 const {Text} = Typography;
 const btnMaxSize = 50;
@@ -56,13 +56,15 @@ function AuthorComponent(props: AuthorComponentProps) {
     const [author, setAuthor] = useState<AuthorInfo>(defaultAuthor);
     const [image, setImage] = useState<ImageInfo>(defaultImage);
     
-    const imageLinkBtnOnClick = useCallback(() => {
+    const themedMessage = createThemedMessage(props.theme, message);
+    
+    function imageLinkBtnOnClick() {
         if (!isEmpty(image.link)) {
             window.open(image.link + unsplashUrl, "_self");
         } else {
-            message.error("无跳转链接");
+            themedMessage.error("无跳转链接");
         }
-    }, [image.link]);
+    }
     
     useEffect(() => {
         if (props.imageData) {
@@ -84,7 +86,7 @@ function AuthorComponent(props: AuthorComponentProps) {
         }
     }, [props.imageData]);
     
-    const popoverTitle = useMemo(() => (
+    const popoverTitle = (
         <Row align={"middle"}>
             <Col span={10}>
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"摄影师与照片信息"}</Text>
@@ -97,29 +99,29 @@ function AuthorComponent(props: AuthorComponentProps) {
                 </Space>
             </Col>
         </Row>
-    ), [props.theme, imageLinkBtnOnClick]);
+    );
     
-    const popoverContent = useMemo(() => (
+    const popoverContent = (
         <List>
             <List.Item>
                 <Space align={"center"}>
                     <Avatar size={90} src={author.iconUrl} alt={"作者"}/>
                     <Space orientation={"vertical"}>
-                        <DisplayButton theme={props.theme} icon={<CameraOutlined/>}>
+                        <HoverButton theme={props.theme} icon={<CameraOutlined/>}>
                             {"由 Unsplash 的 " + truncateText(author.name, btnMaxSize) + " 拍摄"}
-                        </DisplayButton>
+                        </HoverButton>
                         <Space>
-                            <DisplayButton theme={props.theme} icon={<i className="bi bi-collection"></i>}>
+                            <HoverButton theme={props.theme} icon={<i className="bi bi-collection"></i>}>
                                 {" " + author.collections + " 个合集"}
-                            </DisplayButton>
+                            </HoverButton>
                             <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
-                            <DisplayButton theme={props.theme} icon={<i className="bi bi-heart"></i>}>
+                            <HoverButton theme={props.theme} icon={<i className="bi bi-heart"></i>}>
                                 {" " + author.likes + " 个点赞"}
-                            </DisplayButton>
+                            </HoverButton>
                             <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
-                            <DisplayButton theme={props.theme} icon={<i className="bi bi-images"></i>}>
+                            <HoverButton theme={props.theme} icon={<i className="bi bi-images"></i>}>
                                 {" " + author.photos + " 张照片"}
-                            </DisplayButton>
+                            </HoverButton>
                         </Space>
                     </Space>
                 </Space>
@@ -129,18 +131,18 @@ function AuthorComponent(props: AuthorComponentProps) {
                     <Space>
                         <Avatar size={90} shape={"square"} src={image.previewUrl} alt={"信息"}/>
                         <Space orientation={"vertical"}>
-                            <DisplayButton theme={props.theme} icon={<InfoCircleOutlined/>}>
+                            <HoverButton theme={props.theme} icon={<InfoCircleOutlined/>}>
                                 {truncateText(image.description, btnMaxSize)}
-                            </DisplayButton>
-                            <DisplayButton theme={props.theme} icon={<EnvironmentOutlined/>}>
+                            </HoverButton>
+                            <HoverButton theme={props.theme} icon={<EnvironmentOutlined/>}>
                                 {truncateText(image.location, btnMaxSize)}
-                            </DisplayButton>
+                            </HoverButton>
                         </Space>
                     </Space>
                 </Space>
             </List.Item>
         </List>
-    ), [props.theme, author, image]);
+    );
     
     return (
         <Popover title={popoverTitle} content={popoverContent} placement={"topRight"}
@@ -161,4 +163,4 @@ function AuthorComponent(props: AuthorComponentProps) {
     );
 }
 
-export default AuthorComponent;
+export default React.memo(AuthorComponent);

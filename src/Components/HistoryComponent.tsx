@@ -2,32 +2,39 @@ import React, {useEffect, useState} from "react";
 import {Button, Carousel, Col, Empty, Image, List, message, Popover, Row, Space, Spin, Typography} from "antd";
 import {HomeOutlined, HistoryOutlined} from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
-import {changeButtonTheme, changeTheme, isEmpty} from "../TypeScripts/PublicFunctions";
+import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
+import {ImageHistoryItem, ThemeInterface} from "../TypeScripts/PublicInterface";
+import {HoverButton} from "./PublicComponents/PublicButton";
 
 const {Text} = Typography;
 
-function HistoryComponent(props: any) {
-    const [imageHistory, setImageHistory] = useState<any[]>([]);
+interface HistoryComponentProps {
+    theme: ThemeInterface;
+    imageHistory: ImageHistoryItem[];
+}
+
+function HistoryComponent(props: HistoryComponentProps) {
+    const [imageHistory, setImageHistory] = useState<ImageHistoryItem[]>([]);
     const [imageLink, setImageLink] = useState<string>("");
+    
+    const themedMessage = createThemedMessage(props.theme, message);
     
     function imageLinkBtnOnClick() {
         if (!isEmpty(imageLink)) {
             window.open(imageLink + unsplashUrl, "_self");
         } else {
-            message.error("无跳转链接");
+            themedMessage.error("无跳转链接");
         }
     }
     
     function carouselOnChange(currentIndex: number) {
-        setImageLink(imageHistory[currentIndex].imageLink)
+        if (imageHistory[currentIndex]) {
+            setImageLink(imageHistory[currentIndex].imageLink);
+        }
     }
     
     useEffect(() => {
-        if (!isEmpty(props.theme)) {
-            changeTheme("#imageHistoryBtn", props.theme.secondaryColor, props.theme.secondaryFontColor);
-        }
-        
         if (!isEmpty(props.imageHistory) && !isEmpty(props.imageHistory[0].imageLink)) {
             setImageHistory(props.imageHistory);
             setImageLink(props.imageHistory[0].imageLink)
@@ -41,14 +48,9 @@ function HistoryComponent(props: any) {
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>
-                    <Button type={"text"} 
-                            icon={<HomeOutlined />} size={"large"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onClick={imageLinkBtnOnClick}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
+                    <HoverButton theme={props.theme} icon={<HomeOutlined/>} onClick={imageLinkBtnOnClick}>
                         {"图片主页"}
-                    </Button>
+                    </HoverButton>
                 </Space>
             </Col>
         </Row>
@@ -56,48 +58,50 @@ function HistoryComponent(props: any) {
     
     const popoverContent = (
         <List split={false}>
-            <List.Item style={{display: imageHistory.length === 0 ? "flex" : "none"}}>
-                <Row className="alignCenter" style={{width: "400px"}}>
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                </Row>
-            </List.Item>
-            <List.Item style={{display: imageHistory.length === 0 ? "none" : "flex"}}>
-                <Carousel effect="fade" afterChange={carouselOnChange} arrows
-                          style={{width: "400px", height: "300px"}}>
-                    {
-                        imageHistory.map((item: any) => {
-                            return (
-                                <div key={item.index}
-                                     style={{width: "400px", height: "300px", lineHeight: "300px"}}>
-                                    <Image
-                                        width={"400px"}
-                                        height={"300px"}
-                                        preview={false}
-                                        alt={"暂无图片"}
-                                        src={item.imageUrl}
-                                        style={{borderRadius: "8px"}}
-                                        placeholder={
-                                            <div style={{width: "400px", height: "300px", borderRadius: "8px"}}
-                                                 className="alignCenter">
-                                                <Spin tip="加载中，请稍后..."/>
-                                            </div>
-                                        }
-                                    />
-                                </div>
-                            )
-                        })
-                    }
-                </Carousel>
-            </List.Item>
+            {imageHistory.length === 0 ? (
+                <List.Item>
+                    <Row className="alignCenter" style={{width: "400px"}}>
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                    </Row>
+                </List.Item>
+            ) : (
+                <List.Item>
+                    <Carousel effect="fade" afterChange={carouselOnChange} arrows
+                              style={{width: "400px", height: "300px"}}>
+                        {
+                            imageHistory.map((item) => {
+                                return (
+                                    <div key={item.index}
+                                         style={{width: "400px", height: "300px", lineHeight: "300px"}}>
+                                        <Image
+                                            width={"400px"}
+                                            height={"300px"}
+                                            preview={false}
+                                            alt={"暂无图片"}
+                                            src={item.imageUrl}
+                                            style={{borderRadius: "8px"}}
+                                            placeholder={
+                                                <div style={{width: "400px", height: "300px", borderRadius: "8px"}}
+                                                     className="alignCenter">
+                                                    <Spin description="加载中，请稍后..."/>
+                                                </div>
+                                            }
+                                        />
+                                    </div>
+                                )
+                            })
+                        }
+                    </Carousel>
+                </List.Item>
+            )}
         </List>
     );
     
     return (
         <Popover title={popoverTitle} content={popoverContent} placement={"topRight"}
                  color={props.theme.secondaryColor}
-                 overlayStyle={{minWidth: "400px"}}>
+                 styles={{root: {minWidth: "400px"}}}>
             <Button icon={<HistoryOutlined/>} size={"large"}
-                    id={"imageHistoryBtn"}
                     className={"componentTheme zIndexHigh"}
                     style={{
                         cursor: "default",
@@ -109,4 +113,4 @@ function HistoryComponent(props: any) {
     );
 }
 
-export default HistoryComponent;
+export default React.memo(HistoryComponent);

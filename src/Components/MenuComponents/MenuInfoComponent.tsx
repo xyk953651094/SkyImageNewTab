@@ -2,9 +2,15 @@ import React from "react";
 import {Button, Card, Col, Row, Typography} from "antd";
 import {GithubOutlined, GitlabOutlined, InfoCircleOutlined} from "@ant-design/icons";
 import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
+import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 
 const {Text} = Typography;
-function MenuInfoComponent(props: any) {
+
+interface MenuInfoComponentProps {
+    theme: ThemeInterface;
+}
+
+function MenuInfoComponent(props: MenuInfoComponentProps) {
     return (
         <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息"}</Text>}
               extra={<InfoCircleOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}

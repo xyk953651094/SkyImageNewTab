@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Button, Drawer, Space, Tooltip, Typography} from "antd";
 import {MenuOutlined} from "@ant-design/icons";
-import {changeTheme, isEmpty} from "../TypeScripts/PublicFunctions";
 import {deviceType} from "../TypeScripts/PublicConstants";
 import MenuHeaderComponent from "./MenuComponents/MenuHeaderComponent";
 import MenuFooterComponent from "./MenuComponents/MenuFooterComponent";
@@ -9,12 +8,39 @@ import MenuInfoComponent from "./MenuComponents/MenuInfoComponent";
 import MenuContactComponent from "./MenuComponents/MenuContactComponent";
 import MenuToTopComponent from "./MenuComponents/menuToTopComponent";
 import MenuPreferenceComponent from "./MenuComponents/MenuPreferenceComponent";
+import {PreferenceInterface, ThemeInterface} from "../TypeScripts/PublicInterface";
 
 const {Text} = Typography;
+const drawerPosition = (deviceType === "iPhone" || deviceType === "Android") ? "bottom" : "right";
 
-function MenuComponent(props: any) {
+interface MenuComponentProps {
+    theme: ThemeInterface;
+    preference: PreferenceInterface;
+    getPreference: React.Dispatch<React.SetStateAction<PreferenceInterface>>;
+}
+
+function MenuComponent(props: MenuComponentProps) {
     const [displayDrawer, setDisplayDrawer] = useState<boolean>(false);
-    const [drawerPosition, setDrawerPosition] = React.useState<"right" | "bottom">("right");
+    
+    const buttonStyle = useMemo(() => ({
+        backgroundColor: props.theme.secondaryColor,
+        color: props.theme.secondaryFontColor,
+    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
+    
+    const tooltipTextStyle = useMemo(() => ({
+        color: props.theme.secondaryFontColor,
+    }), [props.theme.secondaryFontColor]);
+    
+    const drawerStyles = useMemo(() => ({
+        mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
+        header: {color: props.theme.secondaryFontColor, borderBottomColor: props.theme.secondaryFontColor},
+        section: {backgroundColor: props.theme.secondaryColor},
+        footer: {
+            backgroundColor: props.theme.secondaryColor,
+            borderTopColor: props.theme.secondaryFontColor,
+            textAlign: "center" as const,
+        },
+    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
     
     function showDrawerBtnOnClick() {
         setDisplayDrawer(true);
@@ -24,28 +50,13 @@ function MenuComponent(props: any) {
         setDisplayDrawer(false);
     }
     
-    useEffect(() => {
-        // 屏幕适配
-        if (deviceType === "iPhone" || deviceType === "Android") {
-            setDrawerPosition("bottom");
-        }
-        
-        if (!isEmpty(props.theme)) {
-            changeTheme("#imageHistoryBtn", props.theme.secondaryColor, props.theme.secondaryFontColor);
-        }
-    }, [props.theme]);
-    
     return (
         <>
-            <Tooltip title={<Text style={{color: props.theme.secondaryFontColor}}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
+            <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
                 <Button icon={<MenuOutlined/>} size={"large"}
                         onClick={showDrawerBtnOnClick}
-                        id={"preferenceBtn"}
                         className={"componentTheme zIndexHigh"}
-                        style={{
-                            backgroundColor: props.theme.secondaryColor,
-                            color: props.theme.secondaryFontColor
-                        }}
+                        style={buttonStyle}
                 />
             </Tooltip>
             <Drawer
@@ -54,45 +65,26 @@ function MenuComponent(props: any) {
                 onClose={drawerOnClose}
                 open={displayDrawer}
                 closeIcon={false}
-                styles={{
-                    mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                    header: {color: props.theme.secondaryFontColor, borderBottomColor: props.theme.secondaryFontColor},
-                    section: {backgroundColor: props.theme.secondaryColor},
-                    footer: {
-                        backgroundColor: props.theme.secondaryColor,
-                        borderTopColor: props.theme.secondaryFontColor,
-                        textAlign: "center"
-                    }
-                }}
+                styles={drawerStyles}
                 title={
-                    <MenuHeaderComponent
-                        theme={props.theme}
-                        preference={props.preference}/>
+                    <MenuHeaderComponent theme={props.theme}/>
                 }
                 footer={
-                    <MenuFooterComponent
-                        theme={props.theme}
-                        preference={props.preference}/>
+                    <MenuFooterComponent theme={props.theme}/>
                 }
             >
-                <Space direction={"vertical"} size={"large"} id={"drawerContent"}>
+                <Space orientation={"vertical"} size={"large"} id={"drawerContent"}>
                     <MenuPreferenceComponent
                         theme={props.theme}
                         preference={props.preference}
                         getPreference={props.getPreference}/>
-                    <MenuInfoComponent
-                        theme={props.theme}
-                        preference={props.preference}/>
-                    <MenuContactComponent
-                        theme={props.theme}
-                        preference={props.preference}/>
-                    <MenuToTopComponent
-                        theme={props.theme}
-                        preference={props.preference}/>
+                    <MenuInfoComponent theme={props.theme}/>
+                    <MenuContactComponent theme={props.theme}/>
+                    <MenuToTopComponent theme={props.theme}/>
                 </Space>
             </Drawer>
         </>
     );
 }
 
-export default MenuComponent;
+export default React.memo(MenuComponent);

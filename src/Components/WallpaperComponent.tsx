@@ -1,176 +1,200 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef, useMemo} from "react";
 import "../StyleSheets/WallpaperComponent.scss"
 import "../StyleSheets/PublicStyles.scss"
 import {Image, message} from "antd";
-import {isEmpty} from "../TypeScripts/PublicFunctions";
+import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
 import {httpRequest} from "../TypeScripts/RequestFunctions";
 import {clientId, deviceType, imageHistoryMaxSize, imageSwitchingInterval} from "../TypeScripts/PublicConstants";
 import {decode} from "blurhash";
+import {ImageHistoryItem, PreferenceInterface, ThemeInterface, UnsplashImageData} from "../TypeScripts/PublicInterface";
 
-function WallpaperComponent(props: any) {
+interface WallpaperComponentProps {
+    theme: ThemeInterface;
+    preference: PreferenceInterface;
+    getImageData: (data: UnsplashImageData) => void;
+    getImageHistory: React.Dispatch<React.SetStateAction<ImageHistoryItem[]>>;
+}
+
+/** 纯请求函数 —— 只管从 Unsplash 拿数据 */
+async function fetchWallpaper(preference: PreferenceInterface): Promise<UnsplashImageData> {
+    const imageTopics = preference.imageTopics.join(",");
+    const imageQuery = preference.customTopic;
+    return httpRequest<UnsplashImageData>("https://api.unsplash.com/photos/random?", {
+        method: "GET",
+        headers: {},
+        data: {
+            client_id: clientId,
+            orientation: (deviceType === "iPhone" || deviceType === "Android") ? "portrait" : "landscape",
+            topics: isEmpty(imageQuery) ? imageTopics : "",
+            query: imageQuery,
+            content_filter: "high",
+        },
+    });
+}
+
+/** 纯缓存函数 —— 只管更新历史记录，返回更新后的列表 */
+async function updateImageHistory(currentImage: UnsplashImageData): Promise<ImageHistoryItem[]> {
+    const [lastImageStorage, imageHistoryStorage = []] =
+        await getExtensionStorage(["lastImage", "imageHistory"]);
+
+    const history: ImageHistoryItem[] = imageHistoryStorage || [];
+
+    if (!isEmpty(lastImageStorage) && !isEmpty(history)) {
+        const historyItem: ImageHistoryItem = {
+            index: Date.now(),
+            imageUrl: lastImageStorage.urls.regular,
+            imageLink: lastImageStorage.links.html,
+        };
+
+        const isDuplicate = history.some(
+            (item: ImageHistoryItem) => item.imageUrl === historyItem.imageUrl
+        );
+
+        if (!isDuplicate) {
+            if (history.length >= imageHistoryMaxSize) {
+                history.shift();
+            }
+            history.push(historyItem);
+        }
+    }
+
+    setExtensionStorage("imageHistory", history);
+    return history;
+}
+
+function WallpaperComponent(props: WallpaperComponentProps) {
     const [imageLink, setImageLink] = useState("");
     const [displayImage, setDisplayImage] = useState("block");
     const [displayCanvas, setDisplayCanvas] = useState("block");
     const [canvasClass, setCanvasClass] = useState("backgroundCanvas");
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const imageWrapperRef = useRef<HTMLDivElement>(null);
+    const imageStyle = useMemo(() => ({display: displayImage}), [displayImage]);
+    const canvasStyle = useMemo(() => ({display: displayCanvas}), [displayCanvas]);
     
-    function setWallpaper(imageData: any) {
+    const themedMessage = createThemedMessage(props.theme, message);
+
+    /** 渲染 blurHash 到 canvas 并通知父组件 */
+    function setWallpaper(imageData: UnsplashImageData) {
         props.getImageData(imageData);
         setImageLink(imageData.urls.full);
-            
-        // blurHash
+
         if (!isEmpty(imageData.blur_hash)) {
-            const backgroundCanvas = document.getElementById("backgroundCanvas") as HTMLCanvasElement | null;
-            if (backgroundCanvas instanceof HTMLCanvasElement) {
-                let blurHashImage = decode(imageData.blur_hash, backgroundCanvas.width, backgroundCanvas.height);
-                let ctx = backgroundCanvas.getContext("2d");
+            const canvas = canvasRef.current;
+            if (canvas) {
+                const blurHashImage = decode(imageData.blur_hash!, canvas.width, canvas.height);
+                const ctx = canvas.getContext("2d");
                 if (ctx) {
-                    const imageData = new ImageData(blurHashImage, backgroundCanvas.width, backgroundCanvas.height);
-                    ctx.putImageData(imageData, 0, 0);
+                    const blurImageData = new ImageData(blurHashImage, canvas.width, canvas.height);
+                    ctx.putImageData(blurImageData, 0, 0);
                 }
-                
                 setDisplayCanvas("block");
                 setCanvasClass("backgroundCanvas wallpaperFadeIn");
             }
         }
     }
-    
-    function getWallpaper() {
-        let imageTopics = "";
-        for (let i = 0; i < props.preference.imageTopics.length; i++) {
-            imageTopics += props.preference.imageTopics[i];
-            if (i !== props.preference.imageTopics.length - 1) {
-                imageTopics += ",";
-            }
-        }
-        let imageQuery = props.preference.customTopic;
-        
-        let headers = {};
-        let url = "https://api.unsplash.com/photos/random?";
-        let data = {
-            "client_id": clientId,
-            "orientation": (deviceType === "iPhone" || deviceType === "Android") ? "portrait" : "landscape",
-            "topics": isEmpty(imageQuery) ? imageTopics : "",
-            "query": imageQuery,
-            "content_filter": "high",
-        };
-        
-        message.loading({content: "正在获取图片", duration: 0, key: "message1"});
-        httpRequest(url, {method: "GET", headers: headers, data: data})
-            .then(function (resultData: any) {
-                message.destroy("message1");
-                message.loading({content: "正在加载图片", duration: 0, key: "message2"});
-                
-                // 缓存历史图片
-                getExtensionStorage(["lastImage", "imageHistory"]).then((result) => {
-                   let [lastImageStorage, imageHistoryStorage = []] = result;
-                    if (!isEmpty(lastImageStorage) && !isEmpty(imageHistoryStorage)) {
-                        let imageHistoryItem = {
-                            index: new Date().getTime(),
-                            imageUrl: lastImageStorage.urls.regular,
-                            imageLink: lastImageStorage.links.html,
-                        };
-                        
-                        // 检查是否已存在相同的图片URL
-                        const isDuplicate = imageHistoryStorage.some((item: any) =>
-                            item.imageUrl === imageHistoryItem.imageUrl
-                        );
-                        
-                        // 只有当不是重复图片时才添加到历史记录中
-                        if (!isDuplicate) {
-                            // 满了就把第一个删掉
-                            if (imageHistoryStorage.length === imageHistoryMaxSize) {
-                                imageHistoryStorage.shift();
-                            }
-                            
-                            imageHistoryStorage.push(imageHistoryItem);
-                        }
-                    }
-                    setExtensionStorage("imageHistory", imageHistoryStorage);
-                    props.getImageHistory(imageHistoryStorage);  // 传递给历史图片组件
-                })
-                
-                // 保存请求时间，防抖节流
-                setExtensionStorage("lastImageRequestTime", new Date().getTime());
-                setExtensionStorage("lastImage", resultData);
-                setWallpaper(resultData);
-            })
-            .catch(function () {
-                message.destroy("message1");
-                
-                // 请求失败时使用上一次请求结果
-                getExtensionStorage(["lastImage"]).then((result) => {
-                    let [lastImageStorage] = result;
-                    if (!isEmpty(lastImageStorage)) {
-                        message.loading({content: "获取图片失败，正在加载缓存图片", duration: 0, key: "message3"});
-                        setWallpaper(lastImageStorage);
-                    } else {
-                        message.error("获取图片失败，请检查网络连接");
-                    }
-                })
-            })
-            .finally(function () {});
-    }
-    
+
     useEffect(() => {
-        // 请求间隔控制
-        getExtensionStorage(["lastImageRequestTime", "lastImage"]).then((result) => {
-            let [lastImageRequestTimeStorage, lastImageStorage] = result;
-            let nowTimeStamp = new Date().getTime();
-            if (isEmpty(lastImageRequestTimeStorage)) {  // 第一次请求时 lastRequestTime 为 null，因此直接进行请求赋值 lastRequestTime
-                getWallpaper();
-            } else if (nowTimeStamp - parseInt(lastImageRequestTimeStorage) > imageSwitchingInterval) {  // 必须多于切换间隔才能进行新的请求
-                getWallpaper();
-            } else {  // 切换间隔内使用上一次请求结果
-                if (!isEmpty(lastImageStorage)) {
-                    message.loading({content: "正在加载缓存图片", duration: 0, key: "message4"});
-                    setWallpaper(lastImageStorage);
+        let cancelled = false;
+        const MESSAGE_KEY = "wallpaper_loading";
+
+        async function loadWallpaper() {
+            try {
+                const [lastRequestTime, lastImage] =
+                    await getExtensionStorage(["lastImageRequestTime", "lastImage"]);
+                
+                //TODO: 样式出不来
+                message.loading({
+                    content: "正在加载图片",
+                    styles: {
+                        root: {backgroundColor: props.theme.secondaryColor},
+                        icon: {color: props.theme.secondaryFontColor},
+                        title: {color: props.theme.secondaryFontColor}
+                    },
+                    duration: 0,
+                    key: MESSAGE_KEY
+                });
+                const now = Date.now();
+
+                let imageData: UnsplashImageData;
+                const needsFetch = isEmpty(lastRequestTime) ||
+                    (now - parseInt(lastRequestTime) > imageSwitchingInterval);
+
+                if (needsFetch) {
+                    // 先保存上一张图片到历史记录
+                    if (!isEmpty(lastImage)) {
+                        const history = await updateImageHistory(lastImage);
+                        if (!cancelled) props.getImageHistory(history);
+                    }
+                    setExtensionStorage("lastImageRequestTime", now);
+
+                    // 请求新图片
+                    imageData = await fetchWallpaper(props.preference);
+                    setExtensionStorage("lastImage", imageData);
+                } else if (!isEmpty(lastImage)) {
+                    imageData = lastImage as UnsplashImageData;
                 } else {
-                    message.error("获取图片失败，请检查网络连接");
+                    themedMessage.error("获取图片失败，请检查网络连接");
+                    return;
                 }
-            }
-        });
-        
-        // 图片动画
-        const backgroundImageDiv = document.getElementById("backgroundImage");
-        if (backgroundImageDiv) {
-            const backgroundImage = backgroundImageDiv.querySelector<HTMLImageElement>("img");
-            
-            if (backgroundImage) {
-                backgroundImage.onload = () => {
-                    backgroundImage.style.width = "102%";
-                    setDisplayImage("block");
-                    setCanvasClass("backgroundCanvas wallpaperFadeOut");
-                    message.destroy("message2");
-                    message.destroy("message3");
-                    message.destroy("message4");
-                    
-                    // 设置动态效果
-                    backgroundImage.classList.add("wallpaperFadeIn");
-                    setTimeout(() => {
-                        backgroundImage.style.transform = "scale(1.05, 1.05)";
-                        backgroundImage.style.transition = "5s";
-                    }, 2000);
-                };
+
+                if (!cancelled) setWallpaper(imageData);
+            } catch {
+                // 请求失败，回退缓存
+                const [lastImage] = await getExtensionStorage(["lastImage"]);
+                if (!isEmpty(lastImage)) {
+                    if (!cancelled) setWallpaper(lastImage as UnsplashImageData);
+                } else {
+                    themedMessage.error("获取图片失败，请检查网络连接");
+                }
+            } finally {
+                themedMessage.destroy(MESSAGE_KEY);
             }
         }
+
+        loadWallpaper();
+
+        // 图片加载完成后的动画
+        const backgroundImage = imageWrapperRef.current?.querySelector<HTMLImageElement>("img");
+        if (backgroundImage) {
+            backgroundImage.onload = () => {
+                backgroundImage.style.width = "102%";
+                setDisplayImage("block");
+                setCanvasClass("backgroundCanvas wallpaperFadeOut");
+
+                backgroundImage.classList.add("wallpaperFadeIn");
+                setTimeout(() => {
+                    backgroundImage.style.transform = "scale(1.05, 1.05)";
+                    backgroundImage.style.transition = "5s";
+                }, 2000);
+            };
+        }
+
+        return () => {
+            cancelled = true;
+            if (backgroundImage) {
+                backgroundImage.onload = null;
+            }
+        };
     }, []);
-    
+
     return (
         <>
-            <Image
-                id={"backgroundImage"}
-                // key={"1"}
-                width={"102%"}
-                height={"102%"}
-                className={"backgroundImage zIndexLow"}
-                preview={false}
-                src={imageLink}
-                style={{display: displayImage}}
-            />
-            <canvas id="backgroundCanvas" style={{display: displayCanvas}} className={canvasClass}/>
+            <div ref={imageWrapperRef}>
+                <Image
+                    id={"backgroundImage"}
+                    width={"102%"}
+                    height={"102%"}
+                    className={"backgroundImage zIndexLow"}
+                    preview={false}
+                    src={imageLink}
+                    style={imageStyle}
+                />
+            </div>
+            <canvas ref={canvasRef} style={canvasStyle} className={canvasClass}/>
         </>
     );
 }
 
-export default WallpaperComponent;
+export default React.memo(WallpaperComponent);

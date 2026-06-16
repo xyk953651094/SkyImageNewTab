@@ -1,14 +1,14 @@
-import React, {useMemo, useState} from "react";
-import {Button, Drawer, Space, Tooltip, Typography} from "antd";
-import {MenuOutlined} from "@ant-design/icons";
+import React, {useMemo, useRef, useState} from "react";
+import {Button, Drawer, Row, Space, Tooltip, Typography} from "antd";
+import {MenuOutlined, ToTopOutlined} from "@ant-design/icons";
 import {deviceType} from "../TypeScripts/PublicConstants";
 import MenuHeaderComponent from "./MenuComponents/MenuHeaderComponent";
 import MenuFooterComponent from "./MenuComponents/MenuFooterComponent";
 import MenuInfoComponent from "./MenuComponents/MenuInfoComponent";
 import MenuContactComponent from "./MenuComponents/MenuContactComponent";
-import MenuToTopComponent from "./MenuComponents/menuToTopComponent";
 import MenuPreferenceComponent from "./MenuComponents/MenuPreferenceComponent";
 import {PreferenceInterface, ThemeInterface} from "../TypeScripts/PublicInterface";
+import {HoverButton} from "./PublicComponents/PublicButton";
 
 const {Text} = Typography;
 const drawerPosition = (deviceType === "iPhone" || deviceType === "Android") ? "bottom" : "right";
@@ -21,6 +21,7 @@ interface MenuComponentProps {
 
 function MenuComponent(props: MenuComponentProps) {
     const [displayDrawer, setDisplayDrawer] = useState<boolean>(false);
+    const drawerContentRef = useRef<HTMLDivElement>(null);
     
     const buttonStyle = useMemo(() => ({
         backgroundColor: props.theme.secondaryColor,
@@ -50,6 +51,10 @@ function MenuComponent(props: MenuComponentProps) {
         setDisplayDrawer(false);
     }
     
+    function scrollToTop() {
+        drawerContentRef.current?.scrollIntoView({behavior: "smooth"});
+    }
+    
     return (
         <>
             <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
@@ -73,14 +78,18 @@ function MenuComponent(props: MenuComponentProps) {
                     <MenuFooterComponent theme={props.theme}/>
                 }
             >
-                <Space orientation={"vertical"} size={"large"} id={"drawerContent"}>
+                <Space orientation={"vertical"} size={"large"} ref={drawerContentRef}>
                     <MenuPreferenceComponent
                         theme={props.theme}
                         preference={props.preference}
                         getPreference={props.getPreference}/>
                     <MenuInfoComponent theme={props.theme}/>
                     <MenuContactComponent theme={props.theme}/>
-                    <MenuToTopComponent theme={props.theme}/>
+                    <Row justify={"center"}>
+                        <HoverButton theme={props.theme} icon={<ToTopOutlined/>} onClick={scrollToTop}>
+                            {"回到顶部"}
+                        </HoverButton>
+                    </Row>
                 </Space>
             </Drawer>
         </>

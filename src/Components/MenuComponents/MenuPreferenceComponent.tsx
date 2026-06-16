@@ -1,40 +1,43 @@
 import React, {useState} from "react";
 import {
-    Button,
     Card,
-    Col, Divider,
+    Divider,
     Form, Input,
-    message, Modal,
+    message,
     Radio,
-    Row, Select,
+    Select,
     Space,
     Typography,
 } from "antd";
+import type { RadioChangeEvent } from "antd";
 import {
-    TagOutlined,
     RedoOutlined,
     SettingOutlined,
-    CheckOutlined,
-    CloseOutlined
 } from "@ant-design/icons";
-import {changeButtonTheme, createThemedMessage, isEmpty} from "../../TypeScripts/PublicFunctions";
+import {createThemedMessage} from "../../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from "../../TypeScripts/StorageFunctions";
-import {PreferenceInterface} from "../../TypeScripts/PublicInterface";
+import {PreferenceInterface, ThemeInterface} from "../../TypeScripts/PublicInterface";
 import {defaultPreference} from "../../TypeScripts/PublicConstants";
+import {PublicModal} from "../PublicComponents/PublicModal";
+import { HoverButton } from "../PublicComponents/PublicButton";
 
 const {Text} = Typography;
 
-function MenuPreferenceComponent(props: any) {
+const RESET_COOLDOWN_MS = 60 * 1000;
+
+interface MenuPreferenceComponentProps {
+    theme: ThemeInterface;
+    preference: PreferenceInterface;
+    getPreference: React.Dispatch<React.SetStateAction<PreferenceInterface>>;
+}
+
+function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     const [formDisabled, setFormDisabled] = useState<boolean>(false);
     const [disableImageTopic, setDisableImageTopic] = useState<boolean>(false);
-    const [imageTopicStatus, setImageTopicStatus] = useState<string>("已使用预设主题");
-    const [customTopicStatus, setCustomTopicStatus] = useState<string>("已禁用自定主题");
-    const [displayCustomTopicModal, setDisplayCustomTopicModal] = useState<boolean>(false);
-    const [customTopicInputValue, setCustomTopicInputValue] = useState<string>("");
-    const [displayResetPreferenceModal, setDisplayResetPreferenceModal] = useState<boolean>(false);
-    const [displayClearStorageModal, setDisplayClearStorageModal] = useState<boolean>(false);
+    const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | null>(null);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
-    
+    const imageTopicStatus = disableImageTopic ? "已禁用预设主题" : "已启用预设主题";
+    const customTopicStatus = disableImageTopic ? "已启用自定主题" : "已禁用自定主题";
     const themedMessage = createThemedMessage(props.theme, message);
     
     function refreshWindow() {
@@ -47,8 +50,8 @@ function MenuPreferenceComponent(props: any) {
         return Object.assign({}, preference, data);
     }
     
-    function topicRadioOnChange(e: any) {
-        let topicType= e.target.value;
+    function topicRadioOnChange(e: RadioChangeEvent) {
+        const topicType= e.target.value;
         if (topicType === "presetTopics") {
             setDisableImageTopic(false);
         }
@@ -57,77 +60,36 @@ function MenuPreferenceComponent(props: any) {
         }
     }
     
+    async function checkCooldownThen(callback: () => void) {
+    const [resetTimeStampStorage] = await getExtensionStorage(["resetTimeStamp"]);
+    if (resetTimeStampStorage && Date.now() - parseInt(resetTimeStampStorage) < RESET_COOLDOWN_MS) {
+        themedMessage.error("操作过于频繁，请稍后再试");
+    } else {
+        callback();
+    }
+}
+    
     // 预设主题
-     function imageTopicsSelectOnChange(selectedValues: string) {
-         setPreference(changePreference({imageTopics: selectedValues}));
-         setExtensionStorage("preference", preference);
-         props.getPreference(preference);
-         
-         themedMessage.success("已更换图片主题，下次切换图片时生效");
-         if (selectedValues.length === 0) {
-             themedMessage.info("全不选与全选的效果一样");
-         }
-    }
-    
-    // 自定主题
-    function customTopicBtnOnClick() {
-        setDisplayCustomTopicModal(true);
-    }
-    
-    function customTopicInputOnChange(e: any) {
-        setCustomTopicInputValue(e.target.value)
-    }
-    
-    function customTopicOkBtnOnClick() {
-        if (customTopicInputValue.length !== 0) {
-            setDisplayCustomTopicModal(false);
-            setPreference(changePreference({customTopic: customTopicInputValue}));
-            setDisableImageTopic(!isEmpty(customTopicInputValue));
-            setImageTopicStatus(isEmpty(customTopicInputValue)? "已使用预设主题" : "已禁用预设主题");
-            setCustomTopicStatus(isEmpty(customTopicInputValue)? "已禁用自定主题" : "已使用自定主题");
-            setExtensionStorage("preference", preference);
-            props.getPreference(preference);
-            
-            if(!isEmpty(customTopicInputValue)) {
-                themedMessage.success("已使用自定主题，下次切换图片时生效");
-            } else {
-                setFormDisabled(true);
-                themedMessage.success("已禁用自定主题，一秒后刷新页面");
-                refreshWindow();
-            }
-        } else {
-            setDisplayCustomTopicModal(false);
-            setFormDisabled(true);
-            setPreference(changePreference({customTopic: ""}));
-            setDisableImageTopic(false);
-            setImageTopicStatus("已使用预设主题");
-            setCustomTopicStatus("已禁用自定主题");
-            setExtensionStorage("preference", preference);
-            props.getPreference(preference);
-            themedMessage.success("已禁用自定主题，一秒后刷新页面");
-            refreshWindow();
+    function imageTopicsSelectOnChange(selectedValues: string) {
+        const newPreference = changePreference({imageTopics: selectedValues});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        
+        themedMessage.success("已更换图片主题，下次切换图片时生效");
+        if (selectedValues.length === 0) {
+            themedMessage.info("全不选与全选的效果一样");
         }
-    }
-    
-    function customTopicCancelBtnOnClick() {
-        setDisplayCustomTopicModal(false)
     }
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
-        getExtensionStorage(["resetTimeStamp"]).then((result)=> {
-            let [resetTimeStampStorage] = result;
-            if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
-                themedMessage.error("操作过于频繁，请稍后再试");
-            } else {
-                setDisplayResetPreferenceModal(true);
-            }
-        })
+        checkCooldownThen(() => setActiveModal("resetPreference"));
     }
     
     function resetPreferenceOkBtnOnClick() {
         setFormDisabled(true);
-        setDisplayResetPreferenceModal(false);
+        setActiveModal(null);
         setExtensionStorage("preference", defaultPreference);
         setExtensionStorage("resetTimeStamp", new Date().getTime());
         themedMessage.success("已重置设置，一秒后刷新页面");
@@ -135,24 +97,17 @@ function MenuPreferenceComponent(props: any) {
     }
     
     function resetPreferenceCancelBtnOnClick() {
-        setDisplayResetPreferenceModal(false)
+        setActiveModal(null);
     }
     
     // 重置插件
     function clearStorageBtnOnClick() {
-        getExtensionStorage(["resetTimeStamp"]).then((result)=> {
-            let [resetTimeStampStorage] = result;
-            if (resetTimeStampStorage && new Date().getTime() - parseInt(resetTimeStampStorage) < 60 * 1000) {
-                themedMessage.error("操作过于频繁，请稍后再试");
-            } else {
-                setDisplayClearStorageModal(true);
-            }
-        })
+        checkCooldownThen(() => setActiveModal("clearStorage"));
     }
     
     function clearStorageOkBtnOnClick() {
         setFormDisabled(true);
-        setDisplayClearStorageModal(false);
+        setActiveModal(null);
         clearExtensionStorage();
         setExtensionStorage("resetTimeStamp", new Date().getTime());
         themedMessage.success("已重置插件，一秒后刷新页面");
@@ -161,7 +116,7 @@ function MenuPreferenceComponent(props: any) {
     }
     
     function clearStorageCancelBtnOnClick() {
-        setDisplayClearStorageModal(false);
+        setActiveModal(null);
     }
     
     return (
@@ -229,180 +184,50 @@ function MenuPreferenceComponent(props: any) {
                     </Form.Item>
                     <Form.Item label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
                                extra={<Text style={{color: props.theme.secondaryFontColor}}>{customTopicStatus}</Text>}>
-                        <Input size="large" placeholder="large size" disabled={!disableImageTopic}/>
+                        <Input size="large" placeholder="请输入自定义主题" disabled={!disableImageTopic}/>
                     </Form.Item>
                     <Divider/>
                     <Form.Item name={"clearStorageButton"}
                                label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
                                extra={<Text style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
                         <Space>
-                            <Button type={"text"}
-                                    icon={<RedoOutlined/>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor}}
-                                    onClick={resetPreferenceBtnOnClick}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
+                            <HoverButton theme={props.theme} icon={<RedoOutlined/>} onClick={resetPreferenceBtnOnClick}>
                                 重置设置
-                            </Button>
-                            <Button type={"text"}
-                                    icon={<RedoOutlined/>} size={"large"}
-                                    style={{color: props.theme.secondaryFontColor}}
-                                    onClick={clearStorageBtnOnClick}
-                                    onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                    onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
+                            </HoverButton>
+                            <HoverButton theme={props.theme} icon={<RedoOutlined/>} onClick={clearStorageBtnOnClick}>
                                 重置插件
-                            </Button>
+                            </HoverButton>
                         </Space>
                     </Form.Item>
                 </Form>
             </Card>
-            <Modal title={
-                <Row align={"middle"}>
-                    <Col span={12}>
-                        <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                            {"自定义 Unsplash 图片主题"}
-                        </Text>
-                    </Col>
-                    <Col span={12} style={{textAlign: "right"}}>
-                        <TagOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>
-                    </Col>
-                </Row>
-            }
-                   closeIcon={false}
-                   footer={[
-                       <Space>
-                           <Button type={"text"}
-                                   icon={<CloseOutlined />} size={"large"}
-                                   style={{color: props.theme.secondaryFontColor}}
-                                   onClick={customTopicCancelBtnOnClick}
-                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                               {"取消"}
-                           </Button>
-                           <Button type={"text"}
-                                   icon={<CheckOutlined />} size={"large"}
-                                   style={{color: props.theme.secondaryFontColor}}
-                                   onClick={customTopicOkBtnOnClick}
-                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                               {"确定"}
-                           </Button>
-                       </Space>
-                   ]}
-                   centered
-                   open={displayCustomTopicModal}
-                   destroyOnHidden={true}
-                   styles={{
-                       mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                       header: {color: props.theme.secondaryFontColor, backgroundColor: props.theme.secondaryColor},
-                       container: {backgroundColor: props.theme.secondaryColor}
-                   }}
-            >
-                <Form initialValues={preference} colon={false} >
-                    <Form.Item label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
-                               name={"customTopic"}
-                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{"自定义图片主题为空时将使用预设主题"}</Text>}>
-                        <Input size={"large"} placeholder="请输入自定义 Unsplash 图片主题"
-                               value={customTopicInputValue}
-                               onChange={customTopicInputOnChange}
-                               allowClear/>
-                    </Form.Item>
-                </Form>
-            </Modal>
-            <Modal title={
-                <Row align={"middle"}>
-                    <Col span={12}>
-                        <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                            {"确定重置设置？"}
-                        </Text>
-                    </Col>
-                    <Col span={12} style={{textAlign: "right"}}>
-                        <RedoOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>
-                    </Col>
-                </Row>
-            }
-                   closeIcon={false}
-                   footer={[
-                       <Space>
-                           <Button type={"text"}
-                                   icon={<CloseOutlined />} size={"large"}
-                                   style={{color: props.theme.secondaryFontColor}}
-                                   onClick={resetPreferenceCancelBtnOnClick}
-                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                               {"取消"}
-                           </Button>
-                           <Button type={"text"}
-                                   icon={<CheckOutlined />} size={"large"}
-                                   style={{color: props.theme.secondaryFontColor}}
-                                   onClick={resetPreferenceOkBtnOnClick}
-                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                               {"确定"}
-                           </Button>
-                       </Space>
-                   ]}
-                   centered
-                   open={displayResetPreferenceModal}
-                   destroyOnHidden={true}
-                   styles={{
-                       mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                       header: {color: props.theme.secondaryFontColor, backgroundColor: props.theme.secondaryColor},
-                       container: {backgroundColor: props.theme.secondaryColor}
-                   }}
+            
+            <PublicModal
+                theme={props.theme}
+                open={activeModal === "resetPreference"}
+                titleText={"确定重置设置？"}
+                titleIcon={<RedoOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+                onOk={resetPreferenceOkBtnOnClick}
+                onCancel={resetPreferenceCancelBtnOnClick}
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                     {"注意：所有设置项将被重置为默认值"}
                 </Text>
-            </Modal>
-            <Modal title={
-                <Row align={"middle"}>
-                    <Col span={12}>
-                        <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                            {"确定重置插件？"}
-                        </Text>
-                    </Col>
-                    <Col span={12} style={{textAlign: "right"}}>
-                        <RedoOutlined  style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>
-                    </Col>
-                </Row>
-            }
-                   closeIcon={false}
-                   footer={[
-                       <Space>
-                           <Button type={"text"}
-                                   icon={<CloseOutlined />} size={"large"}
-                                   style={{color: props.theme.secondaryFontColor}}
-                                   onClick={clearStorageCancelBtnOnClick}
-                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                               {"取消"}
-                           </Button>
-                           <Button type={"text"}
-                                   icon={<CheckOutlined />} size={"large"}
-                                   style={{color: props.theme.secondaryFontColor}}
-                                   onClick={clearStorageOkBtnOnClick}
-                                   onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                                   onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                               {"确定"}
-                           </Button>
-                       </Space>
-                   ]}
-                   centered
-                   open={displayClearStorageModal}
-                   destroyOnHidden={true}
-                   styles={{
-                       mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                       header: {color: props.theme.secondaryFontColor, backgroundColor: props.theme.secondaryColor},
-                       container: {backgroundColor: props.theme.secondaryColor}
-                   }}
+            </PublicModal>
+            <PublicModal
+                theme={props.theme}
+                open={activeModal === "clearStorage"}
+                titleText={"确定重置插件？"}
+                titleIcon={<RedoOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+                onOk={clearStorageOkBtnOnClick}
+                onCancel={clearStorageCancelBtnOnClick}
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                     {"注意：所有设置项将被重置为默认值，其他所有数据将被清空"}
                 </Text>
-            </Modal>
+            </PublicModal>
         </>
     );
 }
 
-export default MenuPreferenceComponent;
+export default React.memo(MenuPreferenceComponent);

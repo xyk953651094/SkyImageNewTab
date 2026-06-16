@@ -1,8 +1,7 @@
 import React from "react";
-import {Button} from "antd";
 import {StarOutlined} from "@ant-design/icons";
-import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
+import {HoverButton} from "../PublicComponents/PublicButton";
 
 interface MenuFooterComponentProps {
     theme: ThemeInterface;
@@ -10,14 +9,10 @@ interface MenuFooterComponentProps {
 
 function MenuFooterComponent(props: MenuFooterComponentProps) {
     return (
-        <Button type={"text"} 
-                icon={<StarOutlined />} size={"large"}
-                style={{color: props.theme.secondaryFontColor, cursor: "default"}}
-                onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
+        <HoverButton theme={props.theme} icon={<StarOutlined />}>
             {"如果喜欢这款插件，请考虑五星好评"}
-        </Button>
+        </HoverButton>
     );
 }
 
-export default MenuFooterComponent;
+export default React.memo(MenuFooterComponent);

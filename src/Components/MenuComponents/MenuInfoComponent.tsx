@@ -1,95 +1,85 @@
-import React from "react";
-import {Button, Card, Col, Row, Typography} from "antd";
+import React, {useMemo} from "react";
+import {Card, Col, Row, Typography} from "antd";
 import {GithubOutlined, GitlabOutlined, InfoCircleOutlined} from "@ant-design/icons";
-import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
+import {HoverButton} from "../PublicComponents/PublicButton";
 
 const {Text} = Typography;
+
+interface LinkItem {
+    label: string;
+    github: string;
+    gitlab: string;
+}
+
+const links: LinkItem[] = [
+    {
+        label: "产品主页",
+        github: "https://github.com/xyk953651094/SkyImageNewTab/",
+        gitlab: "https://gitlab.com/xyk953651094/SkyImageNewTab/",
+    },
+    {
+        label: "更新日志",
+        github: "https://github.com/xyk953651094/SkyImageNewTab/releases/",
+        gitlab: "https://gitlab.com/xyk953651094/SkyImageNewTab/-/releases/",
+    },
+    {
+        label: "帮助文档",
+        github: "https://xyk953651094.github.io/SkyDocuments/",
+        gitlab: "https://xyk953651094.gitlab.io/SkyDocuments/",
+    },
+];
 
 interface MenuInfoComponentProps {
     theme: ThemeInterface;
 }
 
 function MenuInfoComponent(props: MenuInfoComponentProps) {
+    const {theme} = props;
+
+    const cardTitle = useMemo(() => (
+        <Text style={{color: theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息"}</Text>
+    ), [theme.secondaryFontColor]);
+
+    const cardExtra = useMemo(() => (
+        <InfoCircleOutlined style={{color: theme.secondaryFontColor, fontSize: "16px"}}/>
+    ), [theme.secondaryFontColor]);
+
+    const cardStyle = useMemo(() => ({
+        border: "1px solid " + theme.secondaryFontColor,
+    }), [theme.secondaryFontColor]);
+
+    const cardStyles = useMemo(() => ({
+        header: {
+            backgroundColor: theme.secondaryColor,
+            color: theme.secondaryFontColor,
+            borderBottom: "2px solid " + theme.secondaryFontColor,
+        },
+        body: {
+            backgroundColor: theme.secondaryColor,
+        },
+    }), [theme.secondaryColor, theme.secondaryFontColor]);
+
     return (
-        <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息"}</Text>}
-              extra={<InfoCircleOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
-              style={{border: "1px solid " + props.theme.secondaryFontColor}}
-              styles={{
-                  header: {
-                      backgroundColor: props.theme.secondaryColor,
-                      color: props.theme.secondaryFontColor,
-                      borderBottom: "2px solid " + props.theme.secondaryFontColor
-                  },
-                  body: {
-                      backgroundColor: props.theme.secondaryColor
-                  }
-              }}
-        >
+        <Card title={cardTitle} extra={cardExtra} style={cardStyle} styles={cardStyles}>
             <Row gutter={[0, 8]}>
-                <Col span="12" style={{textAlign: "center"}}>
-                    <Button type={"text"} 
-                            icon={<GithubOutlined/>} size={"large"}
-                            href={"https://github.com/xyk953651094/SkyImageNewTab/"} target={"_self"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                        {"产品主页"}
-                    </Button>
-                </Col>
-                <Col span="12" style={{textAlign: "center"}}>
-                    <Button type={"text"} 
-                            icon={<GitlabOutlined/>} size={"large"}
-                            href={"https://gitlab.com/xyk953651094/SkyImageNewTab/"} target={"_self"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                        {"产品主页"}
-                    </Button>
-                </Col>
-                <Col span="12" style={{textAlign: "center"}}>
-                    <Button type={"text"} 
-                            icon={<GithubOutlined/>} size={"large"}
-                            href={"https://github.com/xyk953651094/SkyImageNewTab/releases/"} target={"_self"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                        {"更新日志"}
-                    </Button>
-                </Col>
-                <Col span="12" style={{textAlign: "center"}}>
-                    <Button type={"text"} 
-                            icon={<GitlabOutlined/>} size={"large"}
-                            href={"https://gitlab.com/xyk953651094/SkyImageNewTab/-/releases/"} target={"_self"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                        {"更新日志"}
-                    </Button>
-                </Col>
-                <Col span="12" style={{textAlign: "center"}}>
-                    <Button type={"text"} 
-                            icon={<GithubOutlined/>} size={"large"}
-                            href={"https://xyk953651094.github.io/SkyDocuments/"} target={"_self"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                        {"帮助文档"}
-                    </Button>
-                </Col>
-                <Col span="12" style={{textAlign: "center"}}>
-                    <Button type={"text"} 
-                            icon={<GitlabOutlined/>} size={"large"}
-                            href={"https://xyk953651094.gitlab.io/SkyDocuments/"} target={"_self"}
-                            style={{color: props.theme.secondaryFontColor}}
-                            onMouseOver={(e) => changeButtonTheme(props.theme.primaryColor, props.theme.primaryFontColor, e)}
-                            onMouseOut={(e) => changeButtonTheme("transparent", props.theme.secondaryFontColor, e)}>
-                        {"帮助文档"}
-                    </Button>
-                </Col>
+                {links.map((link) => (
+                    <React.Fragment key={link.label}>
+                        <Col span={12} style={{textAlign: "center"}}>
+                            <HoverButton theme={theme} icon={<GithubOutlined/>} href={link.github} target={"_self"}>
+                                {link.label}
+                            </HoverButton>
+                        </Col>
+                        <Col span={12} style={{textAlign: "center"}}>
+                            <HoverButton theme={theme} icon={<GitlabOutlined/>} href={link.gitlab} target={"_self"}>
+                                {link.label}
+                            </HoverButton>
+                        </Col>
+                    </React.Fragment>
+                ))}
             </Row>
         </Card>
     );
 }
 
-export default MenuInfoComponent;
+export default React.memo(MenuInfoComponent);

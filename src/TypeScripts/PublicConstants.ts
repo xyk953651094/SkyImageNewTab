@@ -9,7 +9,7 @@ export const clientId = process.env.REACT_APP_UNSPLASH_ACCESS_KEY ?? "";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
 export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
-export let environment = "development";  // development 或 production
+export const environment = process.env.NODE_ENV ?? "development";
 
 export const defaultPreference: PreferenceInterface = {
     imageTopics: ["wallpapers"],

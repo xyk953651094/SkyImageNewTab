@@ -1,21 +1,31 @@
 import React from "react";
 import {Button} from "antd";
-import {btnMouseOut, btnMouseOver} from "../../TypeScripts/PublicFunctions";
+import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
+import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 
-function PublicButton(props: any) {
+interface HoverButtonProps {
+    theme: ThemeInterface;
+    icon?: React.ReactNode;
+    children?: React.ReactNode;
+    onClick?: () => void;
+    href?: string;
+    target?: string;
+}
+
+export function HoverButton({theme, icon, children, onClick, href, target}: HoverButtonProps) {
     return (
-        <Button type={"text"}
-                shape={props.buttonShape}
-                icon={props.buttonIcon}
-                className={"poemFont"}
-                style={{color: props.theme.fontColor, cursor: props.buttonCursor}}
-                onMouseOver={(e) => btnMouseOver(props.theme.hoverColor, e)}
-                onMouseOut={(e) => btnMouseOut(props.theme.fontColor, e)}
-                onClick={props.buttonOnClick}
-        >
-            {props.buttonContent}
+        <Button type={"text"} size={"large"}
+                icon={icon}
+                style={{
+                    color: theme.secondaryFontColor,
+                    cursor: onClick || href ? "pointer" : "default"
+                }}
+                onClick={onClick}
+                href={href}
+                target={target}
+                onMouseOver={(e) => changeButtonTheme(theme.primaryColor, theme.primaryFontColor, e)}
+                onMouseOut={(e) => changeButtonTheme("transparent", theme.secondaryFontColor, e)}>
+            {children}
         </Button>
     );
 }
-
-export default PublicButton;

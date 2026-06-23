@@ -1,46 +1,25 @@
-import {PreferenceInterface} from './PublicInterface'
+import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface'
 import {getBrowserType, getDeviceType} from "./PublicFunctions";
 
 // 常用变量
 export const deviceType = getDeviceType();  // 获取当前设备类型
 export const browserType = getBrowserType();
 export const colorRegExp = /^#[0-9A-Fa-f]{6}$/;
-export const clientId = "ntHZZmwZUkhiLBMvwqqzmOG29nyXSCXlX7x_i-qhVHM";
+export const clientId = process.env.REACT_APP_UNSPLASH_ACCESS_KEY ?? "";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
+export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
+export const environment = process.env.NODE_ENV ?? "development";
 
-export let defaultPreference: PreferenceInterface = {
-    imageQuality: "full",
-    imageTopics: ["bo8jQKTaE0Y"],
+export const defaultPreference: PreferenceInterface = {
+    imageTopics: ["wallpapers"],
     customTopic: "",
-    changeImageTime: "3600000",
-    buttonShape: "default",
-    accessKey: ""
 }
 
-// 图片主题
-export let imageTopics = [
-    "Fzo3zuOHN6w",
-    "bo8jQKTaE0Y",
-    "CDwuwXJAbEw",
-    "iUIsnVtjB0Y",
-    "qPYsDzvJOYc",
-    "rnSKDHwwYUk",
-    "6sMVjTLSkeQ",
-    "aeu6rL-j6ew",
-    "S4MKLAsBB74",
-    "hmenvQhUmxM",
-    "xjPR4hlkBGA",
-    "_hb-dl4Q-4U",
-    "towJZFskpGg",
-    "R_Fyn-Gwtlw",
-    "xHxYTMHLgOc",
-    "Jpg6Kidl-Hk",
-    "_8zFHuhRhyo",
-    "bDo48cUhwnY",
-    "dijpbw99kQQ",
-    "Bn-DjrcBrwo"
-]
+// TODO:如果后续不再增加别的功能，例如待办、倒数日之类的，这个常量可以删除。
+export const defaultExtensionData: ExtensionDataInterface = {
+    preference: defaultPreference
+}
 
 // 主题颜色
 export const lightColors: string[] = [

@@ -1,7 +1,8 @@
-@use "~antd/dist/reset.css";
+@import "~antd/dist/reset.css";
 
 $heightRegular: 100px;
 $heightLarge: 300px;
+$desktop-large: "screen and (min-width: 2000px) and (orientation: landscape)";
 
 * {
     margin: 0;
@@ -17,22 +18,32 @@ html, body {
     background: transparent;
 }
 
-#header {
+.layoutHeader {
     height: $heightRegular;
     line-height: $heightRegular;
     background-color: transparent;
     padding: 0;
+
+    @media #{$desktop-large} {
+        height: $heightLarge;
+        line-height: $heightLarge;
+    }
 }
 
-#content {
+.layoutContent {
     position: fixed;
     top: $heightRegular;
     bottom: $heightRegular;
     left: 0;
     right: 0;
+
+    @media #{$desktop-large} {
+        top: $heightLarge;
+        bottom: $heightLarge;
+    }
 }
 
-#footer {
+.layoutFooter {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -40,57 +51,8 @@ html, body {
     height: $heightRegular;
     line-height: $heightRegular;
     padding: 0;
-}
 
-/* z轴显示层数 */
-.zIndexHigh {
-    z-index: 2;
-}
-
-.zIndexMiddle {
-    z-index: 1;
-}
-
-.zIndexLow {
-    z-index: 0;
-}
-
-/*水平垂直居中*/
-.alignCenter {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    text-align: center !important;
-}
-
-/*毛玻璃效果*/
-.componentTheme {
-    border-width: 0;
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-/*桌面端大屏样式*/
-@media screen and (min-width: 2000px) and (orientation: landscape) {
-    #header {
-        height: $heightLarge;
-        line-height: $heightLarge;
-        background-color: transparent;
-    }
-
-    #content {
-        position: fixed;
-        top: $heightLarge;
-        bottom: $heightLarge;
-        left: 0;
-        right: 0;
-    }
-
-    #footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        background-color: transparent;
+    @media #{$desktop-large} {
         height: $heightLarge;
         line-height: $heightLarge;
     }

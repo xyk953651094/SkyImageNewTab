@@ -6,6 +6,8 @@ import {HoverButton} from "../PublicComponents/PublicButton";
 
 const {Text} = Typography;
 
+const version = require("../../../package.json").version;
+
 interface LinkItem {
     label: string;
     github: string;
@@ -38,7 +40,7 @@ function MenuInfoComponent(props: MenuInfoComponentProps) {
     const {theme} = props;
 
     const cardTitle = useMemo(() => (
-        <Text style={{color: theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息"}</Text>
+        <Text style={{color: theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息（ V" + version + " ）"}</Text>
     ), [theme.secondaryFontColor]);
 
     const cardExtra = useMemo(() => (
@@ -50,15 +52,11 @@ function MenuInfoComponent(props: MenuInfoComponentProps) {
     }), [theme.secondaryFontColor]);
 
     const cardStyles = useMemo(() => ({
-        header: {
-            backgroundColor: theme.secondaryColor,
-            color: theme.secondaryFontColor,
-            borderBottom: "2px solid " + theme.secondaryFontColor,
-        },
-        body: {
-            backgroundColor: theme.secondaryColor,
-        },
-    }), [theme.secondaryColor, theme.secondaryFontColor]);
+        root: {
+            backgroundColor: props.theme.secondaryColor,
+            color: props.theme.secondaryFontColor,
+        }
+    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
 
     return (
         <Card title={cardTitle} extra={cardExtra} style={cardStyle} styles={cardStyles}>

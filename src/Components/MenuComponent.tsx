@@ -60,7 +60,6 @@ function MenuComponent(props: MenuComponentProps) {
             <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
                 <Button icon={<MenuOutlined/>} size={"large"}
                         onClick={showDrawerBtnOnClick}
-                        className={"componentTheme zIndexHigh"}
                         style={buttonStyle}
                 />
             </Tooltip>

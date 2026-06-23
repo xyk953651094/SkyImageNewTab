@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from "react";
-import {Button, Carousel, Col, Empty, Image, List, message, Popover, Row, Space, Spin, Typography} from "antd";
+import {Button, Carousel, Col, Empty, Flex, Image, List, message, Popover, Row, Space, Spin, Typography} from "antd";
 import {HomeOutlined, HistoryOutlined} from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
-import {ImageHistoryItem, ThemeInterface} from "../TypeScripts/PublicInterface";
+import {ImageHistoryItemInterface, ThemeInterface} from "../TypeScripts/PublicInterface";
 import {HoverButton} from "./PublicComponents/PublicButton";
 
 const {Text} = Typography;
 
 interface HistoryComponentProps {
     theme: ThemeInterface;
-    imageHistory: ImageHistoryItem[];
+    imageHistory: ImageHistoryItemInterface[];
 }
 
 function HistoryComponent(props: HistoryComponentProps) {
-    const [imageHistory, setImageHistory] = useState<ImageHistoryItem[]>([]);
+    const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [imageLink, setImageLink] = useState<string>("");
     
     const themedMessage = createThemedMessage(props.theme, message);
@@ -60,9 +60,9 @@ function HistoryComponent(props: HistoryComponentProps) {
         <List split={false}>
             {imageHistory.length === 0 ? (
                 <List.Item>
-                    <Row className="alignCenter" style={{width: "400px"}}>
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                    </Row>
+                    <Flex justify="center" align="center" style={{width: "400px"}}>
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} styles={{description: {color: props.theme.secondaryFontColor} }} />
+                    </Flex>
                 </List.Item>
             ) : (
                 <List.Item>
@@ -81,10 +81,9 @@ function HistoryComponent(props: HistoryComponentProps) {
                                             src={item.imageUrl}
                                             style={{borderRadius: "8px"}}
                                             placeholder={
-                                                <div style={{width: "400px", height: "300px", borderRadius: "8px"}}
-                                                     className="alignCenter">
+                                                <Flex justify="center" align="center" style={{width: "400px", height: "300px", borderRadius: "8px"}}>
                                                     <Spin description="加载中，请稍后..."/>
-                                                </div>
+                                                </Flex>
                                             }
                                         />
                                     </div>
@@ -102,7 +101,6 @@ function HistoryComponent(props: HistoryComponentProps) {
                  color={props.theme.secondaryColor}
                  styles={{root: {minWidth: "400px"}}}>
             <Button icon={<HistoryOutlined/>} size={"large"}
-                    className={"componentTheme zIndexHigh"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

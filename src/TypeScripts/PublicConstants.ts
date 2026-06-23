@@ -5,45 +5,23 @@ import {getBrowserType, getDeviceType} from "./PublicFunctions";
 export const deviceType = getDeviceType();  // 获取当前设备类型
 export const browserType = getBrowserType();
 export const colorRegExp = /^#[0-9A-Fa-f]{6}$/;
-export const clientId = "ntHZZmwZUkhiLBMvwqqzmOG29nyXSCXlX7x_i-qhVHM";
+export const clientId = process.env.REACT_APP_UNSPLASH_ACCESS_KEY ?? "";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
 export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
-export let environment = "development";  // "development" 或 "production"
+export let environment = "development";  // development 或 production
 
-export let defaultPreference: PreferenceInterface = {
+export const defaultPreference: PreferenceInterface = {
     imageTopics: ["wallpapers"],
     customTopic: "",
 }
 
-// TODO:
-export let defaultExtensionData: ExtensionDataInterface = {
-    Preference: defaultPreference
+// TODO:如果后续不再增加别的功能，例如待办、倒数日之类的，这个常量可以删除。
+export const defaultExtensionData: ExtensionDataInterface = {
+    preference: defaultPreference
 }
 
-// 图片主题
-export let imageTopics = [
-    "travel",
-    "wallpapers",
-    "3d-renders",
-    "textures-patterns",
-    "experimental",
-    "architecture-interior",
-    "nature",
-    "business-work",
-    "fashion-beauty",
-    "film",
-    "food-drink",
-    "health",
-    "people",
-    "interiors",
-    "street-photography",
-    "animals",
-    "spirituality",
-    "sports"
-]
-
-// 主题颜色，TODO: 不需要这么多，留一个就行
+// 主题颜色
 export const lightColors: string[] = [
     // "#A04F3C",
     // "#A0875A",

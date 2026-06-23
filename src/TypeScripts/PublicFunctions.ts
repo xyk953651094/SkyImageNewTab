@@ -6,12 +6,12 @@ export function getTimeDetails(param: Date) {
     if (isNaN(param.getTime())) {
         throw new Error("Invalid Date provided.");
     }
-
+    
     // 辅助函数，用于将数字格式化为两位字符串
     function formatNumber(value: number): string {
-        return value < 10 ? `0${value}` : value.toString();
+        return value.toString().padStart(2, "0");
     }
-
+    
     const year = param.getFullYear().toString();
     const month = formatNumber(param.getMonth() + 1);
     const day = formatNumber(param.getDate());
@@ -19,34 +19,36 @@ export function getTimeDetails(param: Date) {
     const minute = formatNumber(param.getMinutes());
     const second = formatNumber(param.getSeconds());
     const week = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][param.getDay()];
-
+    
     const localeDate: string = "农历" + param.toLocaleString("zh-Hans-u-ca-chinese").split(" ")[0] + "日";
-
+    
     return {
         year, month, day, hour, minute, second, week, localeDate
     };
 }
 
-// 判断对象是否为空
-export function isEmpty(param: any) {
-    // null、undefined 或空数组/字符串
-    if (param === null || param === undefined || param.length === 0) {
+/**
+ * 判断值是否为"空"
+ * - null / undefined → 空
+ * - 字符串 / 数组 → length 为 0 则空
+ * - 普通对象 → 所有自有属性均为 null / undefined / length 0 则空
+ * - 其余类型（number / boolean 等）→ 非空
+ */
+export function isEmpty(param: unknown): boolean {
+    if (param === null || param === undefined) {
         return true;
     }
     
-    // 如果是对象（包括JSON对象），需要进一步检查
-    if (typeof param === 'object' && !Array.isArray(param)) {
-        // 遍历对象的所有属性
-        for (const key in param) {
-            if (param.hasOwnProperty(key)) {
-                // 如果有任何属性不为null或undefined，且length不为0，则不为空
-                if (param[key] !== null && param[key] !== undefined && param[key].length !== 0) {
-                    return false;
-                }
-            }
-        }
-        // 所有属性为 null 或 undefined 或 length 为 0，则返回空
-        return true;
+    // 字符串或数组：通过 length 判断
+    if (typeof param === "string" || Array.isArray(param)) {
+        return param.length === 0;
+    }
+    
+    // 普通对象：所有自有属性均为 null / undefined / length 0 视为空
+    if (typeof param === "object") {
+        return Object.entries(param).every(
+            ([, value]) => value === null || value === undefined || value.length === 0
+        );
     }
     
     return false;
@@ -54,24 +56,20 @@ export function isEmpty(param: any) {
 
 // 请求unsplash图片前随机显示多彩颜色主题
 export function getRandomTheme() {
-    let currentHour = parseInt(getTimeDetails(new Date()).hour);
-    let lightRandomNum = Math.floor(Math.random() * lightColors.length);
-    let darkRandomNum = Math.floor(Math.random() * darkColors.length);
-
-    let theme: ThemeInterface = {
-        primaryColor: lightColors[lightRandomNum],
-        secondaryColor: darkColors[darkRandomNum],
-        primaryFontColor: getFontColor(lightColors[lightRandomNum]),
-        secondaryFontColor: getFontColor(darkColors[darkRandomNum])
+    const currentHour = new Date().getHours();
+    const lightIndex = Math.floor(Math.random() * lightColors.length);
+    const darkIndex = Math.floor(Math.random() * darkColors.length);
+    
+    const isNight = currentHour > 18 || currentHour < 6;  // 夜间显示深色背景
+    const primary = isNight ? darkColors[darkIndex] : lightColors[lightIndex];
+    const secondary = isNight ? lightColors[lightIndex] : darkColors[darkIndex];
+    
+    const theme: ThemeInterface = {
+        primaryColor: primary,
+        secondaryColor: secondary,
+        primaryFontColor: getFontColor(primary),
+        secondaryFontColor: getFontColor(secondary),
     };
-    if (currentHour > 18 || currentHour < 6) {  // 夜间显示深色背景
-        theme = {
-            primaryColor: darkColors[lightRandomNum],
-            secondaryColor: lightColors[darkRandomNum],
-            primaryFontColor: getFontColor(darkColors[lightRandomNum]),
-            secondaryFontColor: getFontColor(lightColors[darkRandomNum])
-        };
-    }
     return theme;
 }
 
@@ -81,121 +79,100 @@ export function getReverseColor(color: string) {
     if (!colorRegExp.test(color)) {
         throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#'.");
     }
-
+    
     // 移除#并转换为16进制数，同时处理类型安全
     const colorValue = Number.parseInt(color.slice(1), 16);
-
-    // 确保colorValue在正确的范围内
-    if (colorValue > 0xFFFFFF) {
-        throw new Error("Color value exceeds the maximum range.");
-    }
-
+    
     // 计算反色
     const reverseColorValue = 0xFFFFFF - colorValue;
-
+    
     // 将计算出的反色值转换为16进制字符串，并确保它以6位数的形式呈现
     const reverseColorHex = reverseColorValue.toString(16).padStart(6, '0');
-
+    
     // 返回最终结果，确保结果以#开头
     return "#" + reverseColorHex;
 }
 
 // 根据图片背景颜色改变字体颜色效果
-export function getFontColor(color: string) {
-    let rgb = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
-
-    if (!rgb) {
+export function getFontColor(color: string): string {
+    if (!colorRegExp.test(color)) {
         return "#ffffff";
     }
-
-    let r = parseInt(rgb[1], 16);
-    let g = parseInt(rgb[2], 16);
-    let b = parseInt(rgb[3], 16);
-
-    if (isNaN(r) || isNaN(g) || isNaN(b)) {
-        return "#ffffff";
-    }
-
-    let gray = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
+    
+    const r = parseInt(color.slice(1, 3), 16);
+    const g = parseInt(color.slice(3, 5), 16);
+    const b = parseInt(color.slice(5, 7), 16);
+    
+    const gray = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
     return gray > 128 ? "#000000" : "#ffffff";
 }
 
+// 通用类型检测：返回第一个匹配为 true 的 key，无匹配则返回 fallback
+function detectType(detections: Record<string, boolean>, fallback: string): string {
+    for (const key in detections) {
+        if (detections[key]) return key;
+    }
+    return fallback;
+}
+
 // 判断设备型号
-export function getDeviceType() {
-    const userAgent = navigator.userAgent;
-
-    interface DeviceDetectionInterface {
-        [key: string]: boolean;
-    }
-
-    const deviceDetection: DeviceDetectionInterface = {
-        "iPhone": userAgent.includes("iPhone"),
-        "iPad": userAgent.includes("iPad"),
-        "Android": userAgent.includes("Android"),
-    };
-
-    for (const device in deviceDetection) {
-        if (deviceDetection[device]) {
-            return device;
-        }
-    }
-    return "";
+export function getDeviceType(): string {
+    const ua = navigator.userAgent;
+    return detectType({
+        "iPhone": ua.includes("iPhone"),
+        "iPad": ua.includes("iPad"),
+        "Android": ua.includes("Android"),
+    }, "");
 }
 
-export function getBrowserType() {
-    const userAgent = navigator.userAgent;
-
-    interface BrowserDetectionInterface {
-        [key: string]: boolean;
-    }
-
-    const browserDetection: BrowserDetectionInterface = {
-        "Chrome": userAgent.includes("Chrome") && userAgent.includes("Safari") && !userAgent.includes("Edg"),
-        "Edge": userAgent.includes("Edg"),
-        "Firefox": userAgent.includes("Firefox"),
-        "Safari": !userAgent.includes("Chrome") && userAgent.includes("Safari"),
-    };
-
-    for (const browser in browserDetection) {
-        if (browserDetection[browser]) {
-            return browser;
-        }
-    }
-    return "Other";
+// 判断浏览器型号
+export function getBrowserType(): string {
+    const ua = navigator.userAgent;
+    return detectType({
+        "Chrome": ua.includes("Chrome") && ua.includes("Safari") && !ua.includes("Edg"),
+        "Edge": ua.includes("Edg"),
+        "Firefox": ua.includes("Firefox"),
+        "Safari": !ua.includes("Chrome") && ua.includes("Safari"),
+    }, "Other");
 }
 
+// TODO：考虑删除
 // 过渡动画
 export function changeTheme(element: string, backgroundColor: string, fontColor: string, time: number = 300) {
     if (!colorRegExp.test(backgroundColor) || !colorRegExp.test(fontColor)) {
         throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#'.");
     }
     
-    const Element = document.getElementById(element);
-    if (Element && Element as HTMLElement) {
-        Element.style.backgroundColor = backgroundColor;
-        Element.style.color = fontColor;
-    }
+    const el = document.getElementById(element);
+    if (!el) return;
     
-    // $(element).animate({
-    //     backgroundColor: backgroundColor,
-    //     color: fontColor,
-    // }, {queue: false, duration: time});
+    // 用 Web Animations API 实现真正的平滑过渡
+    el.animate(
+        [
+            {backgroundColor: el.style.backgroundColor || backgroundColor, color: el.style.color || fontColor},
+            {backgroundColor, color: fontColor}
+        ],
+        {duration: time, easing: "ease-in-out", fill: "forwards"}
+    );
+    
+    // 同步设置最终样式，确保动画结束后状态正确
+    el.style.backgroundColor = backgroundColor;
+    el.style.color = fontColor;
 }
 
 // 按钮鼠标悬停与离开事件
-export function changeButtonTheme(backgroundColor: string, fontColor: string, e: any) {
+export function changeButtonTheme(backgroundColor: string, fontColor: string, e: { currentTarget: HTMLElement }) {
     if (!colorRegExp.test(backgroundColor) && backgroundColor !== "transparent") {
         throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#' or 'transparent'.");
     }
     
-    if (e.currentTarget && (e.currentTarget as HTMLElement).style) {
-        (e.currentTarget as HTMLElement).style.backgroundColor = backgroundColor;
-        (e.currentTarget as HTMLElement).style.color = fontColor;
-    }
+    const target = e.currentTarget;
+    target.style.backgroundColor = backgroundColor;
+    target.style.color = fontColor;
 }
 
 export function truncateText(text: string, maxLength: number): string {
-    return text.length < maxLength ? text : text.substring(0, maxLength) + "...";
+    return text.length < maxLength ? text : text.slice(0, maxLength) + "...";
 }
 
 // 创建带主题样式的 message 调用器，避免每次调用都重复写 styles 配置
@@ -203,23 +180,26 @@ export function truncateText(text: string, maxLength: number): string {
 // 否则捕获的是首次渲染时的空 theme。
 export function createThemedMessage(theme: ThemeInterface, message: any) {
     const themedStyles = {
-        root: { backgroundColor: theme.secondaryColor },
-        icon: { color: theme.secondaryFontColor },
-        title: { color: theme.secondaryFontColor }
+        root: {backgroundColor: theme.secondaryColor},
+        icon: {color: theme.secondaryFontColor},
+        title: {color: theme.secondaryFontColor}
     };
-
+    
     const apply = (method: string, content: string) =>
-        isEmpty(theme) ? message[method]({ content }) : message[method]({ content, styles: themedStyles });
-
+        isEmpty(theme) ? message[method]({content}) : message[method]({content, styles: themedStyles});
+    
     return {
         ...message,
         success: (content: string) => apply("success", content),
         error: (content: string) => apply("error", content),
         info: (content: string) => apply("info", content),
         warning: (content: string) => apply("warning", content),
-        loading: (config: any) =>
-            typeof config === "string"
-                ? (isEmpty(theme) ? message.loading({ content: config }) : message.loading({ content: config, styles: themedStyles }))
-                : (isEmpty(theme) ? message.loading(config) : message.loading({ ...config, styles: themedStyles })),
+        loading: (config: any) => {
+            const normalized = typeof config === "string" ? {content: config} : config;
+            return isEmpty(theme) ? message.loading(normalized) : message.loading({
+                ...normalized,
+                styles: themedStyles
+            });
+        },
     };
 }

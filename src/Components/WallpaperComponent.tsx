@@ -7,20 +7,20 @@ import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFu
 import {httpRequest} from "../TypeScripts/RequestFunctions";
 import {clientId, deviceType, imageHistoryMaxSize, imageSwitchingInterval} from "../TypeScripts/PublicConstants";
 import {decode} from "blurhash";
-import {ImageHistoryItem, PreferenceInterface, ThemeInterface, UnsplashImageData} from "../TypeScripts/PublicInterface";
+import {ImageHistoryItemInterface, PreferenceInterface, ThemeInterface, UnsplashImageDataInterface} from "../TypeScripts/PublicInterface";
 
 interface WallpaperComponentProps {
     theme: ThemeInterface;
     preference: PreferenceInterface;
-    getImageData: (data: UnsplashImageData) => void;
-    getImageHistory: React.Dispatch<React.SetStateAction<ImageHistoryItem[]>>;
+    getImageData: (data: UnsplashImageDataInterface) => void;
+    getImageHistory: React.Dispatch<React.SetStateAction<ImageHistoryItemInterface[]>>;
 }
 
 /** 纯请求函数 —— 只管从 Unsplash 拿数据 */
-async function fetchWallpaper(preference: PreferenceInterface): Promise<UnsplashImageData> {
+async function fetchWallpaper(preference: PreferenceInterface): Promise<UnsplashImageDataInterface> {
     const imageTopics = preference.imageTopics.join(",");
     const imageQuery = preference.customTopic;
-    return httpRequest<UnsplashImageData>("https://api.unsplash.com/photos/random?", {
+    return httpRequest<UnsplashImageDataInterface>("https://api.unsplash.com/photos/random?", {
         method: "GET",
         headers: {},
         data: {
@@ -34,21 +34,21 @@ async function fetchWallpaper(preference: PreferenceInterface): Promise<Unsplash
 }
 
 /** 纯缓存函数 —— 只管更新历史记录，返回更新后的列表 */
-async function updateImageHistory(currentImage: UnsplashImageData): Promise<ImageHistoryItem[]> {
+async function updateImageHistory(currentImage: UnsplashImageDataInterface): Promise<ImageHistoryItemInterface[]> {
     const [lastImageStorage, imageHistoryStorage = []] =
         await getExtensionStorage(["lastImage", "imageHistory"]);
 
-    const history: ImageHistoryItem[] = imageHistoryStorage || [];
+    const history: ImageHistoryItemInterface[] = imageHistoryStorage || [];
 
     if (!isEmpty(lastImageStorage) && !isEmpty(history)) {
-        const historyItem: ImageHistoryItem = {
+        const historyItem: ImageHistoryItemInterface = {
             index: Date.now(),
             imageUrl: lastImageStorage.urls.regular,
             imageLink: lastImageStorage.links.html,
         };
 
         const isDuplicate = history.some(
-            (item: ImageHistoryItem) => item.imageUrl === historyItem.imageUrl
+            (item: ImageHistoryItemInterface) => item.imageUrl === historyItem.imageUrl
         );
 
         if (!isDuplicate) {
@@ -67,7 +67,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const [imageLink, setImageLink] = useState("");
     const [displayImage, setDisplayImage] = useState("block");
     const [displayCanvas, setDisplayCanvas] = useState("block");
-    const [canvasClass, setCanvasClass] = useState("backgroundCanvas");
+    const [canvasClass, setCanvasClass] = useState("backgroundLayer");
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageWrapperRef = useRef<HTMLDivElement>(null);
     const imageStyle = useMemo(() => ({display: displayImage}), [displayImage]);
@@ -76,7 +76,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const themedMessage = createThemedMessage(props.theme, message);
 
     /** 渲染 blurHash 到 canvas 并通知父组件 */
-    function setWallpaper(imageData: UnsplashImageData) {
+    function setWallpaper(imageData: UnsplashImageDataInterface) {
         props.getImageData(imageData);
         setImageLink(imageData.urls.full);
 
@@ -90,7 +90,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                     ctx.putImageData(blurImageData, 0, 0);
                 }
                 setDisplayCanvas("block");
-                setCanvasClass("backgroundCanvas wallpaperFadeIn");
+                setCanvasClass("backgroundLayer wallpaperFadeIn");
             }
         }
     }
@@ -104,7 +104,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 const [lastRequestTime, lastImage] =
                     await getExtensionStorage(["lastImageRequestTime", "lastImage"]);
                 
-                //TODO: 样式出不来
+                //TODO: 样式出不来（图片没请求到）
                 message.loading({
                     content: "正在加载图片",
                     styles: {
@@ -117,7 +117,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 });
                 const now = Date.now();
 
-                let imageData: UnsplashImageData;
+                let imageData: UnsplashImageDataInterface;
                 const needsFetch = isEmpty(lastRequestTime) ||
                     (now - parseInt(lastRequestTime) > imageSwitchingInterval);
 
@@ -133,7 +133,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                     imageData = await fetchWallpaper(props.preference);
                     setExtensionStorage("lastImage", imageData);
                 } else if (!isEmpty(lastImage)) {
-                    imageData = lastImage as UnsplashImageData;
+                    imageData = lastImage as UnsplashImageDataInterface;
                 } else {
                     themedMessage.error("获取图片失败，请检查网络连接");
                     return;
@@ -144,7 +144,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 // 请求失败，回退缓存
                 const [lastImage] = await getExtensionStorage(["lastImage"]);
                 if (!isEmpty(lastImage)) {
-                    if (!cancelled) setWallpaper(lastImage as UnsplashImageData);
+                    if (!cancelled) setWallpaper(lastImage as UnsplashImageDataInterface);
                 } else {
                     themedMessage.error("获取图片失败，请检查网络连接");
                 }
@@ -161,7 +161,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
             backgroundImage.onload = () => {
                 backgroundImage.style.width = "102%";
                 setDisplayImage("block");
-                setCanvasClass("backgroundCanvas wallpaperFadeOut");
+                setCanvasClass("backgroundLayer wallpaperFadeOut");
 
                 backgroundImage.classList.add("wallpaperFadeIn");
                 setTimeout(() => {
@@ -186,7 +186,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                     id={"backgroundImage"}
                     width={"102%"}
                     height={"102%"}
-                    className={"backgroundImage zIndexLow"}
+                    className={"backgroundLayer"}
                     preview={false}
                     src={imageLink}
                     style={imageStyle}

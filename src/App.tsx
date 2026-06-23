@@ -4,7 +4,7 @@ import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
 import HistoryComponent from "./Components/HistoryComponent";
 
-import {Col, Layout, Row, Space} from "antd";
+import {Col, Flex, Layout, Row, Space} from "antd";
 import "./StyleSheets/PublicStyles.scss"
 import {
     getFontColor,
@@ -12,7 +12,7 @@ import {
     getRandomTheme
 } from "./TypeScripts/PublicFunctions";
 import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
-import {PreferenceInterface, ThemeInterface, UnsplashImageData, ImageHistoryItem} from "./TypeScripts/PublicInterface";
+import {PreferenceInterface, ThemeInterface, UnsplashImageDataInterface, ImageHistoryItemInterface} from "./TypeScripts/PublicInterface";
 import {defaultPreference} from "./TypeScripts/PublicConstants";
 
 const {Header, Content, Footer} = Layout;
@@ -24,11 +24,11 @@ function App() {
         primaryFontColor: "",
         secondaryFontColor: "",
     });
-    const [imageData, setImageData] = useState<UnsplashImageData | null>(null);
-    const [imageHistory, setImageHistory] = useState<ImageHistoryItem[]>([]);
+    const [imageData, setImageData] = useState<UnsplashImageDataInterface | null>(null);
+    const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [preference, setPreference] = useState<PreferenceInterface>(defaultPreference);
     
-    const getImageData = useCallback((data: UnsplashImageData) => {
+    const getImageData = useCallback((data: UnsplashImageDataInterface) => {
         setImageData(data);
         if (data.color !== null) {
             const primaryColor = data.color;
@@ -79,7 +79,7 @@ function App() {
     
     return (
         <Layout>
-            <Header id={"header"} className={"zIndexMiddle"}>
+            <Header className={"layoutHeader"}>
                 <Row justify="center">
                     <Col xs={0} sm={0} md={0} lg={10} xl={10} xxl={10}>
                     
@@ -89,15 +89,17 @@ function App() {
                     </Col>
                 </Row>
             </Header>
-            <Content id={"content"} className={"alignCenter"}>
-                <WallpaperComponent
-                    theme={theme}
-                    preference={preference}
-                    getImageData={getImageData}
-                    getImageHistory={setImageHistory}
-                />
+            <Content className={"layoutContent"}>
+                <Flex justify="center" align="center" style={{height: "100%"}}>
+                    <WallpaperComponent
+                        theme={theme}
+                        preference={preference}
+                        getImageData={getImageData}
+                        getImageHistory={setImageHistory}
+                    />
+                </Flex>
             </Content>
-            <Footer id={"footer"}>
+            <Footer className={"layoutFooter"}>
                 <Row justify="center">
                     <Col xs={0} sm={0} md={0} lg={20} xl={20} style={{textAlign: "right"}}>
                         <Space align={"center"}>

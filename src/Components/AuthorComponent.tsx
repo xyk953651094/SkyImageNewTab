@@ -9,7 +9,7 @@ import {
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
 import {createThemedMessage, isEmpty, truncateText} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
-import {ThemeInterface, UnsplashImageData} from "../TypeScripts/PublicInterface";
+import {ThemeInterface, UnsplashImageDataInterface} from "../TypeScripts/PublicInterface";
 import {HoverButton} from "./PublicComponents/PublicButton";
 
 const {Text} = Typography;
@@ -17,7 +17,7 @@ const btnMaxSize = 50;
 
 interface AuthorComponentProps {
     theme: ThemeInterface;
-    imageData: UnsplashImageData | null;
+    imageData: UnsplashImageDataInterface | null;
 }
 
 interface AuthorInfo {
@@ -150,7 +150,6 @@ function AuthorComponent(props: AuthorComponentProps) {
                  styles={{root: {minWidth: "600px"}}}>
             <Button icon={<CameraOutlined/>} size={"large"}
                     id={"authorBtn"}
-                    className={"componentTheme zIndexHigh"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

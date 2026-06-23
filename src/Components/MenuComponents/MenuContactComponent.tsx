@@ -31,13 +31,9 @@ function MenuContactComponent(props: MenuContactComponentProps) {
               extra={<MailOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
               style={{border: "1px solid " + props.theme.secondaryFontColor}}
               styles={{
-                  header: {
+                  root: {
                       backgroundColor: props.theme.secondaryColor,
                       color: props.theme.secondaryFontColor,
-                      borderBottom: "2px solid " + props.theme.secondaryFontColor
-                  },
-                  body: {
-                      backgroundColor: props.theme.secondaryColor
                   }
               }}
         >

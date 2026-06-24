@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import {useEffect, useState, useCallback} from "react";
 import WallpaperComponent from "./Components/WallpaperComponent";
 import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";

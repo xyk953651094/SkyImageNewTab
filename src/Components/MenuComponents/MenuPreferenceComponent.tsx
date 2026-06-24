@@ -9,7 +9,7 @@ import {
     Space,
     Typography,
 } from "antd";
-import type { RadioChangeEvent } from "antd";
+import type {RadioChangeEvent} from "antd";
 import {
     RedoOutlined,
     SettingOutlined,
@@ -19,7 +19,7 @@ import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from ".
 import {PreferenceInterface, ThemeInterface} from "../../TypeScripts/PublicInterface";
 import {defaultPreference} from "../../TypeScripts/PublicConstants";
 import {PublicModal} from "../PublicComponents/PublicModal";
-import { HoverButton } from "../PublicComponents/PublicButton";
+import {HoverButton} from "../PublicComponents/PublicButton";
 
 const {Text} = Typography;
 
@@ -51,23 +51,22 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     function topicRadioOnChange(e: RadioChangeEvent) {
-        const topicType= e.target.value;
+        const topicType = e.target.value;
         if (topicType === "presetTopics") {
             setDisableImageTopic(false);
-        }
-        else {
+        } else {
             setDisableImageTopic(true);
         }
     }
     
     async function checkCooldownThen(callback: () => void) {
-    const [resetTimeStampStorage] = await getExtensionStorage(["resetTimeStamp"]);
-    if (resetTimeStampStorage && Date.now() - parseInt(resetTimeStampStorage) < RESET_COOLDOWN_MS) {
-        themedMessage.error("操作过于频繁，请稍后再试");
-    } else {
-        callback();
+        const [resetTimeStampStorage] = await getExtensionStorage(["resetTimeStamp"]);
+        if (resetTimeStampStorage && Date.now() - parseInt(resetTimeStampStorage) < RESET_COOLDOWN_MS) {
+            themedMessage.error("操作过于频繁，请稍后再试");
+        } else {
+            callback();
+        }
     }
-}
     
     // 预设主题
     function imageTopicsSelectOnChange(selectedValues: string) {
@@ -132,19 +131,29 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                   }}
             >
                 <Form colon={false} initialValues={preference} disabled={formDisabled}>
-                    <Form.Item name={"TopicsType"} label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"主题类型"}</Text>}>
+                    <Form.Item name={"TopicsType"} label={<Text
+                        style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"主题类型"}</Text>}>
                         <Radio.Group
-                            defaultValue={disableImageTopic? "customTopics" : "presetTopics"}
+                            defaultValue={disableImageTopic ? "customTopics" : "presetTopics"}
                             size={"large"}
                             onChange={topicRadioOnChange}
                             options={[
-                                { value: "presetTopics", label: "预设主题", style: { color: props.theme.secondaryFontColor } },
-                                { value: "customTopics", label: "自定主题", style: { color: props.theme.secondaryFontColor } }
+                                {
+                                    value: "presetTopics",
+                                    label: "预设主题",
+                                    style: {color: props.theme.secondaryFontColor}
+                                },
+                                {
+                                    value: "customTopics",
+                                    label: "自定主题",
+                                    style: {color: props.theme.secondaryFontColor}
+                                }
                             ]}
                         />
                     </Form.Item>
                     
-                    <Form.Item name={"imageTopics"} label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}
+                    <Form.Item name={"imageTopics"} label={<Text
+                        style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}
                                extra={<Text style={{color: props.theme.secondaryFontColor}}>{imageTopicStatus}</Text>}>
                         <Select size={"large"} mode="multiple"
                                 defaultValue={"wallpapers"}
@@ -178,14 +187,19 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                 ]}
                         />
                     </Form.Item>
-                    <Form.Item label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
+                    <Form.Item label={<Text
+                        style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
                                extra={<Text style={{color: props.theme.secondaryFontColor}}>{customTopicStatus}</Text>}>
                         <Input size="large" placeholder="请输入自定义主题" disabled={!disableImageTopic}/>
                     </Form.Item>
                     <Divider/>
                     <Form.Item name={"clearStorageButton"}
-                               label={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
-                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
+                               label={<Text style={{
+                                   color: props.theme.secondaryFontColor,
+                                   fontSize: "16px"
+                               }}>{"危险设置"}</Text>}
+                               extra={<Text
+                                   style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
                         <Space>
                             <HoverButton theme={props.theme} icon={<RedoOutlined/>} onClick={resetPreferenceBtnOnClick}>
                                 重置设置

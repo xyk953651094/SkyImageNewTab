@@ -14,6 +14,8 @@ import {
 import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
 import {PreferenceInterface, ThemeInterface, UnsplashImageDataInterface, ImageHistoryItemInterface} from "./TypeScripts/PublicInterface";
 import {defaultPreference} from "./TypeScripts/PublicConstants";
+import TodoComponent from "./Components/TodoComponent";
+import DailyComponent from "./Components/DailyComponent";
 
 const {Header, Content, Footer} = Layout;
 
@@ -85,7 +87,7 @@ function App() {
                     
                     </Col>
                     <Col xs={22} sm={22} md={22} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
-                    
+                        <TodoComponent theme={theme} />
                     </Col>
                 </Row>
             </Header>
@@ -111,6 +113,8 @@ function App() {
                                 theme={theme}
                                 imageHistory={imageHistory}
                             />
+                            <TodoComponent theme={theme} />
+                            <DailyComponent theme={theme} />
                             <MenuComponent
                                 theme={theme}
                                 preference={preference}

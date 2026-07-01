@@ -47,19 +47,19 @@ function MenuInfoComponent(props: MenuInfoComponentProps) {
         <InfoCircleOutlined style={{color: theme.secondaryFontColor, fontSize: "16px"}}/>
     ), [theme.secondaryFontColor]);
 
-    const cardStyle = useMemo(() => ({
-        border: "1px solid " + theme.secondaryFontColor,
-    }), [theme.secondaryFontColor]);
-
     const cardStyles = useMemo(() => ({
         root: {
             backgroundColor: props.theme.secondaryColor,
             color: props.theme.secondaryFontColor,
+            borderColor: props.theme.secondaryFontColor,
+        },
+        header: {
+            borderColor: props.theme.secondaryFontColor,
         }
     }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
 
     return (
-        <Card title={cardTitle} extra={cardExtra} style={cardStyle} styles={cardStyles}>
+        <Card title={cardTitle} extra={cardExtra} styles={cardStyles}>
             <Row gutter={[0, 8]}>
                 {links.map((link) => (
                     <React.Fragment key={link.label}>

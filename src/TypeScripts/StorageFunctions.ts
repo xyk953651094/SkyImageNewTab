@@ -104,7 +104,7 @@ export async function clearExtensionStorage() {
     }
 }
 
-// 补全设置数据
+// 修补设置数据
 export function fixPreference(preference: PreferenceInterface): PreferenceInterface {
     let isFixed = false;
 

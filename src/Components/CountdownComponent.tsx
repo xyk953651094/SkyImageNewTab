@@ -39,7 +39,7 @@ interface DailyComponentProps {
     theme: ThemeInterface;
 }
 
-function DailyComponent(props: DailyComponentProps) {
+function CountdownComponent(props: DailyComponentProps) {
     const [dailyList, setDailyList] = useState<DailyItem[]>([]);
     const [displayModal, setDisplayModal] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>("");
@@ -242,10 +242,6 @@ function DailyComponent(props: DailyComponentProps) {
                 }}
             >
                 <Space orientation="vertical" style={{width: "100%"}}>
-                    <div>
-                        <Text style={{color: props.theme.secondaryFontColor, display: "block", marginBottom: 8}}>
-                            {"倒数标题"}
-                        </Text>
                         <Input
                             placeholder="请输入标题"
                             value={inputValue}
@@ -254,22 +250,16 @@ function DailyComponent(props: DailyComponentProps) {
                             showCount
                             allowClear
                         />
-                    </div>
-                    <div>
-                        <Text style={{color: props.theme.secondaryFontColor, display: "block", marginBottom: 8}}>
-                            {"倒数日期"}
-                        </Text>
                         <DatePicker
                             disabledDate={(current) => dayjs(current).isBefore(dayjs())}
                             onChange={datePickerOnChange}
                             allowClear={false}
                             style={{width: "100%"}}
                         />
-                    </div>
                 </Space>
             </Modal>
         </>
     );
 }
 
-export default React.memo(DailyComponent);
+export default React.memo(CountdownComponent);

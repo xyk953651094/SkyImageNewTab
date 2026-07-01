@@ -29,11 +29,14 @@ function MenuContactComponent(props: MenuContactComponentProps) {
     return (
         <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"联系作者"}</Text>}
               extra={<MailOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
-              style={{border: "1px solid " + props.theme.secondaryFontColor}}
               styles={{
                   root: {
                       backgroundColor: props.theme.secondaryColor,
                       color: props.theme.secondaryFontColor,
+                      borderColor: props.theme.secondaryFontColor,
+                  },
+                  header: {
+                      borderColor: props.theme.secondaryFontColor,
                   }
               }}
         >

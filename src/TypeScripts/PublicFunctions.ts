@@ -136,30 +136,6 @@ export function getBrowserType(): string {
     }, "Other");
 }
 
-// TODO：考虑删除
-// 过渡动画
-export function changeTheme(element: string, backgroundColor: string, fontColor: string, time: number = 300) {
-    if (!colorRegExp.test(backgroundColor) || !colorRegExp.test(fontColor)) {
-        throw new Error("Invalid color format. Expected a 6-digit hexadecimal color code prefixed with '#'.");
-    }
-    
-    const el = document.getElementById(element);
-    if (!el) return;
-    
-    // 用 Web Animations API 实现真正的平滑过渡
-    el.animate(
-        [
-            {backgroundColor: el.style.backgroundColor || backgroundColor, color: el.style.color || fontColor},
-            {backgroundColor, color: fontColor}
-        ],
-        {duration: time, easing: "ease-in-out", fill: "forwards"}
-    );
-    
-    // 同步设置最终样式，确保动画结束后状态正确
-    el.style.backgroundColor = backgroundColor;
-    el.style.color = fontColor;
-}
-
 // 按钮鼠标悬停与离开事件
 export function changeButtonTheme(backgroundColor: string, fontColor: string, e: { currentTarget: HTMLElement }) {
     if (!colorRegExp.test(backgroundColor) && backgroundColor !== "transparent") {

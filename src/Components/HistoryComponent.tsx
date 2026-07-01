@@ -49,7 +49,7 @@ function HistoryComponent(props: HistoryComponentProps) {
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>
                     <HoverButton theme={props.theme} icon={<HomeOutlined/>} onClick={imageLinkBtnOnClick}>
-                        {"图片主页"}
+                        {"查看原图"}
                     </HoverButton>
                 </Space>
             </Col>

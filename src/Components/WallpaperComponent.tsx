@@ -23,16 +23,15 @@ interface WallpaperComponentProps {
 
 /** 纯请求函数 —— 只管从 Unsplash 拿数据 */
 async function fetchWallpaper(preference: PreferenceInterface): Promise<UnsplashImageDataInterface> {
-    const imageTopics = preference.imageTopics.join(",");
-    const imageQuery = preference.customTopic;
+    const topicsParam = preference.imageTopics.join(",");
     return httpRequest<UnsplashImageDataInterface>("https://api.unsplash.com/photos/random?", {
         method: "GET",
         headers: {},
         data: {
             client_id: clientId,
             orientation: (deviceType === "iPhone" || deviceType === "Android") ? "portrait" : "landscape",
-            topics: isEmpty(imageQuery) ? imageTopics : "",
-            query: imageQuery,
+            topics: preference.customTopic ? "" : topicsParam,
+            query: preference.customTopic ? topicsParam : "",
             content_filter: "high",
         },
     });
@@ -40,12 +39,10 @@ async function fetchWallpaper(preference: PreferenceInterface): Promise<Unsplash
 
 /** 纯缓存函数 —— 只管更新历史记录，返回更新后的列表 */
 async function updateImageHistory(currentImage: UnsplashImageDataInterface): Promise<ImageHistoryItemInterface[]> {
-    const [, imageHistoryStorage = []] =
-        await getExtensionStorage(["imageHistory"]);
-    
+    const [imageHistoryStorage] = await getExtensionStorage(["imageHistory"]);
     const history: ImageHistoryItemInterface[] = imageHistoryStorage || [];
     
-    if (!isEmpty(currentImage) && !isEmpty(history)) {
+    if (!isEmpty(currentImage)) {
         const historyItem: ImageHistoryItemInterface = {
             index: Date.now(),
             imageUrl: currentImage.urls.regular,

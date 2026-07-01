@@ -6,8 +6,8 @@ export interface ThemeInterface {
 }
 
 export interface PreferenceInterface {
+    customTopic: boolean,
     imageTopics: string[];
-    customTopic: string;
 }
 
 export interface ExtensionDataInterface {

@@ -168,6 +168,7 @@ function FocusComponent(props: FocusComponentProps) {
                 <Button
                     icon={<i className={focusMode ? "bi bi-cup-hot" : "bi bi-cup"}/>}
                     size={"large"}
+                    type={"primary"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

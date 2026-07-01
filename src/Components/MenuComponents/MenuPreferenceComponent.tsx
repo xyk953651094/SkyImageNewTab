@@ -33,11 +33,9 @@ interface MenuPreferenceComponentProps {
 
 function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     const [formDisabled, setFormDisabled] = useState<boolean>(false);
-    const [disableImageTopic, setDisableImageTopic] = useState<boolean>(false);
+    const [disableImageTopic, setDisableImageTopic] = useState<boolean>(props.preference.customTopic);
     const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | null>(null);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
-    const imageTopicStatus = disableImageTopic ? "已禁用预设主题" : "已启用预设主题";
-    const customTopicStatus = disableImageTopic ? "已启用自定主题" : "已禁用自定主题";
     const themedMessage = createThemedMessage(props.theme, message);
     
     function refreshWindow() {
@@ -46,17 +44,20 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         }, 1000);
     }
     
-    function changePreference(data: Object) {
+    function changePreference(data: Partial<PreferenceInterface>) {
         return Object.assign({}, preference, data);
     }
     
     function topicRadioOnChange(e: RadioChangeEvent) {
-        const topicType = e.target.value;
-        if (topicType === "presetTopics") {
-            setDisableImageTopic(false);
-        } else {
-            setDisableImageTopic(true);
-        }
+        const isCustom = e.target.value;
+        const newPreference = changePreference({
+            customTopic: isCustom,
+            imageTopics: isCustom ? [] : ["wallpapers"]
+        });
+        setPreference(newPreference);
+        setDisableImageTopic(isCustom);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
     }
     
     async function checkCooldownThen(callback: () => void) {
@@ -69,17 +70,34 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     // 预设主题
-    function imageTopicsSelectOnChange(selectedValues: string) {
+    function imageTopicsSelectOnChange(selectedValues: string[]) {
         const newPreference = changePreference({imageTopics: selectedValues});
         setPreference(newPreference);
         setExtensionStorage("preference", newPreference);
         props.getPreference(newPreference);
         
-        themedMessage.success("已更换图片主题，下次切换图片时生效");
+        themedMessage.success("已更新主题，下次更新图片时生效");
         if (selectedValues.length === 0) {
             themedMessage.info("全不选与全选的效果一样");
         }
     }
+    
+    // 自定主题
+    function customTopicInputOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const value = e.target.value;
+        setPreference(changePreference({imageTopics: value ? [value] : []}));
+    }
+    
+    // 新增保存函数
+    function saveCustomTopic() {
+        const value = preference.imageTopics[0] || "";
+        setExtensionStorage("preference", preference);
+        props.getPreference(preference);
+        if (value) {
+            themedMessage.success("已保存主题：" + value + "，下次更新图片时生效");
+        }
+    }
+    
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
@@ -90,7 +108,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setFormDisabled(true);
         setActiveModal(null);
         setExtensionStorage("preference", defaultPreference);
-        setExtensionStorage("resetTimeStamp", new Date().getTime());
+        setExtensionStorage("resetTimeStamp", Date.now());
         themedMessage.success("已重置设置，一秒后刷新页面");
         refreshWindow();
     }
@@ -108,9 +126,9 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setFormDisabled(true);
         setActiveModal(null);
         clearExtensionStorage();
-        setExtensionStorage("resetTimeStamp", new Date().getTime());
+        setExtensionStorage("preference", defaultPreference);
+        setExtensionStorage("resetTimeStamp", Date.now());
         themedMessage.success("已重置插件，一秒后刷新页面");
-        
         refreshWindow();
     }
     
@@ -134,75 +152,75 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                   }}
             >
                 <Form colon={false} initialValues={preference} disabled={formDisabled}>
-                    <Form.Item name={"TopicsType"} label={<Text
-                        style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"主题类型"}</Text>}>
+                    <Form.Item
+                        label={<Text
+                            style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"主题类型"}</Text>}>
                         <Radio.Group
-                            defaultValue={disableImageTopic ? "customTopics" : "presetTopics"}
+                            value={preference.customTopic}
                             size={"large"}
                             onChange={topicRadioOnChange}
                             options={[
-                                {
-                                    value: "presetTopics",
-                                    label: "预设主题",
-                                    style: {color: props.theme.secondaryFontColor}
-                                },
-                                {
-                                    value: "customTopics",
-                                    label: "自定主题",
-                                    style: {color: props.theme.secondaryFontColor}
-                                }
+                                {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},
+                                {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}
                             ]}
                         />
                     </Form.Item>
+                    {!disableImageTopic && (
+                        <Form.Item
+                            label={<Text
+                                style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}>
+                            <Select<string[]> size={"large"} mode="multiple"
+                                              value={preference.imageTopics}
+                                              onChange={imageTopicsSelectOnChange}
+                                              disabled={disableImageTopic}
+                                              style={{width: "100%"}}
+                                              styles={{
+                                                  item: {backgroundColor: props.theme.secondaryColor},
+                                                  itemContent: {color: props.theme.secondaryFontColor},
+                                                  itemRemove: {color: props.theme.secondaryFontColor},
+                                              }}
+                                              options={[
+                                                  {value: "travel", label: "旅游"},
+                                                  {value: "wallpapers", label: "壁纸"},
+                                                  {value: "3d-renders", label: "3D 渲染"},
+                                                  {value: "textures-patterns", label: "纹理 & 图案"},
+                                                  {value: "experimental", label: "实验"},
+                                                  {value: "architecture-interior", label: "建筑 & 室内"},
+                                                  {value: "nature", label: "自然"},
+                                                  {value: "business-work", label: "商业 & 工作"},
+                                                  {value: "fashion-beauty", label: "时尚 & 美容"},
+                                                  {value: "film", label: "电影"},
+                                                  {value: "food-drink", label: "饮食"},
+                                                  {value: "health", label: "健康"},
+                                                  {value: "people", label: "人物"},
+                                                  {value: "interiors", label: "室内"},
+                                                  {value: "street-photography", label: "街头摄影"},
+                                                  {value: "animals", label: "动物"},
+                                                  {value: "spirituality", label: "灵性"},
+                                                  {value: "sports", label: "体育"},
+                                              ]}
+                            />
+                        </Form.Item>
+                    )}
                     
-                    <Form.Item name={"imageTopics"} label={<Text
-                        style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}
-                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{imageTopicStatus}</Text>}>
-                        <Select size={"large"} mode="multiple"
-                                defaultValue={"wallpapers"}
-                                onChange={imageTopicsSelectOnChange}
-                                style={{width: "100%"}}
-                                styles={{
-                                    item: {backgroundColor: props.theme.secondaryColor},
-                                    itemContent: {color: props.theme.secondaryFontColor},
-                                    itemRemove: {color: props.theme.secondaryFontColor},
-                                }}
-                                disabled={disableImageTopic}
-                                options={[
-                                    {value: "travel", label: "旅游"},
-                                    {value: "wallpapers", label: "壁纸"},
-                                    {value: "3d-renders", label: "3D 渲染"},
-                                    {value: "textures-patterns", label: "纹理 & 图案"},
-                                    {value: "experimental", label: "实验"},
-                                    {value: "architecture-interior", label: "建筑 & 室内"},
-                                    {value: "nature", label: "自然"},
-                                    {value: "business-work", label: "商业 & 工作"},
-                                    {value: "fashion-beauty", label: "时尚 & 美容"},
-                                    {value: "film", label: "电影"},
-                                    {value: "food-drink", label: "饮食"},
-                                    {value: "health", label: "健康"},
-                                    {value: "people", label: "人物"},
-                                    {value: "interiors", label: "室内"},
-                                    {value: "street-photography", label: "街头摄影"},
-                                    {value: "animals", label: "动物"},
-                                    {value: "spirituality", label: "灵性"},
-                                    {value: "sports", label: "体育"},
-                                ]}
-                        />
-                    </Form.Item>
-                    <Form.Item label={<Text
-                        style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}
-                               extra={<Text style={{color: props.theme.secondaryFontColor}}>{customTopicStatus}</Text>}>
-                        <Input size="large" placeholder="请输入自定义主题" disabled={!disableImageTopic}/>
-                    </Form.Item>
+                    {disableImageTopic && (
+                        <Form.Item
+                            label={<Text
+                                style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}>
+                            <Input size="large" placeholder="请输入自定主题，回车保存" disabled={!disableImageTopic}
+                                   value={preference.imageTopics[0] || ""}
+                                   onChange={customTopicInputOnChange}
+                                   onBlur={saveCustomTopic}
+                                   onPressEnter={saveCustomTopic}
+                            />
+                        </Form.Item>
+                    )}
                     <Divider/>
-                    <Form.Item name={"clearStorageButton"}
-                               label={<Text style={{
-                                   color: props.theme.secondaryFontColor,
-                                   fontSize: "16px"
-                               }}>{"危险设置"}</Text>}
-                               extra={<Text
-                                   style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
+                    <Form.Item
+                        label={<Text
+                            style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
+                        extra={<Text
+                            style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
                         <Space>
                             <HoverButton theme={props.theme} icon={<RedoOutlined/>} onClick={resetPreferenceBtnOnClick}>
                                 重置设置

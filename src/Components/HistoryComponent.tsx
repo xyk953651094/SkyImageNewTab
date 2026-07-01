@@ -49,7 +49,7 @@ function HistoryComponent(props: HistoryComponentProps) {
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>
                     <HoverButton theme={props.theme} icon={<HomeOutlined/>} onClick={imageLinkBtnOnClick}>
-                        {"图片主页"}
+                        {"查看原图"}
                     </HoverButton>
                 </Space>
             </Col>
@@ -101,6 +101,7 @@ function HistoryComponent(props: HistoryComponentProps) {
                  color={props.theme.secondaryColor}
                  styles={{root: {minWidth: "400px"}}}>
             <Button icon={<HistoryOutlined/>} size={"large"}
+                    type={"primary"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

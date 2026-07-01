@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import {useEffect, useState, useCallback} from "react";
 import WallpaperComponent from "./Components/WallpaperComponent";
 import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
@@ -14,6 +14,9 @@ import {
 import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
 import {PreferenceInterface, ThemeInterface, UnsplashImageDataInterface, ImageHistoryItemInterface} from "./TypeScripts/PublicInterface";
 import {defaultPreference} from "./TypeScripts/PublicConstants";
+import TodoComponent from "./Components/TodoComponent";
+import DailyComponent from "./Components/CountdownComponent";
+import FocusComponent from "./Components/FocusComponent";
 
 const {Header, Content, Footer} = Layout;
 
@@ -85,7 +88,11 @@ function App() {
                     
                     </Col>
                     <Col xs={22} sm={22} md={22} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
-                    
+                        <Space align={"center"}>
+                            <TodoComponent theme={theme} />
+                            <DailyComponent theme={theme} />
+                            <FocusComponent theme={theme} />
+                        </Space>
                     </Col>
                 </Row>
             </Header>

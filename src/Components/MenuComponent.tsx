@@ -58,7 +58,7 @@ function MenuComponent(props: MenuComponentProps) {
     return (
         <>
             <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
-                <Button icon={<MenuOutlined/>} size={"large"}
+                <Button icon={<MenuOutlined/>} size={"large"} type={"primary"}
                         onClick={showDrawerBtnOnClick}
                         style={buttonStyle}
                 />

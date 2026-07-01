@@ -19,6 +19,8 @@ html, body {
 }
 
 .layoutHeader {
+    position: relative;
+    z-index: 10;
     height: $heightRegular;
     line-height: $heightRegular;
     background-color: transparent;

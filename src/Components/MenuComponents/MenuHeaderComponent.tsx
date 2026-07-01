@@ -1,6 +1,5 @@
 import React from "react";
 import {Col, Row, Typography} from "antd";
-import {InfoCircleOutlined} from "@ant-design/icons";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 import { HoverButton } from "../PublicComponents/PublicButton";
 import {getGreetInfo} from "../../TypeScripts/GreetComponent";

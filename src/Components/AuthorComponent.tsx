@@ -150,6 +150,7 @@ function AuthorComponent(props: AuthorComponentProps) {
                  styles={{root: {minWidth: "600px"}}}>
             <Button icon={<CameraOutlined/>} size={"large"}
                     id={"authorBtn"}
+                    type={"primary"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

@@ -2,20 +2,21 @@ import React, {useEffect, useState} from "react";
 import {
     Button,
     Col,
+    Divider,
+    Empty,
+    Flex,
     Input,
-    List,
     message,
-    Modal,
     Popover,
     Row,
-    Space,
     Typography
 } from "antd";
-import {CheckOutlined, CheckSquareOutlined, PlusOutlined} from "@ant-design/icons";
+import {CheckOutlined, CarryOutOutlined, PlusOutlined} from "@ant-design/icons";
 import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage, removeExtensionStorage} from "../TypeScripts/StorageFunctions";
 import {HoverButton} from "./PublicComponents/PublicButton";
+import { PublicModal } from "./PublicComponents/PublicModal";
 
 const {Text} = Typography;
 const TODO_MAX_SIZE = 5;
@@ -46,13 +47,6 @@ function TodoComponent(props: TodoComponentProps) {
         } else {
             await setExtensionStorage(STORAGE_KEY_TODOS, list);
         }
-    }
-
-    // 全部完成
-    function finishAllBtnOnClick() {
-        setTodoList([]);
-        saveTodoList([]);
-        themedMessage.success("全部完成");
     }
 
     // 完成单条
@@ -112,44 +106,42 @@ function TodoComponent(props: TodoComponentProps) {
                 </Text>
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
-                <Space>
-                    <HoverButton theme={props.theme} icon={<PlusOutlined/>} onClick={showAddModalBtnOnClick}>
-                        {"添加待办"}
-                    </HoverButton>
-                    <HoverButton theme={props.theme} icon={<CheckOutlined/>} onClick={finishAllBtnOnClick}>
-                        {"全部完成"}
-                    </HoverButton>
-                </Space>
+                <HoverButton theme={props.theme} icon={<PlusOutlined/>} onClick={showAddModalBtnOnClick}>
+                    {"添加待办"}
+                </HoverButton>
             </Col>
         </Row>
     );
 
     const popoverContent = (
-        <List
-            dataSource={todoList}
-            renderItem={(item: TodoItem) => (
-                <List.Item
-                    actions={[
-                        <HoverButton
-                            key="finish"
-                            theme={props.theme}
-                            icon={<CheckOutlined/>}
-                            onClick={() => finishBtnOnClick(item)}
-                        >
-                            {"完成"}
-                        </HoverButton>,
-                    ]}
-                >
-                    <HoverButton
-                            key="finish"
-                            theme={props.theme}
-                            icon={<CheckSquareOutlined/>}
-                        >
-                            {item.title}
-                    </HoverButton>,
-                </List.Item>
+        <Flex vertical gap="middle">
+            {todoList.length === 0 ? (
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    styles={{description: {color: props.theme.secondaryFontColor}}}
+                />
+            ) : (
+                todoList.map((item: TodoItem, index: number) => (
+                    <React.Fragment key={item.timeStamp}>
+                        <Flex justify="space-between" align="center">
+                            <HoverButton
+                                theme={props.theme}
+                            >
+                                {index + 1}、{item.title}
+                            </HoverButton>
+                            <HoverButton
+                                theme={props.theme}
+                                icon={<CheckOutlined/>}
+                                onClick={() => finishBtnOnClick(item)}
+                            >
+                                {"完成"}
+                            </HoverButton>
+                        </Flex>
+                        {index < todoList.length - 1 && <Divider style={{margin: "0px", borderColor: props.theme.secondaryFontColor}}/>}
+                    </React.Fragment>
+                ))
             )}
-        />
+        </Flex>
     );
 
     return (
@@ -162,7 +154,7 @@ function TodoComponent(props: TodoComponentProps) {
                 styles={{root: {minWidth: "600px"}}}
             >
                 <Button
-                    icon={<CheckSquareOutlined/>}
+                    icon={<CarryOutOutlined/>}
                     size={"large"}
                     type={"primary"}
                     style={{
@@ -174,29 +166,24 @@ function TodoComponent(props: TodoComponentProps) {
                     {`${todoList.length} 个待办`}
                 </Button>
             </Popover>
-
-            <Modal
-                title={`添加待办 ${todoList.length} / ${TODO_MAX_SIZE}`}
-                closeIcon={false}
-                centered
+            <PublicModal
+                theme={props.theme}
                 open={displayModal}
+                titleText={`添加待办 ${todoList.length} / ${TODO_MAX_SIZE}`}
+                titleIcon={<CarryOutOutlined/>}
                 onOk={modalOkBtnOnClick}
                 onCancel={() => setDisplayModal(false)}
-                styles={{
-                    mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                    container: {backgroundColor: props.theme.secondaryColor},
-                    title: {color: props.theme.secondaryFontColor}
-                }}
             >
                 <Input
                     placeholder="请输入待办内容"
+                    size={"large"}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     maxLength={20}
                     showCount
                     allowClear
                 />
-            </Modal>
+            </PublicModal>
         </>
     );
 }

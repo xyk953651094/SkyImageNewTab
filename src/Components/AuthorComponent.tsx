@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Avatar, Button, Col, Divider, List, message, Popover, Row, Space, Typography} from "antd";
+import {Avatar, Button, Col, Divider, message, Popover, Row, Space, Typography} from "antd";
 import {
     CameraOutlined,
     EnvironmentOutlined,
@@ -102,46 +102,43 @@ function AuthorComponent(props: AuthorComponentProps) {
     );
     
     const popoverContent = (
-        <List>
-            <List.Item>
-                <Space align={"center"}>
-                    <Avatar size={90} src={author.iconUrl} alt={"作者"}/>
-                    <Space orientation={"vertical"}>
-                        <HoverButton theme={props.theme} icon={<CameraOutlined/>}>
-                            {"由 Unsplash 的 " + truncateText(author.name, btnMaxSize) + " 拍摄"}
-                        </HoverButton>
-                        <Space>
-                            <HoverButton theme={props.theme} icon={<i className="bi bi-collection"></i>}>
-                                {" " + author.collections + " 个合集"}
-                            </HoverButton>
-                            <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
-                            <HoverButton theme={props.theme} icon={<i className="bi bi-heart"></i>}>
-                                {" " + author.likes + " 个点赞"}
-                            </HoverButton>
-                            <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
-                            <HoverButton theme={props.theme} icon={<i className="bi bi-images"></i>}>
-                                {" " + author.photos + " 张照片"}
-                            </HoverButton>
-                        </Space>
-                    </Space>
-                </Space>
-            </List.Item>
-            <List.Item>
+        <Space orientation={"vertical"}>
+            <Space align={"center"}>
+                <Avatar size={90} src={author.iconUrl} alt={"作者"}/>
                 <Space orientation={"vertical"}>
+                    <HoverButton theme={props.theme} icon={<CameraOutlined/>}>
+                        {"由 Unsplash 的 " + truncateText(author.name, btnMaxSize) + " 拍摄"}
+                    </HoverButton>
                     <Space>
-                        <Avatar size={90} shape={"square"} src={image.previewUrl} alt={"信息"}/>
-                        <Space orientation={"vertical"}>
-                            <HoverButton theme={props.theme} icon={<InfoCircleOutlined/>}>
-                                {truncateText(image.description, btnMaxSize)}
-                            </HoverButton>
-                            <HoverButton theme={props.theme} icon={<EnvironmentOutlined/>}>
-                                {truncateText(image.location, btnMaxSize)}
-                            </HoverButton>
-                        </Space>
+                        <HoverButton theme={props.theme} icon={<i className="bi bi-collection"></i>}>
+                            {" " + author.collections + " 个合集"}
+                        </HoverButton>
+                        <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
+                        <HoverButton theme={props.theme} icon={<i className="bi bi-heart"></i>}>
+                            {" " + author.likes + " 个点赞"}
+                        </HoverButton>
+                        <Divider orientation="vertical" style={{borderColor: props.theme.secondaryFontColor}}/>
+                        <HoverButton theme={props.theme} icon={<i className="bi bi-images"></i>}>
+                            {" " + author.photos + " 张照片"}
+                        </HoverButton>
                     </Space>
                 </Space>
-            </List.Item>
-        </List>
+            </Space>
+            <Divider size={"small"} style={{borderColor: props.theme.secondaryFontColor}}/>
+            <Space orientation={"vertical"}>
+                <Space>
+                    <Avatar size={90} shape={"square"} src={image.previewUrl} alt={"信息"}/>
+                    <Space orientation={"vertical"}>
+                        <HoverButton theme={props.theme} icon={<InfoCircleOutlined/>}>
+                            {truncateText(image.description, btnMaxSize)}
+                        </HoverButton>
+                        <HoverButton theme={props.theme} icon={<EnvironmentOutlined/>}>
+                            {truncateText(image.location, btnMaxSize)}
+                        </HoverButton>
+                    </Space>
+                </Space>
+            </Space>
+        </Space>
     );
     
     return (

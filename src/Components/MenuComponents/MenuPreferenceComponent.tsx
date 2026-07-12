@@ -215,7 +215,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
-                    <Divider/>
+                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
                     <Form.Item
                         label={<Text
                             style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}

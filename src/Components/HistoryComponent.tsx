@@ -44,7 +44,7 @@ function HistoryComponent(props: HistoryComponentProps) {
     const popoverTitle = (
         <Row align={"middle"}>
             <Col span={8}>
-                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"历史记录"}</Text>
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"历史图片"}</Text>
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>

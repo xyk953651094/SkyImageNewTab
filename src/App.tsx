@@ -83,7 +83,7 @@ function App() {
         <Layout>
             <Header className={"layoutHeader"}>
                 <Row justify={"center"}>
-                    <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20} style={{textAlign: "right"}}>
+                    <Col xs={0} sm={0} md={20} lg={20} xl={20} xxl={20} style={{textAlign: "right"}}>
                         <Space align={"center"}>
                             <TodoComponent theme={theme} />
                             <DailyComponent theme={theme} />
@@ -104,7 +104,7 @@ function App() {
             </Content>
             <Footer className={"layoutFooter"}>
                 <Row justify="center">
-                    <Col xs={0} sm={0} md={0} lg={20} xl={20} style={{textAlign: "right"}}>
+                    <Col xs={0} sm={0} md={20} lg={20} xl={20} xxl={20} style={{textAlign: "right"}}>
                         <Space align={"center"}>
                             <AuthorComponent
                                 theme={theme}

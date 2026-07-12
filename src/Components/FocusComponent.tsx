@@ -9,6 +9,9 @@ import {
     Switch,
     Typography
 } from "antd";
+// import {
+//     CustomerServiceFilled, CustomerServiceOutlined
+// } from "@ant-design/icons";
 import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
@@ -146,39 +149,41 @@ function FocusComponent(props: FocusComponentProps) {
     );
 
     const popoverContent = (
-        <Select
-            value={focusSound}
-            placeholder={"请选择白噪音"}
-            onChange={focusSoundSelectOnChange}
-            options={SOUND_OPTIONS}
-            style={{width: "100%"}}
-        />
+        <div>
+            <Select
+                value={focusSound}
+                placeholder={"请选择白噪音"}
+                onChange={focusSoundSelectOnChange}
+                options={SOUND_OPTIONS}
+                size={"large"}
+                style={{width: "100%"}}
+            />
+            <audio ref={audioRef} style={{display: "none"}}/>
+        </div>
     );
 
     return (
-        <>
-            <audio ref={audioRef}/>
-            <Popover
-                title={popoverTitle}
-                content={popoverContent}
-                placement="bottomRight"
-                color={props.theme.secondaryColor}
-                styles={{root: {minWidth: "300px"}}}
+        <Popover
+            title={popoverTitle}
+            content={popoverContent}
+            placement="bottomRight"
+            color={props.theme.secondaryColor}
+            styles={{root: {minWidth: "300px"}}}
+        >
+            <Button
+                // icon={focusMode ? <CustomerServiceFilled /> : <CustomerServiceOutlined />}
+                icon={<i className={focusMode ? "bi bi-cup-hot" : "bi bi-cup"} style={{display: "inline-flex"}}/>}
+                size={"large"}
+                type={"primary"}
+                style={{
+                    cursor: "default",
+                    backgroundColor: props.theme.secondaryColor,
+                    color: props.theme.secondaryFontColor,
+                }}
             >
-                <Button
-                    icon={<i className={focusMode ? "bi bi-cup-hot" : "bi bi-cup"}/>}
-                    size={"large"}
-                    type={"primary"}
-                    style={{
-                        cursor: "default",
-                        backgroundColor: props.theme.secondaryColor,
-                        color: props.theme.secondaryFontColor,
-                    }}
-                >
-                    {focusMode ? "专注中" : "未专注"}
-                </Button>
-            </Popover>
-        </>
+                {focusMode ? "专注中" : "未专注"}
+            </Button>
+        </Popover>
     );
 }
 

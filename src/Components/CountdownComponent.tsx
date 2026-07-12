@@ -2,11 +2,11 @@ import React, {useEffect, useState} from "react";
 import {
     Button,
     Col,
-    DatePicker,
+    DatePicker, Divider,
+    Empty,
+    Flex,
     Input,
-    List,
     message,
-    Modal,
     Popover,
     Row,
     Space,
@@ -19,6 +19,7 @@ import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage, removeExtensionStorage} from "../TypeScripts/StorageFunctions";
 import {HoverButton} from "./PublicComponents/PublicButton";
+import { PublicModal } from "./PublicComponents/PublicModal";
 
 const {Text} = Typography;
 const DAILY_MAX_SIZE = 5;
@@ -90,13 +91,6 @@ function CountdownComponent(props: DailyComponentProps) {
         return `${year}-${month}-${day}`;
     }
 
-    // 全部删除
-    function removeAllBtnOnClick() {
-        setDailyList([]);
-        saveDailyList([]);
-        themedMessage.success("删除成功");
-    }
-
     // 删除单条
     function removeBtnOnClick(item: DailyItem) {
         const newList = dailyList.filter(d => d.timeStamp !== item.timeStamp);
@@ -165,44 +159,43 @@ function CountdownComponent(props: DailyComponentProps) {
                 </Text>
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
-                <Space>
-                    <HoverButton theme={props.theme} icon={<PlusOutlined/>} onClick={showAddModalBtnOnClick}>
-                        {"添加倒数"}
-                    </HoverButton>
-                    <HoverButton theme={props.theme} icon={<DeleteOutlined/>} onClick={removeAllBtnOnClick}>
-                        {"全部删除"}
-                    </HoverButton>
-                </Space>
+                <HoverButton theme={props.theme} icon={<PlusOutlined/>} onClick={showAddModalBtnOnClick}>
+                    {"添加倒数"}
+                </HoverButton>
             </Col>
         </Row>
     );
 
     const popoverContent = (
-        <List
-            dataSource={dailyList}
-            renderItem={(item: DailyItem) => (
-                <List.Item
-                    actions={[
-                        <HoverButton
-                            key="remove"
-                            theme={props.theme}
-                            icon={<DeleteOutlined/>}
-                            onClick={() => removeBtnOnClick(item)}
-                        >
-                            {"删除"}
-                        </HoverButton>
-                    ]}
-                >
-                    <HoverButton
-                            key="remove"
-                            theme={props.theme}
-                            icon={<CalendarOutlined/>}
-                        >
-                        {"距离 " + item.title + "（" + formatDate(item.selectedTimeStamp) + "）" + getDailyDescription(item.selectedTimeStamp)}
-                    </HoverButton>
-                </List.Item>
+        <Flex vertical gap="middle">
+            {dailyList.length === 0 ? (
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    styles={{description: {color: props.theme.secondaryFontColor}}}
+                />
+            ) : (
+                dailyList.map((item: DailyItem, index: number) => (
+                    <React.Fragment key={item.timeStamp}>
+                        <Flex justify="space-between" align="center">
+                            <HoverButton
+                                theme={props.theme}
+                            >
+                                {index + 1}、
+                                {"距离 " + item.title + "（" + formatDate(item.selectedTimeStamp) + "）" + getDailyDescription(item.selectedTimeStamp)}
+                            </HoverButton>
+                            <HoverButton
+                                theme={props.theme}
+                                icon={<DeleteOutlined/>}
+                                onClick={() => removeBtnOnClick(item)}
+                            >
+                                {"删除"}
+                            </HoverButton>
+                        </Flex>
+                        {index < dailyList.length - 1 && <Divider size="small" style={{margin: "0px", borderColor: props.theme.secondaryFontColor}}/>}
+                    </React.Fragment>
+                ))
             )}
-        />
+        </Flex>
     );
 
     return (
@@ -227,37 +220,34 @@ function CountdownComponent(props: DailyComponentProps) {
                     {`${dailyList.length} 个倒数`}
                 </Button>
             </Popover>
-
-            <Modal
-                title={`添加倒数 ${dailyList.length} / ${DAILY_MAX_SIZE}`}
-                closeIcon={false}
-                centered
+            
+            <PublicModal
+                theme={props.theme}
                 open={displayModal}
+                titleText={`添加倒数 ${dailyList.length} / ${DAILY_MAX_SIZE}`}
+                titleIcon={<CalendarOutlined/>}
                 onOk={modalOkBtnOnClick}
                 onCancel={() => setDisplayModal(false)}
-                styles={{
-                    mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
-                    container: {backgroundColor: props.theme.secondaryColor},
-                    title: {color: props.theme.secondaryFontColor}
-                }}
             >
                 <Space orientation="vertical" style={{width: "100%"}}>
-                        <Input
-                            placeholder="请输入标题"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            maxLength={10}
-                            showCount
-                            allowClear
-                        />
-                        <DatePicker
-                            disabledDate={(current) => dayjs(current).isBefore(dayjs())}
-                            onChange={datePickerOnChange}
-                            allowClear={false}
-                            style={{width: "100%"}}
-                        />
+                    <Input
+                        placeholder="请输入标题"
+                        size={"large"}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        maxLength={10}
+                        showCount
+                        allowClear
+                    />
+                    <DatePicker
+                        size={"large"}
+                        disabledDate={(current) => dayjs(current).isBefore(dayjs())}
+                        onChange={datePickerOnChange}
+                        allowClear={false}
+                        style={{width: "100%"}}
+                    />
                 </Space>
-            </Modal>
+            </PublicModal>
         </>
     );
 }

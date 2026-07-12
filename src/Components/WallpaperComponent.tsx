@@ -88,7 +88,8 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 const blurHashImage = decode(imageData.blur_hash!, canvas.width, canvas.height);
                 const ctx = canvas.getContext("2d");
                 if (ctx) {
-                    const blurImageData = new ImageData(blurHashImage, canvas.width, canvas.height);
+                    const blurImageData = ctx.createImageData(canvas.width, canvas.height);
+                    blurImageData.data.set(blurHashImage);
                     ctx.putImageData(blurImageData, 0, 0);
                 }
                 setDisplayCanvas("block");

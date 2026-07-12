@@ -1,4 +1,4 @@
-import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface'
+import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface';
 import {getBrowserType, getDeviceType} from "./PublicFunctions";
 
 // 常用变量

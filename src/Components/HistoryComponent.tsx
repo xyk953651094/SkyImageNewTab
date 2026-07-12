@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Carousel, Col, Empty, Flex, Image, List, message, Popover, Row, Space, Spin, Typography} from "antd";
-import {HomeOutlined, HistoryOutlined} from "@ant-design/icons";
+import {HistoryOutlined, FileImageOutlined} from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
@@ -48,7 +48,7 @@ function HistoryComponent(props: HistoryComponentProps) {
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>
-                    <HoverButton theme={props.theme} icon={<HomeOutlined/>} onClick={imageLinkBtnOnClick}>
+                    <HoverButton theme={props.theme} icon={<FileImageOutlined />} onClick={imageLinkBtnOnClick}>
                         {"查看原图"}
                     </HoverButton>
                 </Space>

@@ -12,25 +12,16 @@ import {
 import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
-import focusSoundOne from "../Assets/focusSounds/古镇雨滴.mp3";
-import focusSoundTwo from "../Assets/focusSounds/松树林小雪.mp3";
-import focusSoundThree from "../Assets/focusSounds/漓江水.mp3";
-import focusSoundFour from "../Assets/focusSounds/泉水水滴.mp3";
+import focusSoundOne from "../Assets/FocusSounds/古镇雨滴.mp3";
+import focusSoundTwo from "../Assets/FocusSounds/松树林小雪.mp3";
+import focusSoundThree from "../Assets/FocusSounds/漓江水.mp3";
+import focusSoundFour from "../Assets/FocusSounds/泉水水滴.mp3";
 
 const {Text} = Typography;
 
 // 存储 key 常量
 const STORAGE_KEY_FOCUS_MODE = "focusMode";
 const STORAGE_KEY_FOCUS_SOUND = "focusSound";
-
-// 白噪音选项
-const SOUND_OPTIONS = [
-    {value: "none", label: "静音", src: ""},
-    {value: "古镇雨滴", label: "声谷 - 古镇雨滴", src: focusSoundOne},
-    {value: "松树林小雪", label: "声谷 - 松树林小雪", src: focusSoundTwo},
-    {value: "漓江水", label: "声谷 - 漓江水", src: focusSoundThree},
-    {value: "泉水水滴", label: "声谷 - 泉水水滴", src: focusSoundFour},
-] as const;
 
 interface FocusComponentProps {
     theme: ThemeInterface;
@@ -42,6 +33,15 @@ function FocusComponent(props: FocusComponentProps) {
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const themedMessage = createThemedMessage(props.theme, message);
+    
+    // 白噪音选项
+    const SOUND_OPTIONS = [
+        {value: "none", label: focusMode ? "静音" : "请先开启专注模式", src: ""},
+        {value: "古镇雨滴", label: "声谷 - 古镇雨滴", src: focusSoundOne, disabled: !focusMode},
+        {value: "松树林小雪", label: "声谷 - 松树林小雪", src: focusSoundTwo, disabled: !focusMode},
+        {value: "漓江水", label: "声谷 - 漓江水", src: focusSoundThree, disabled: !focusMode},
+        {value: "泉水水滴", label: "声谷 - 泉水水滴", src: focusSoundFour, disabled: !focusMode},
+    ];
 
     // 获取音频 src
     function getSoundSrc(soundName: string): string {
@@ -150,7 +150,7 @@ function FocusComponent(props: FocusComponentProps) {
             value={focusSound}
             placeholder={"请选择白噪音"}
             onChange={focusSoundSelectOnChange}
-            options={[...SOUND_OPTIONS]}
+            options={SOUND_OPTIONS}
             style={{width: "100%"}}
         />
     );

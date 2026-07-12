@@ -63,7 +63,7 @@ module.exports = (env, argv) => ({
                 test: /\.mp3$/,
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/focusSounds/[name][ext]'
+                    filename: 'assets/FocusSounds/[name][ext]'
                 }
             },
         ]

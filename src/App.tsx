@@ -1,9 +1,4 @@
 import {useEffect, useState, useCallback} from "react";
-import WallpaperComponent from "./Components/WallpaperComponent";
-import MenuComponent from "./Components/MenuComponent";
-import AuthorComponent from "./Components/AuthorComponent";
-import HistoryComponent from "./Components/HistoryComponent";
-
 import {Col, Flex, Layout, Row, Space} from "antd";
 import "./StyleSheets/PublicStyles.scss"
 import {
@@ -17,6 +12,10 @@ import {defaultPreference} from "./TypeScripts/PublicConstants";
 import TodoComponent from "./Components/TodoComponent";
 import DailyComponent from "./Components/CountdownComponent";
 import FocusComponent from "./Components/FocusComponent";
+import WallpaperComponent from "./Components/WallpaperComponent";
+import MenuComponent from "./Components/MenuComponent";
+import AuthorComponent from "./Components/AuthorComponent";
+import HistoryComponent from "./Components/HistoryComponent";
 
 const {Header, Content, Footer} = Layout;
 
@@ -83,11 +82,8 @@ function App() {
     return (
         <Layout>
             <Header className={"layoutHeader"}>
-                <Row justify="center">
-                    <Col xs={0} sm={0} md={0} lg={10} xl={10} xxl={10}>
-                    
-                    </Col>
-                    <Col xs={22} sm={22} md={22} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
+                <Row justify={"center"}>
+                    <Col xs={20} sm={20} md={20} lg={20} xl={20} xxl={20} style={{textAlign: "right"}}>
                         <Space align={"center"}>
                             <TodoComponent theme={theme} />
                             <DailyComponent theme={theme} />

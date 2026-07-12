@@ -1,6 +1,6 @@
 import React, {useMemo, useRef, useState} from "react";
 import {Button, Drawer, Row, Space, Tooltip, Typography} from "antd";
-import {MenuOutlined, ToTopOutlined} from "@ant-design/icons";
+import {MenuFoldOutlined, ToTopOutlined} from "@ant-design/icons";
 import {deviceType} from "../TypeScripts/PublicConstants";
 import MenuHeaderComponent from "./MenuComponents/MenuHeaderComponent";
 import MenuFooterComponent from "./MenuComponents/MenuFooterComponent";
@@ -58,7 +58,7 @@ function MenuComponent(props: MenuComponentProps) {
     return (
         <>
             <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
-                <Button icon={<MenuOutlined/>} size={"large"} type={"primary"}
+                <Button icon={<MenuFoldOutlined />} size={"large"} type={"primary"}
                         onClick={showDrawerBtnOnClick}
                         style={buttonStyle}
                 />

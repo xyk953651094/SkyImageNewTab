@@ -157,6 +157,7 @@ function TodoComponent(props: TodoComponentProps) {
                     icon={<CarryOutOutlined/>}
                     size={"large"}
                     type={"primary"}
+                    className={"floatingButton"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

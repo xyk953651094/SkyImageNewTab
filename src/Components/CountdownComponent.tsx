@@ -20,6 +20,7 @@ import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage, removeExtensionStorage} from "../TypeScripts/StorageFunctions";
 import {HoverButton} from "./PublicComponents/PublicButton";
 import { PublicModal } from "./PublicComponents/PublicModal";
+import "../StyleSheets/PublicStyles.scss";
 
 const {Text} = Typography;
 const DAILY_MAX_SIZE = 5;
@@ -211,6 +212,7 @@ function CountdownComponent(props: DailyComponentProps) {
                     icon={<CalendarOutlined/>}
                     size={"large"}
                     type={"primary"}
+                    className={"floatingButton"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

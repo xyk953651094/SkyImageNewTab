@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {Button, Drawer, Row, Space, Tooltip, Typography} from "antd";
 import {MenuFoldOutlined, ToTopOutlined} from "@ant-design/icons";
 import {deviceType} from "../TypeScripts/PublicConstants";
@@ -23,16 +23,16 @@ function MenuComponent(props: MenuComponentProps) {
     const [displayDrawer, setDisplayDrawer] = useState<boolean>(false);
     const drawerContentRef = useRef<HTMLDivElement>(null);
     
-    const buttonStyle = useMemo(() => ({
+    const buttonStyle = {
         backgroundColor: props.theme.secondaryColor,
         color: props.theme.secondaryFontColor,
-    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
+    };
     
-    const tooltipTextStyle = useMemo(() => ({
+    const tooltipTextStyle = {
         color: props.theme.secondaryFontColor,
-    }), [props.theme.secondaryFontColor]);
+    };
     
-    const drawerStyles = useMemo(() => ({
+    const drawerStyles = {
         mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
         header: {color: props.theme.secondaryFontColor, borderBottomColor: props.theme.secondaryFontColor},
         section: {backgroundColor: props.theme.secondaryColor},
@@ -41,7 +41,7 @@ function MenuComponent(props: MenuComponentProps) {
             borderTopColor: props.theme.secondaryFontColor,
             textAlign: "center" as const,
         },
-    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
+    };
     
     function showDrawerBtnOnClick() {
         setDisplayDrawer(true);
@@ -58,7 +58,7 @@ function MenuComponent(props: MenuComponentProps) {
     return (
         <>
             <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
-                <Button icon={<MenuFoldOutlined />} size={"large"} type={"primary"}
+                <Button icon={<MenuFoldOutlined />} size={"large"} type={"primary"} className={"floatingButton"}
                         onClick={showDrawerBtnOnClick}
                         style={buttonStyle}
                 />

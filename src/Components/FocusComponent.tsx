@@ -19,6 +19,7 @@ import focusSoundOne from "../Assets/FocusSounds/古镇雨滴.mp3";
 import focusSoundTwo from "../Assets/FocusSounds/松树林小雪.mp3";
 import focusSoundThree from "../Assets/FocusSounds/漓江水.mp3";
 import focusSoundFour from "../Assets/FocusSounds/泉水水滴.mp3";
+import "../StyleSheets/PublicStyles.scss";
 
 const {Text} = Typography;
 
@@ -175,6 +176,7 @@ function FocusComponent(props: FocusComponentProps) {
                 icon={<i className={focusMode ? "bi bi-cup-hot" : "bi bi-cup"} style={{display: "inline-flex"}}/>}
                 size={"large"}
                 type={"primary"}
+                className={"floatingButton"}
                 style={{
                     cursor: "default",
                     backgroundColor: props.theme.secondaryColor,

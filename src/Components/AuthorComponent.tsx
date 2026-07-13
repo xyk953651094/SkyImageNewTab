@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
 import {createThemedMessage, isEmpty, truncateText} from "../TypeScripts/PublicFunctions";
-import "../StyleSheets/PublicStyles.scss"
+import "../StyleSheets/PublicStyles.scss";
 import {ThemeInterface, UnsplashImageDataInterface} from "../TypeScripts/PublicInterface";
 import {HoverButton} from "./PublicComponents/PublicButton";
 
@@ -148,6 +148,7 @@ function AuthorComponent(props: AuthorComponentProps) {
             <Button icon={<CameraOutlined/>} size={"large"}
                     id={"authorBtn"}
                     type={"primary"}
+                    className={"floatingButton"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

@@ -102,6 +102,7 @@ function HistoryComponent(props: HistoryComponentProps) {
                  styles={{root: {minWidth: "400px"}}}>
             <Button icon={<HistoryOutlined/>} size={"large"}
                     type={"primary"}
+                    className={"floatingButton"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

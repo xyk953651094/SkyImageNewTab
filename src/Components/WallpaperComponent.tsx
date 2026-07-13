@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useMemo} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import "../StyleSheets/WallpaperComponent.scss"
 import "../StyleSheets/PublicStyles.scss"
 import {Image, message} from "antd";
@@ -72,8 +72,8 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const [canvasClass, setCanvasClass] = useState("backgroundLayer");
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageWrapperRef = useRef<HTMLDivElement>(null);
-    const imageStyle = useMemo(() => ({display: displayImage}), [displayImage]);
-    const canvasStyle = useMemo(() => ({display: displayCanvas}), [displayCanvas]);
+    const imageStyle = {display: displayImage};
+    const canvasStyle = {display: displayCanvas};
     
     const themedMessage = createThemedMessage(props.theme, message);
     

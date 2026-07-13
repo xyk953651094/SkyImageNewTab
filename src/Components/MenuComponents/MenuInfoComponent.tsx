@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React from "react";
 import {Card, Col, Row, Typography} from "antd";
 import {GithubOutlined, GitlabOutlined, InfoCircleOutlined} from "@ant-design/icons";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
@@ -39,15 +39,15 @@ interface MenuInfoComponentProps {
 function MenuInfoComponent(props: MenuInfoComponentProps) {
     const {theme} = props;
 
-    const cardTitle = useMemo(() => (
+    const cardTitle = (
         <Text style={{color: theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息（ V" + version + " ）"}</Text>
-    ), [theme.secondaryFontColor]);
+    );
 
-    const cardExtra = useMemo(() => (
+    const cardExtra = (
         <InfoCircleOutlined style={{color: theme.secondaryFontColor, fontSize: "16px"}}/>
-    ), [theme.secondaryFontColor]);
+    );
 
-    const cardStyles = useMemo(() => ({
+    const cardStyles = {
         root: {
             backgroundColor: props.theme.secondaryColor,
             color: props.theme.secondaryFontColor,
@@ -56,7 +56,7 @@ function MenuInfoComponent(props: MenuInfoComponentProps) {
         header: {
             borderColor: props.theme.secondaryFontColor,
         }
-    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
+    };
 
     return (
         <Card title={cardTitle} extra={cardExtra} styles={cardStyles}>

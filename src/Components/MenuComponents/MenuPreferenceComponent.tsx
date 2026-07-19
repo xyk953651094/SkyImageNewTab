@@ -138,23 +138,25 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     
     return (
         <>
-            <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"偏好设置"}</Text>}
-                  extra={<SettingOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+            <Card title={"偏好设置"} extra={<SettingOutlined />}
                   styles={{
                       root: {
                           backgroundColor: props.theme.secondaryColor,
-                          color: props.theme.secondaryFontColor,
                           borderColor: props.theme.secondaryFontColor
                       },
                       header: {
+                          color: props.theme.secondaryFontColor,
                           borderColor: props.theme.secondaryFontColor,
-                      }
+                      },
+                      extra: {color: props.theme.secondaryFontColor}
                   }}
             >
-                <Form colon={false} initialValues={preference} disabled={formDisabled}>
-                    <Form.Item
-                        label={<Text
-                            style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"主题类型"}</Text>}>
+                <Form layout="vertical" disabled={formDisabled}
+                      styles={{
+                          label: {color: props.theme.secondaryFontColor},
+                          extra: {color: props.theme.secondaryFontColor}
+                      }}>
+                    <Form.Item label={"主题类型"}>
                         <Radio.Group
                             value={preference.customTopic}
                             size={"large"}
@@ -166,13 +168,10 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                         />
                     </Form.Item>
                     {!disableImageTopic && (
-                        <Form.Item
-                            label={<Text
-                                style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}>
+                        <Form.Item label={"预设主题"}>
                             <Select<string[]> size={"large"} mode="multiple"
                                               value={preference.imageTopics}
                                               onChange={imageTopicsSelectOnChange}
-                                              disabled={disableImageTopic}
                                               style={{width: "100%"}}
                                               styles={{
                                                   item: {backgroundColor: props.theme.secondaryColor},
@@ -202,12 +201,10 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
-                    
+
                     {disableImageTopic && (
-                        <Form.Item
-                            label={<Text
-                                style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}>
-                            <Input size="large" placeholder="请输入自定主题，回车保存" disabled={!disableImageTopic}
+                        <Form.Item label={"自定主题"} extra={"实际图片可能与输入的主题不相符"}>
+                            <Input size="large" placeholder="请输入自定主题，回车保存"
                                    value={preference.imageTopics[0] || ""}
                                    onChange={customTopicInputOnChange}
                                    onBlur={saveCustomTopic}
@@ -216,11 +213,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                         </Form.Item>
                     )}
                     <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
-                    <Form.Item
-                        label={<Text
-                            style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
-                        extra={<Text
-                            style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
+                    <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>
                         <Space>
                             <HoverButton theme={props.theme} icon={<RedoOutlined/>} onClick={resetPreferenceBtnOnClick}>
                                 重置设置
@@ -242,7 +235,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                 onCancel={resetPreferenceCancelBtnOnClick}
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                    {"注意：所有设置项将被重置为默认值"}
+                    {"将设置项重置为默认值"}
                 </Text>
             </PublicModal>
             <PublicModal
@@ -254,7 +247,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                 onCancel={clearStorageCancelBtnOnClick}
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                    {"注意：所有设置项将被重置为默认值，其他所有数据将被清空"}
+                    {"将设置项重置为默认值，并删除其他数据"}
                 </Text>
             </PublicModal>
         </>

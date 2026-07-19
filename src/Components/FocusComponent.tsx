@@ -9,9 +9,9 @@ import {
     Switch,
     Typography
 } from "antd";
-// import {
-//     CustomerServiceFilled, CustomerServiceOutlined
-// } from "@ant-design/icons";
+import {
+    CustomerServiceFilled, CustomerServiceOutlined
+} from "@ant-design/icons";
 import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
@@ -34,7 +34,7 @@ interface FocusComponentProps {
 function FocusComponent(props: FocusComponentProps) {
     const [focusMode, setFocusMode] = useState<boolean>(false);
     const [focusSound, setFocusSound] = useState<string>("none");
-
+    
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const themedMessage = createThemedMessage(props.theme, message);
     
@@ -46,33 +46,34 @@ function FocusComponent(props: FocusComponentProps) {
         {value: "漓江水", label: "声谷 - 漓江水", src: focusSoundThree, disabled: !focusMode},
         {value: "泉水水滴", label: "声谷 - 泉水水滴", src: focusSoundFour, disabled: !focusMode},
     ];
-
+    
     // 获取音频 src
     function getSoundSrc(soundName: string): string {
         return SOUND_OPTIONS.find(opt => opt.value === soundName)?.src ?? "";
     }
-
+    
     // 播放白噪音
     function playSound(soundName: string) {
         const src = getSoundSrc(soundName);
         if (!audioRef.current || !src) return;
         audioRef.current.src = src;
         audioRef.current.loop = true;
-        audioRef.current.play().catch(() => {});
+        audioRef.current.play().catch(() => {
+        });
     }
-
+    
     // 停止白噪音
     function stopSound() {
         if (audioRef.current && !audioRef.current.paused) {
             audioRef.current.pause();
         }
     }
-
+    
     // 重置专注状态到 storage
     async function resetFocusStorage() {
         await setExtensionStorage(STORAGE_KEY_FOCUS_MODE, false);
     }
-
+    
     // 专注模式开关
     async function focusModeSwitchOnChange(checked: boolean) {
         if (checked) {
@@ -87,42 +88,42 @@ function FocusComponent(props: FocusComponentProps) {
             themedMessage.info("已关闭专注模式");
         }
     }
-
+    
     // 切换白噪音
     function focusSoundSelectOnChange(value: string) {
         setFocusSound(value);
         setExtensionStorage(STORAGE_KEY_FOCUS_SOUND, value);
-
+        
         if (!focusMode) return;
-
+        
         if (value === "none") {
             stopSound();
         } else {
             playSound(value);
         }
     }
-
+    
     // 组件卸载时清理
     useEffect(() => {
         return () => {
             stopSound();
         };
     }, []);
-
+    
     // 初始化：从 storage 恢复状态
     useEffect(() => {
         async function loadFromStorage() {
             const [storedMode] = await getExtensionStorage([STORAGE_KEY_FOCUS_MODE]);
             const isModeOn: boolean = storedMode ?? false;
-
+            
             if (isModeOn) {
                 setFocusMode(true);
             }
         }
-
+        
         loadFromStorage();
     }, []);
-
+    
     const popoverTitle = (
         <Row align={"middle"}>
             <Col span={8}>
@@ -148,7 +149,7 @@ function FocusComponent(props: FocusComponentProps) {
             </Col>
         </Row>
     );
-
+    
     const popoverContent = (
         <div>
             <Select
@@ -162,18 +163,18 @@ function FocusComponent(props: FocusComponentProps) {
             <audio ref={audioRef} style={{display: "none"}}/>
         </div>
     );
-
+    
     return (
         <Popover
             title={popoverTitle}
             content={popoverContent}
             placement="bottomRight"
             color={props.theme.secondaryColor}
-            styles={{root: {minWidth: "300px"}}}
+            styles={{root: {minWidth: "350px"}}}
         >
             <Button
-                // icon={focusMode ? <CustomerServiceFilled /> : <CustomerServiceOutlined />}
-                icon={<i className={focusMode ? "bi bi-cup-hot" : "bi bi-cup"} style={{display: "inline-flex"}}/>}
+                icon={focusMode ? <CustomerServiceFilled /> : <CustomerServiceOutlined />}
+                // icon={<i className={focusMode ? "bi bi-cup-hot" : "bi bi-cup"} style={{display: "inline-flex"}}/>}
                 size={"large"}
                 type={"primary"}
                 className={"floatingButton"}

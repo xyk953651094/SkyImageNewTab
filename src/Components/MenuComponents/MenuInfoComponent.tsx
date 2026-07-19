@@ -1,10 +1,8 @@
 import React from "react";
-import {Card, Col, Row, Typography} from "antd";
+import {Card, Col, Row} from "antd";
 import {GithubOutlined, GitlabOutlined, InfoCircleOutlined} from "@ant-design/icons";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 import {HoverButton} from "../PublicComponents/PublicButton";
-
-const {Text} = Typography;
 
 const version = require("../../../package.json").version;
 
@@ -38,28 +36,20 @@ interface MenuInfoComponentProps {
 
 function MenuInfoComponent(props: MenuInfoComponentProps) {
     const {theme} = props;
-
-    const cardTitle = (
-        <Text style={{color: theme.secondaryFontColor, fontSize: "16px"}}>{"产品信息（ V" + version + " ）"}</Text>
-    );
-
-    const cardExtra = (
-        <InfoCircleOutlined style={{color: theme.secondaryFontColor, fontSize: "16px"}}/>
-    );
-
-    const cardStyles = {
-        root: {
-            backgroundColor: props.theme.secondaryColor,
-            color: props.theme.secondaryFontColor,
-            borderColor: props.theme.secondaryFontColor,
-        },
-        header: {
-            borderColor: props.theme.secondaryFontColor,
-        }
-    };
-
+    
     return (
-        <Card title={cardTitle} extra={cardExtra} styles={cardStyles}>
+        <Card title={"产品信息（ V" + version + " ）"} extra={<InfoCircleOutlined />}
+              styles={{
+                  root: {
+                      backgroundColor: props.theme.secondaryColor,
+                      borderColor: props.theme.secondaryFontColor,
+                  },
+                  header: {
+                      color: props.theme.secondaryFontColor,
+                      borderColor: props.theme.secondaryFontColor,
+                  },
+                  extra: {color: props.theme.secondaryFontColor}
+              }}>
             <Row gutter={[0, 8]}>
                 {links.map((link) => (
                     <React.Fragment key={link.label}>

@@ -70,7 +70,7 @@ module.exports = (env, argv) => ({
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: '云开新标签页',
+            title: '云开壁纸新标签页',
             filename: 'mainPage.html',
             template: 'public/index.html',
             chunks: ['vendors', 'mainPage'],
@@ -80,7 +80,7 @@ module.exports = (env, argv) => ({
             }
         }),
         // new HtmlWebpackPlugin({
-        //     title: '云开新标签页弹窗',
+        //     title: '云开壁纸新标签页弹窗',
         //     filename: 'popup.html',
         //     template: 'public/popup.html',
         //     chunks: ['vendors', 'popup'],

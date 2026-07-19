@@ -88,6 +88,11 @@ function App() {
                             <TodoComponent theme={theme} />
                             <DailyComponent theme={theme} />
                             <FocusComponent theme={theme} />
+                            <MenuComponent
+                                theme={theme}
+                                preference={preference}
+                                getPreference={setPreference}
+                            />
                         </Space>
                     </Col>
                 </Row>
@@ -113,11 +118,6 @@ function App() {
                             <HistoryComponent
                                 theme={theme}
                                 imageHistory={imageHistory}
-                            />
-                            <MenuComponent
-                                theme={theme}
-                                preference={preference}
-                                getPreference={setPreference}
                             />
                         </Space>
                     </Col>

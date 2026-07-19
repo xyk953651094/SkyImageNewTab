@@ -14,6 +14,9 @@ import {
     UnsplashImageDataInterface
 } from "../TypeScripts/PublicInterface";
 
+const MESSAGE_KEY = "wallpaper_fetching";
+const MESSAGE_KEY2 = "wallpaper_loading";
+
 interface WallpaperComponentProps {
     theme: ThemeInterface;
     preference: PreferenceInterface;
@@ -94,14 +97,12 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 }
                 setDisplayCanvas("block");
                 setCanvasClass("backgroundLayer wallpaperFadeIn");
-                themedMessage.loading({content: "正在加载图片", duration: 0, key: "wallpaper_loading"});
             }
         }
     }
     
-    
     const handleImageLoad = () => {
-        themedMessage.destroy("wallpaper_loading");
+        themedMessage.destroy(MESSAGE_KEY2);
         const img = imageWrapperRef.current?.querySelector<HTMLImageElement>("img");
         if (img) {
             img.style.width = "102%";
@@ -116,8 +117,13 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     };
     
     useEffect(() => {
+        if (imageLink) {
+            themedMessage.loading({content: "正在加载图片", duration: 0, key: MESSAGE_KEY2});
+        }
+    }, [props.theme]);
+    
+    useEffect(() => {
         let cancelled = false;
-        const MESSAGE_KEY = "wallpaper_fetching";
         
         async function loadWallpaper() {
             const [cached] = await getExtensionStorage(["wallpaperCache"]);
@@ -127,7 +133,17 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 setWallpaper(cached.imageData);
             } else {
                 // 没缓存，给用户一个提示
-                themedMessage.loading({content: "正在获取图片", duration: 0, key: MESSAGE_KEY});
+                themedMessage.loading({
+                    content: "正在获取图片",
+                    duration: 0,
+                    key: MESSAGE_KEY,
+                    styles: {
+                        root: {
+                            backgroundColor: props.theme.secondaryColor,
+                            color: props.theme.secondaryFontColor,
+                        }
+                    }
+                });
             }
             
             const needsRefresh = isEmpty(cached) ||

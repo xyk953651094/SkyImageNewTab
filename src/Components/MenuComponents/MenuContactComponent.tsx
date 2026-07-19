@@ -1,10 +1,8 @@
 import React from "react";
-import {Card, Col, Row, Typography} from "antd";
+import {Card, Col, Row} from "antd";
 import {DislikeOutlined, GithubOutlined, GitlabOutlined, LikeOutlined, MailOutlined} from "@ant-design/icons";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
 import {HoverButton} from "../PublicComponents/PublicButton";
-
-const {Text} = Typography;
 
 interface MenuContactComponentProps {
     theme: ThemeInterface;
@@ -27,17 +25,17 @@ const contactLinks: ContactLink[] = [
 
 function MenuContactComponent(props: MenuContactComponentProps) {
     return (
-        <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"联系作者"}</Text>}
-              extra={<MailOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+        <Card title={"联系作者"} extra={<MailOutlined />}
               styles={{
                   root: {
                       backgroundColor: props.theme.secondaryColor,
-                      color: props.theme.secondaryFontColor,
                       borderColor: props.theme.secondaryFontColor,
                   },
                   header: {
+                      color: props.theme.secondaryFontColor,
                       borderColor: props.theme.secondaryFontColor,
-                  }
+                  },
+                  extra: {color: props.theme.secondaryFontColor}
               }}
         >
             <Row gutter={[0, 8]}>

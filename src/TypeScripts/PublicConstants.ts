@@ -23,14 +23,6 @@ export const defaultExtensionData: ExtensionDataInterface = {
 
 // 主题颜色
 export const lightColors: string[] = [
-    // "#A04F3C",
-    // "#A0875A",
-    // "#A08C9F",
-    // "#A35842",
-    // "#A55456",
-    // "#A6845A",
-    // "#AB8483",
-    // "#AFC5C1",
     "#B19BA7",
     "#B1C5BA",
     "#B3C5AB",
@@ -86,9 +78,4 @@ export const darkColors: string[] = [
     "#745B9F",
     "#75706C",
     "#761521",
-    // "#911D50",
-    // "#91955F",
-    // "#979AB9",
-    // "#9B8A9D",
-    // "#9E754E",
 ]

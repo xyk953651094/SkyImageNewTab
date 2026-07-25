@@ -10,7 +10,7 @@ import {HoverButton} from "./PublicComponents/PublicButton";
 import {getGreetInfo} from "../TypeScripts/GreetComponent";
 
 const {Text} = Typography;
-const { icon, greet } = getGreetInfo();
+const {icon, greet} = getGreetInfo();
 const drawerPosition = (deviceType === "iPhone" || deviceType === "Android") ? "bottom" : "right";
 
 interface MenuComponentProps {
@@ -25,10 +25,6 @@ function MenuComponent(props: MenuComponentProps) {
     
     const buttonStyle = {
         backgroundColor: props.theme.secondaryColor,
-        color: props.theme.secondaryFontColor,
-    };
-    
-    const tooltipTextStyle = {
         color: props.theme.secondaryFontColor,
     };
     
@@ -57,8 +53,10 @@ function MenuComponent(props: MenuComponentProps) {
     
     return (
         <>
-            <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
-                <Button icon={<MenuFoldOutlined />} size={"large"} type={"primary"} className={"floatingButton"}
+            <Tooltip title={"菜单栏"} placement={"bottomRight"} color={props.theme.secondaryColor} styles={{
+                container: {color: props.theme.secondaryFontColor},
+            }}>
+                <Button icon={<MenuFoldOutlined/>} size={"large"} type={"primary"} className={"floatingButton"}
                         onClick={showDrawerBtnOnClick}
                         style={buttonStyle}
                 />

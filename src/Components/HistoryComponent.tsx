@@ -67,21 +67,21 @@ function HistoryComponent(props: HistoryComponentProps) {
             ) : (
                 <List.Item>
                     <Carousel effect="fade" afterChange={carouselOnChange} arrows
-                              style={{width: "400px", height: "300px"}}>
+                              style={{width: "400px", height: "250px"}}>
                         {
                             imageHistory.map((item) => {
                                 return (
                                     <div key={item.index}
-                                         style={{width: "400px", height: "300px", lineHeight: "300px"}}>
+                                         style={{width: "400px", height: "250px", lineHeight: "250px"}}>
                                         <Image
                                             width={"400px"}
-                                            height={"300px"}
+                                            height={"250px"}
                                             preview={false}
                                             alt={"暂无图片"}
                                             src={item.imageUrl}
                                             style={{borderRadius: "8px"}}
                                             placeholder={
-                                                <Flex justify="center" align="center" style={{width: "400px", height: "300px", borderRadius: "8px"}}>
+                                                <Flex justify="center" align="center" style={{width: "400px", height: "250px", borderRadius: "8px"}}>
                                                     <Spin description="加载中，请稍后..."/>
                                                 </Flex>
                                             }

@@ -63,7 +63,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     async function checkCooldownThen(callback: () => void) {
-        const [resetTimeStampStorage] = await getExtensionStorage(["resetTimeStamp"]);
+        const [resetTimeStampStorage] = await getExtensionStorage(["lastPreferenceResetTime"]);
         if (resetTimeStampStorage && Date.now() - parseInt(resetTimeStampStorage) < RESET_COOLDOWN_MS) {
             themedMessage.error("操作过于频繁，请稍后再试");
         } else {
@@ -127,7 +127,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setFormDisabled(true);
         setActiveModal(null);
         setExtensionStorage("preference", defaultPreference);
-        setExtensionStorage("resetTimeStamp", Date.now());
+        setExtensionStorage("lastPreferenceResetTime", Date.now());
         themedMessage.success("已重置设置，一秒后刷新页面");
         refreshWindow();
     }
@@ -146,7 +146,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setActiveModal(null);
         clearExtensionStorage();
         setExtensionStorage("preference", defaultPreference);
-        setExtensionStorage("resetTimeStamp", Date.now());
+        setExtensionStorage("lastPreferenceResetTime", Date.now());
         themedMessage.success("已重置插件，一秒后刷新页面");
         refreshWindow();
     }

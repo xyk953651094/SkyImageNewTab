@@ -6,7 +6,9 @@ import {
     message,
     Radio,
     Select,
+    Slider,
     Space,
+    Switch,
     Typography,
 } from "antd";
 import type {RadioChangeEvent} from "antd";
@@ -98,6 +100,23 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         }
     }
     
+    // 壁纸亮度
+    function imageBrightnessSliderOnChange(value: number) {
+        const newPreference = changePreference({imageBrightness: value});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+    }
+    
+    // 图片质量
+    function imageHighQualitySwitchOnChange(checked: boolean) {
+        const newPreference = changePreference({imageHighQuality: checked});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success(checked ? "已开启高清图片，下次更新图片时生效" : "已关闭高清图片，下次更新图片时生效");
+    }
+    
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
@@ -138,7 +157,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     
     return (
         <>
-            <Card title={"偏好设置"} extra={<SettingOutlined />}
+            <Card title={"偏好设置"} extra={<SettingOutlined/>}
                   styles={{
                       root: {
                           backgroundColor: props.theme.secondaryColor,
@@ -201,7 +220,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
-
+                    
                     {disableImageTopic && (
                         <Form.Item label={"自定主题"} extra={"实际图片可能与输入的主题不相符"}>
                             <Input size="large" placeholder="请输入自定主题，回车保存"
@@ -212,6 +231,35 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
+                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"壁纸亮度"} extra={"降低亮度可减少强光刺眼，1 为原始亮度"}>
+                        <Slider
+                            min={0}
+                            max={1}
+                            step={0.1}
+                            value={preference.imageBrightness}
+                            onChange={imageBrightnessSliderOnChange}
+                            styles={{
+                                rail: {backgroundColor: props.theme.secondaryFontColor},
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"高清壁纸"} extra={"开启后将加载原始分辨率图片，加载时间可能更长"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.imageHighQuality}
+                            onChange={imageHighQualitySwitchOnChange}
+                            styles={{
+                                root: {
+                                    backgroundColor: preference.imageHighQuality ? props.theme.primaryColor : ""
+                                },
+                                content: {
+                                    color: preference.imageHighQuality ? props.theme.primaryFontColor : ""
+                                }
+                            }}
+                        />
+                    </Form.Item>
                     <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
                     <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>
                         <Space>

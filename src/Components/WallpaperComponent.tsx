@@ -75,7 +75,10 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const [canvasClass, setCanvasClass] = useState("backgroundLayer");
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageWrapperRef = useRef<HTMLDivElement>(null);
-    const imageStyle = {display: displayImage};
+    const imageStyle = {
+        display: displayImage,
+        filter: `brightness(${props.preference.imageBrightness ?? 1})`,
+    };
     const canvasStyle = {display: displayCanvas};
     
     const themedMessage = createThemedMessage(props.theme, message);
@@ -83,7 +86,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     /** 渲染 blurHash 到 canvas 并通知父组件 */
     function setWallpaper(imageData: UnsplashImageDataInterface) {
         props.getImageData(imageData);
-        setImageLink(imageData.urls.full);
+        setImageLink(props.preference.imageHighQuality ? imageData.urls.full : imageData.urls.regular);
         
         if (!isEmpty(imageData.blur_hash)) {
             const canvas = canvasRef.current;

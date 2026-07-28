@@ -20,7 +20,6 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const [displayCanvas, setDisplayCanvas] = useState("block");
     const [canvasClass, setCanvasClass] = useState("backgroundLayer");
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imageWrapperRef = useRef<HTMLDivElement>(null);
     const imageStyle = {
         display: displayImage,
         filter: `brightness(${props.preference.imageBrightness})`,
@@ -65,22 +64,13 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     
     const handleImageLoad = () => {
         themedMessage.destroy(MESSAGE_KEY);
-        const img = imageWrapperRef.current?.querySelector<HTMLImageElement>("img");
-        if (img) {
-            img.style.width = "102%";
-            img.classList.add("wallpaperFadeIn");
-            setTimeout(() => {
-                img.style.transform = "scale(1.05, 1.05)";
-                img.style.transition = "5s";
-            }, 2000);
-        }
         setDisplayImage("block");
         setCanvasClass("backgroundLayer wallpaperFadeOut");
     };
     
     return (
         <>
-            <div ref={imageWrapperRef}>
+            <div key={imageLink} className={"wallpaperZoom"}>
                 <Image
                     id={"backgroundImage"}
                     width={"102%"}

@@ -15,6 +15,7 @@ import type {RadioChangeEvent} from "antd";
 import {
     RedoOutlined,
     SettingOutlined,
+    IdcardOutlined,
 } from "@ant-design/icons";
 import {createThemedMessage} from "../../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from "../../TypeScripts/StorageFunctions";
@@ -36,7 +37,7 @@ interface MenuPreferenceComponentProps {
 function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     const [formDisabled, setFormDisabled] = useState<boolean>(false);
     const [disableImageTopic, setDisableImageTopic] = useState<boolean>(props.preference.customTopic);
-    const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | null>(null);
+    const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | "accessKey" | null>(null);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
     const themedMessage = createThemedMessage(props.theme, message);
     
@@ -98,6 +99,31 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         if (value) {
             themedMessage.success("已保存主题：" + value + "，下次更新图片时生效");
         }
+    }
+    
+    // 自定密钥
+    function accessKeyInputOnChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        setPreference(changePreference({accessKey: e.target.value}));
+    }
+    
+    function saveAccessKey() {
+        const value = preference.accessKey;
+        setExtensionStorage("preference", preference);
+        props.getPreference(preference);
+        if (value) {
+            themedMessage.success("已保存访问密钥，下次获取图片时生效");
+        } else {
+            themedMessage.info("已清除自定义密钥，将使用默认密钥");
+        }
+    }
+    
+    function accessKeyOkBtnOnClick() {
+        saveAccessKey();
+        setActiveModal(null);
+    }
+    
+    function accessKeyCancelBtnOnClick() {
+        setActiveModal(null);
     }
     
     // 壁纸亮度
@@ -260,6 +286,12 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             }}
                         />
                     </Form.Item>
+                    <Form.Item label={"访问密钥"} extra={"使用自己的 Unsplash Access Key，可解除切换频率限制"}>
+                        <HoverButton theme={props.theme} icon={<IdcardOutlined/>}
+                                     onClick={() => setActiveModal("accessKey")}>
+                            自定义 Unsplash 访问密钥
+                        </HoverButton>
+                    </Form.Item>
                     <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
                     <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>
                         <Space>
@@ -296,6 +328,26 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                     {"将设置项重置为默认值，并删除其他数据"}
+                </Text>
+            </PublicModal>
+            <PublicModal
+                theme={props.theme}
+                open={activeModal === "accessKey"}
+                titleText={"自定义 Unsplash 访问密钥"}
+                titleIcon={<IdcardOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+                onOk={accessKeyOkBtnOnClick}
+                onCancel={accessKeyCancelBtnOnClick}
+            >
+                <Input.TextArea
+                    rows={3}
+                    placeholder="请输入你的 Unsplash Access Key，留空则使用默认密钥"
+                    autoSize={{ minRows: 1, maxRows: 5 }}
+                    value={preference.accessKey}
+                    onChange={accessKeyInputOnChange}
+                    allowClear
+                />
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "12px", marginTop: "8px", display: "block"}}>
+                    {"前往 unsplash.com/developers 申请专属 Access Key，使用自己的密钥可解除图片切换频率限制"}
                 </Text>
             </PublicModal>
         </>

@@ -16,6 +16,7 @@ export const defaultPreference: PreferenceInterface = {
     imageTopics: ["wallpapers"],
     imageBrightness: 1,
     imageHighQuality: false,
+    accessKey: "",
 }
 
 // TODO:如果后续不再增加别的功能，例如数据导入导出、待办、倒数日之类的，这个常量可以删除。

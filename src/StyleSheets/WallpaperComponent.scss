@@ -52,3 +52,19 @@
     from { opacity: 1; visibility: visible;}
     to { opacity: 0; visibility: hidden;}
 }
+
+/* 壁纸缓慢放大效果：前 2 秒静止，后 5 秒缓慢放大 */
+.wallpaperZoom {
+    position: fixed;
+    top: -1%;
+    left: -1%;
+    width: 102%;
+    height: 102%;
+    overflow: hidden;
+    animation: wallpaperZoom 7s ease-out forwards;
+}
+
+@keyframes wallpaperZoom {
+    0%, 28% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}

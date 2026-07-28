@@ -3,7 +3,7 @@ import {Button, message, Tooltip} from "antd";
 import {ReloadOutlined} from "@ant-design/icons";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
-import {httpRequest} from "../TypeScripts/RequestFunctions";
+import {httpRequest, HttpRequestError} from "../TypeScripts/RequestFunctions";
 import {clientId, deviceType, imageHistoryMaxSize, imageSwitchingInterval} from "../TypeScripts/PublicConstants";
 import {
     ImageHistoryItemInterface,
@@ -29,7 +29,7 @@ async function fetchWallpaper(preference: PreferenceInterface): Promise<Unsplash
         method: "GET",
         headers: {},
         data: {
-            client_id: clientId,
+            client_id: preference.accessKey || clientId,
             orientation: (deviceType === "iPhone" || deviceType === "Android") ? "portrait" : "landscape",
             topics: preference.customTopic ? "" : topicsParam,
             query: preference.customTopic ? topicsParam : "",
@@ -96,6 +96,7 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
             }
             
             const needsRefresh = isEmpty(cached) ||
+                pref.accessKey ||
                 (Date.now() - cachedTime > imageSwitchingInterval);
             
             if (!needsRefresh) return;
@@ -111,8 +112,10 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
                 setExtensionStorage("lastWallpaper", newData);
                 setExtensionStorage("lastWallpaperRequestTime", Date.now());
                 if (!cancelled) props.getImageData(newData);
-            } catch {
-                if (isEmpty(cached)) {
+            } catch (error: any) {
+                if (error instanceof HttpRequestError && (error.status === 401 || error.status === 403)) {
+                    themedMessage.error("访问密钥无效，请检查后重试");
+                } else {
                     themedMessage.error("获取图片失败，请检查网络连接");
                 }
             } finally {
@@ -129,9 +132,9 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
     
     // 手动刷新：换一张
     const handleRefresh = useCallback(async () => {
-        // 检查距上次请求是否不足 5 分钟
+        // 检查距上次请求是否不足 5 分钟（自定义密钥不受限制）
         const [, cachedTime] = await getExtensionStorage(["lastWallpaper", "lastWallpaperRequestTime"]);
-        if (cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
+        if (!preferenceRef.current.accessKey && cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
             themedMessage.error("操作太频繁，请稍后再试");
             return;
         }
@@ -154,8 +157,12 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
             setExtensionStorage("lastWallpaper", newData);
             setExtensionStorage("lastWallpaperRequestTime", Date.now());
             props.getImageData(newData);
-        } catch {
-            themedMessage.error("获取图片失败，请检查网络连接");
+        } catch (error: any) {
+            if (error instanceof HttpRequestError && (error.status === 401 || error.status === 403)) {
+                themedMessage.error("访问密钥无效，请检查后重试");
+            } else {
+                themedMessage.error("获取图片失败，请检查网络连接");
+            }
         } finally {
             themedMessage.destroy(MESSAGE_KEY);
         }

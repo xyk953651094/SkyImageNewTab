@@ -10,6 +10,7 @@ export interface PreferenceInterface {
     imageTopics: string[];
     imageBrightness: number;
     imageHighQuality: boolean;
+    accessKey: string;
 }
 
 export interface ExtensionDataInterface {

@@ -2,6 +2,7 @@ import React from "react";
 import {Button} from "antd";
 import {changeButtonTheme} from "../../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../../TypeScripts/PublicInterface";
+import "../../StyleSheets/PublicStyles.scss"
 
 interface HoverButtonProps {
     theme: ThemeInterface;

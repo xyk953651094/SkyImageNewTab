@@ -6,7 +6,9 @@ import {
     message,
     Radio,
     Select,
+    Slider,
     Space,
+    Switch,
     Typography,
 } from "antd";
 import type {RadioChangeEvent} from "antd";
@@ -61,7 +63,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     async function checkCooldownThen(callback: () => void) {
-        const [resetTimeStampStorage] = await getExtensionStorage(["resetTimeStamp"]);
+        const [resetTimeStampStorage] = await getExtensionStorage(["lastPreferenceResetTime"]);
         if (resetTimeStampStorage && Date.now() - parseInt(resetTimeStampStorage) < RESET_COOLDOWN_MS) {
             themedMessage.error("操作过于频繁，请稍后再试");
         } else {
@@ -98,6 +100,23 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         }
     }
     
+    // 壁纸亮度
+    function imageBrightnessSliderOnChange(value: number) {
+        const newPreference = changePreference({imageBrightness: value});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+    }
+    
+    // 图片质量
+    function imageHighQualitySwitchOnChange(checked: boolean) {
+        const newPreference = changePreference({imageHighQuality: checked});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success(checked ? "已开启高清图片，下次更新图片时生效" : "已关闭高清图片，下次更新图片时生效");
+    }
+    
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
@@ -108,7 +127,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setFormDisabled(true);
         setActiveModal(null);
         setExtensionStorage("preference", defaultPreference);
-        setExtensionStorage("resetTimeStamp", Date.now());
+        setExtensionStorage("lastPreferenceResetTime", Date.now());
         themedMessage.success("已重置设置，一秒后刷新页面");
         refreshWindow();
     }
@@ -127,7 +146,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setActiveModal(null);
         clearExtensionStorage();
         setExtensionStorage("preference", defaultPreference);
-        setExtensionStorage("resetTimeStamp", Date.now());
+        setExtensionStorage("lastPreferenceResetTime", Date.now());
         themedMessage.success("已重置插件，一秒后刷新页面");
         refreshWindow();
     }
@@ -138,23 +157,25 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     
     return (
         <>
-            <Card title={<Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"偏好设置"}</Text>}
-                  extra={<SettingOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+            <Card title={"偏好设置"} extra={<SettingOutlined/>}
                   styles={{
                       root: {
                           backgroundColor: props.theme.secondaryColor,
-                          color: props.theme.secondaryFontColor,
                           borderColor: props.theme.secondaryFontColor
                       },
                       header: {
+                          color: props.theme.secondaryFontColor,
                           borderColor: props.theme.secondaryFontColor,
-                      }
+                      },
+                      extra: {color: props.theme.secondaryFontColor}
                   }}
             >
-                <Form colon={false} initialValues={preference} disabled={formDisabled}>
-                    <Form.Item
-                        label={<Text
-                            style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"主题类型"}</Text>}>
+                <Form layout="vertical" disabled={formDisabled}
+                      styles={{
+                          label: {color: props.theme.secondaryFontColor},
+                          extra: {color: props.theme.secondaryFontColor}
+                      }}>
+                    <Form.Item label={"主题类型"}>
                         <Radio.Group
                             value={preference.customTopic}
                             size={"large"}
@@ -166,13 +187,10 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                         />
                     </Form.Item>
                     {!disableImageTopic && (
-                        <Form.Item
-                            label={<Text
-                                style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"预设主题"}</Text>}>
+                        <Form.Item label={"预设主题"}>
                             <Select<string[]> size={"large"} mode="multiple"
                                               value={preference.imageTopics}
                                               onChange={imageTopicsSelectOnChange}
-                                              disabled={disableImageTopic}
                                               style={{width: "100%"}}
                                               styles={{
                                                   item: {backgroundColor: props.theme.secondaryColor},
@@ -204,10 +222,8 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                     )}
                     
                     {disableImageTopic && (
-                        <Form.Item
-                            label={<Text
-                                style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"自定主题"}</Text>}>
-                            <Input size="large" placeholder="请输入自定主题，回车保存" disabled={!disableImageTopic}
+                        <Form.Item label={"自定主题"} extra={"实际图片可能与输入的主题不相符"}>
+                            <Input size="large" placeholder="请输入自定主题，回车保存"
                                    value={preference.imageTopics[0] || ""}
                                    onChange={customTopicInputOnChange}
                                    onBlur={saveCustomTopic}
@@ -215,12 +231,37 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
-                    <Divider/>
-                    <Form.Item
-                        label={<Text
-                            style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"危险设置"}</Text>}
-                        extra={<Text
-                            style={{color: props.theme.secondaryFontColor}}>{"出现异常时可尝试重置设置或插件"}</Text>}>
+                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"壁纸亮度"} extra={"降低亮度可减少强光刺眼，1 为原始亮度"}>
+                        <Slider
+                            min={0}
+                            max={1}
+                            step={0.1}
+                            value={preference.imageBrightness}
+                            onChange={imageBrightnessSliderOnChange}
+                            styles={{
+                                rail: {backgroundColor: props.theme.secondaryFontColor},
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"高清壁纸"} extra={"开启后将加载原始分辨率图片，加载时间可能更长"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.imageHighQuality}
+                            onChange={imageHighQualitySwitchOnChange}
+                            styles={{
+                                root: {
+                                    backgroundColor: preference.imageHighQuality ? props.theme.primaryColor : ""
+                                },
+                                content: {
+                                    color: preference.imageHighQuality ? props.theme.primaryFontColor : ""
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>
                         <Space>
                             <HoverButton theme={props.theme} icon={<RedoOutlined/>} onClick={resetPreferenceBtnOnClick}>
                                 重置设置
@@ -242,7 +283,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                 onCancel={resetPreferenceCancelBtnOnClick}
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                    {"注意：所有设置项将被重置为默认值"}
+                    {"将设置项重置为默认值"}
                 </Text>
             </PublicModal>
             <PublicModal
@@ -254,7 +295,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                 onCancel={clearStorageCancelBtnOnClick}
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                    {"注意：所有设置项将被重置为默认值，其他所有数据将被清空"}
+                    {"将设置项重置为默认值，并删除其他数据"}
                 </Text>
             </PublicModal>
         </>

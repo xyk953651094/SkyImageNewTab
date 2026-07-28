@@ -8,6 +8,8 @@ export interface ThemeInterface {
 export interface PreferenceInterface {
     customTopic: boolean,
     imageTopics: string[];
+    imageBrightness: number;
+    imageHighQuality: boolean;
 }
 
 export interface ExtensionDataInterface {

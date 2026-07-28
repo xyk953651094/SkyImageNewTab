@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Carousel, Col, Empty, Flex, Image, List, message, Popover, Row, Space, Spin, Typography} from "antd";
-import {HomeOutlined, HistoryOutlined} from "@ant-design/icons";
+import {HistoryOutlined, FileImageOutlined} from "@ant-design/icons";
 import {unsplashUrl} from "../TypeScripts/PublicConstants";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import "../StyleSheets/PublicStyles.scss"
@@ -44,11 +44,11 @@ function HistoryComponent(props: HistoryComponentProps) {
     const popoverTitle = (
         <Row align={"middle"}>
             <Col span={8}>
-                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"历史记录"}</Text>
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"历史图片"}</Text>
             </Col>
             <Col span={16} style={{textAlign: "right"}}>
                 <Space>
-                    <HoverButton theme={props.theme} icon={<HomeOutlined/>} onClick={imageLinkBtnOnClick}>
+                    <HoverButton theme={props.theme} icon={<FileImageOutlined />} onClick={imageLinkBtnOnClick}>
                         {"查看原图"}
                     </HoverButton>
                 </Space>
@@ -67,21 +67,21 @@ function HistoryComponent(props: HistoryComponentProps) {
             ) : (
                 <List.Item>
                     <Carousel effect="fade" afterChange={carouselOnChange} arrows
-                              style={{width: "400px", height: "300px"}}>
+                              style={{width: "400px", height: "250px"}}>
                         {
                             imageHistory.map((item) => {
                                 return (
                                     <div key={item.index}
-                                         style={{width: "400px", height: "300px", lineHeight: "300px"}}>
+                                         style={{width: "400px", height: "250px", lineHeight: "250px"}}>
                                         <Image
                                             width={"400px"}
-                                            height={"300px"}
+                                            height={"250px"}
                                             preview={false}
                                             alt={"暂无图片"}
                                             src={item.imageUrl}
                                             style={{borderRadius: "8px"}}
                                             placeholder={
-                                                <Flex justify="center" align="center" style={{width: "400px", height: "300px", borderRadius: "8px"}}>
+                                                <Flex justify="center" align="center" style={{width: "400px", height: "250px", borderRadius: "8px"}}>
                                                     <Spin description="加载中，请稍后..."/>
                                                 </Flex>
                                             }
@@ -102,6 +102,7 @@ function HistoryComponent(props: HistoryComponentProps) {
                  styles={{root: {minWidth: "400px"}}}>
             <Button icon={<HistoryOutlined/>} size={"large"}
                     type={"primary"}
+                    className={"floatingButton"}
                     style={{
                         cursor: "default",
                         backgroundColor: props.theme.secondaryColor,

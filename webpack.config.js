@@ -2,6 +2,11 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+
+// 加载 .env.local 中的环境变量（与 CRA 行为一致）
+const envVars = dotenv.config({ path: path.resolve(__dirname, '.env.local') }).parsed || {};
 
 module.exports = (env, argv) => ({
     optimization: {
@@ -63,14 +68,23 @@ module.exports = (env, argv) => ({
                 test: /\.mp3$/,
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/focusSounds/[name][ext]'
+                    filename: 'Assets/FocusSounds/[name][ext]'
                 }
             },
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(argv.mode || 'production'),
+            'process.env': JSON.stringify({
+                NODE_ENV: argv.mode || 'production',
+                ...Object.fromEntries(
+                    Object.entries(envVars).filter(([key]) => key.startsWith('REACT_APP_'))
+                )
+            })
+        }),
         new HtmlWebpackPlugin({
-            title: '云开新标签页',
+            title: '云开壁纸新标签页',
             filename: 'mainPage.html',
             template: 'public/index.html',
             chunks: ['vendors', 'mainPage'],
@@ -80,7 +94,7 @@ module.exports = (env, argv) => ({
             }
         }),
         // new HtmlWebpackPlugin({
-        //     title: '云开新标签页弹窗',
+        //     title: '云开壁纸新标签页弹窗',
         //     filename: 'popup.html',
         //     template: 'public/popup.html',
         //     chunks: ['vendors', 'popup'],
@@ -96,7 +110,7 @@ module.exports = (env, argv) => ({
             patterns: [
                 {
                     from: path.resolve(__dirname, 'src/Assets'),
-                    to: path.resolve(__dirname, 'dist/assets'),
+                    to: path.resolve(__dirname, 'dist/Assets'),
                 },
                 {
                     from: path.resolve(__dirname, 'src/ExtensionFiles'),

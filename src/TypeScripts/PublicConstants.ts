@@ -1,4 +1,4 @@
-import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface'
+import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface';
 import {getBrowserType, getDeviceType} from "./PublicFunctions";
 
 // 常用变量
@@ -14,6 +14,8 @@ export const environment = process.env.NODE_ENV ?? "development";
 export const defaultPreference: PreferenceInterface = {
     customTopic: false,
     imageTopics: ["wallpapers"],
+    imageBrightness: 1,
+    imageHighQuality: false,
 }
 
 // TODO:如果后续不再增加别的功能，例如数据导入导出、待办、倒数日之类的，这个常量可以删除。
@@ -23,14 +25,6 @@ export const defaultExtensionData: ExtensionDataInterface = {
 
 // 主题颜色
 export const lightColors: string[] = [
-    // "#A04F3C",
-    // "#A0875A",
-    // "#A08C9F",
-    // "#A35842",
-    // "#A55456",
-    // "#A6845A",
-    // "#AB8483",
-    // "#AFC5C1",
     "#B19BA7",
     "#B1C5BA",
     "#B3C5AB",
@@ -86,9 +80,4 @@ export const darkColors: string[] = [
     "#745B9F",
     "#75706C",
     "#761521",
-    // "#911D50",
-    // "#91955F",
-    // "#979AB9",
-    // "#9B8A9D",
-    // "#9E754E",
 ]

@@ -1,16 +1,16 @@
-import React, {useMemo, useRef, useState} from "react";
-import {Button, Drawer, Row, Space, Tooltip, Typography} from "antd";
-import {MenuOutlined, ToTopOutlined} from "@ant-design/icons";
+import React, {useRef, useState} from "react";
+import {Button, Col, Drawer, Row, Space, Tooltip, Typography} from "antd";
+import {MenuFoldOutlined, StarOutlined, ToTopOutlined} from "@ant-design/icons";
 import {deviceType} from "../TypeScripts/PublicConstants";
-import MenuHeaderComponent from "./MenuComponents/MenuHeaderComponent";
-import MenuFooterComponent from "./MenuComponents/MenuFooterComponent";
 import MenuInfoComponent from "./MenuComponents/MenuInfoComponent";
 import MenuContactComponent from "./MenuComponents/MenuContactComponent";
 import MenuPreferenceComponent from "./MenuComponents/MenuPreferenceComponent";
 import {PreferenceInterface, ThemeInterface} from "../TypeScripts/PublicInterface";
 import {HoverButton} from "./PublicComponents/PublicButton";
+import {getGreetInfo} from "../TypeScripts/GreetComponent";
 
 const {Text} = Typography;
+const {icon, greet} = getGreetInfo();
 const drawerPosition = (deviceType === "iPhone" || deviceType === "Android") ? "bottom" : "right";
 
 interface MenuComponentProps {
@@ -23,16 +23,12 @@ function MenuComponent(props: MenuComponentProps) {
     const [displayDrawer, setDisplayDrawer] = useState<boolean>(false);
     const drawerContentRef = useRef<HTMLDivElement>(null);
     
-    const buttonStyle = useMemo(() => ({
+    const buttonStyle = {
         backgroundColor: props.theme.secondaryColor,
         color: props.theme.secondaryFontColor,
-    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
+    };
     
-    const tooltipTextStyle = useMemo(() => ({
-        color: props.theme.secondaryFontColor,
-    }), [props.theme.secondaryFontColor]);
-    
-    const drawerStyles = useMemo(() => ({
+    const drawerStyles = {
         mask: {backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)"},
         header: {color: props.theme.secondaryFontColor, borderBottomColor: props.theme.secondaryFontColor},
         section: {backgroundColor: props.theme.secondaryColor},
@@ -41,7 +37,7 @@ function MenuComponent(props: MenuComponentProps) {
             borderTopColor: props.theme.secondaryFontColor,
             textAlign: "center" as const,
         },
-    }), [props.theme.secondaryColor, props.theme.secondaryFontColor]);
+    };
     
     function showDrawerBtnOnClick() {
         setDisplayDrawer(true);
@@ -57,8 +53,10 @@ function MenuComponent(props: MenuComponentProps) {
     
     return (
         <>
-            <Tooltip title={<Text style={tooltipTextStyle}>{"菜单栏"}</Text>} placement={"bottomRight"} color={props.theme.secondaryColor}>
-                <Button icon={<MenuOutlined/>} size={"large"} type={"primary"}
+            <Tooltip title={"菜单栏"} placement={"bottomRight"} color={props.theme.secondaryColor} styles={{
+                container: {color: props.theme.secondaryFontColor},
+            }}>
+                <Button icon={<MenuFoldOutlined/>} size={"large"} type={"primary"} className={"floatingButton"}
                         onClick={showDrawerBtnOnClick}
                         style={buttonStyle}
                 />
@@ -71,10 +69,21 @@ function MenuComponent(props: MenuComponentProps) {
                 closeIcon={false}
                 styles={drawerStyles}
                 title={
-                    <MenuHeaderComponent theme={props.theme}/>
+                    <Row align={"middle"}>
+                        <Col span={6}>
+                            <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>{"菜单栏"}</Text>
+                        </Col>
+                        <Col span={18} style={{textAlign: "right"}}>
+                            <HoverButton theme={props.theme} icon={<i className={icon}/>}>
+                                {greet}
+                            </HoverButton>
+                        </Col>
+                    </Row>
                 }
                 footer={
-                    <MenuFooterComponent theme={props.theme}/>
+                    <HoverButton theme={props.theme} icon={<StarOutlined/>}>
+                        {"如果喜欢这款插件，请考虑五星好评"}
+                    </HoverButton>
                 }
             >
                 <Space orientation={"vertical"} size={"large"} ref={drawerContentRef}>

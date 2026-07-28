@@ -13,7 +13,7 @@ import {
 } from "../TypeScripts/PublicInterface";
 
 const MESSAGE_KEY = "wallpaper_fetching";
-const COOLDOWN_MS = 5 * 60 * 1000;
+const COOLDOWN_MS = 5 * 60 * 1000;  // 5 * 60 * 1000
 
 interface RefreshWallpaperComponentProps {
     theme: ThemeInterface;

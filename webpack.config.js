@@ -68,7 +68,7 @@ module.exports = (env, argv) => ({
                 test: /\.mp3$/,
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/FocusSounds/[name][ext]'
+                    filename: 'Assets/FocusSounds/[name][ext]'
                 }
             },
         ]
@@ -110,7 +110,7 @@ module.exports = (env, argv) => ({
             patterns: [
                 {
                     from: path.resolve(__dirname, 'src/Assets'),
-                    to: path.resolve(__dirname, 'dist/assets'),
+                    to: path.resolve(__dirname, 'dist/Assets'),
                 },
                 {
                     from: path.resolve(__dirname, 'src/ExtensionFiles'),

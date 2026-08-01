@@ -41,7 +41,8 @@ function MenuContactComponent(props: MenuContactComponentProps) {
             <Row gutter={[0, 8]}>
                 {contactLinks.map((link, index) => (
                     <Col span={12} style={{textAlign: "center"}} key={index}>
-                        <HoverButton theme={props.theme} icon={link.icon} href={link.href}>
+                        <HoverButton theme={props.theme} icon={link.icon} href={link.href}
+                                     target={link.href.startsWith("mailto:") ? undefined : "_blank"}>
                             {link.label}
                         </HoverButton>
                     </Col>

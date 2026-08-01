@@ -133,10 +133,16 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
     // 手动刷新：换一张
     const handleRefresh = useCallback(async () => {
         // 检查距上次请求是否不足 5 分钟（自定义密钥不受限制）
-        const [, cachedTime] = await getExtensionStorage(["lastWallpaper", "lastWallpaperRequestTime"]);
+        const [cached, cachedTime] = await getExtensionStorage(["lastWallpaper", "lastWallpaperRequestTime"]);
         if (!preferenceRef.current.accessKey && cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
             themedMessage.error("操作太频繁，请稍后再试");
             return;
+        }
+        
+        // 将当前壁纸写入历史记录
+        if (!isEmpty(cached)) {
+            const history = await updateImageHistory(cached);
+            props.getImageHistory(history);
         }
         
         themedMessage.loading({

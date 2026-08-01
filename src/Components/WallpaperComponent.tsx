@@ -53,14 +53,14 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 }
             }
         }
-    }, [props.imageData]);
+    }, [props.imageData, props.preference.imageHighQuality]);
     
     // 图片加载中提示
     useEffect(() => {
         if (imageLink) {
             themedMessage.loading({content: "正在加载图片", duration: 0, key: MESSAGE_KEY});
         }
-    }, [props.theme]);
+    }, [imageLink]);
     
     const handleImageLoad = () => {
         themedMessage.destroy(MESSAGE_KEY);

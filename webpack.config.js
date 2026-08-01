@@ -26,7 +26,6 @@ module.exports = (env, argv) => ({
     devtool: argv.mode === 'development' ? 'cheap-module-source-map' : false,
     entry: {
         mainPage: path.resolve(__dirname, "./src/index.tsx"),
-        // popup: path.resolve(__dirname, "./src/popup.tsx"),
     },
     output: {
         filename: '[name].bundle.js',
@@ -93,16 +92,6 @@ module.exports = (env, argv) => ({
                 removeComments: true
             }
         }),
-        // new HtmlWebpackPlugin({
-        //     title: '云开壁纸新标签页弹窗',
-        //     filename: 'popup.html',
-        //     template: 'public/popup.html',
-        //     chunks: ['vendors', 'popup'],
-        //     minify: {
-        //         collapseWhitespace: true,
-        //         removeComments: true
-        //     }
-        // }),
         new MiniCssExtractPlugin({
             filename: '[name].bundle.css',
         }),

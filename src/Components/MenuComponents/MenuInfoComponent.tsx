@@ -54,12 +54,12 @@ function MenuInfoComponent(props: MenuInfoComponentProps) {
                 {links.map((link) => (
                     <React.Fragment key={link.label}>
                         <Col span={12} style={{textAlign: "center"}}>
-                            <HoverButton theme={theme} icon={<GithubOutlined/>} href={link.github} target={"_self"}>
+                            <HoverButton theme={theme} icon={<GithubOutlined/>} href={link.github} target={"_blank"}>
                                 {link.label}
                             </HoverButton>
                         </Col>
                         <Col span={12} style={{textAlign: "center"}}>
-                            <HoverButton theme={theme} icon={<GitlabOutlined/>} href={link.gitlab} target={"_self"}>
+                            <HoverButton theme={theme} icon={<GitlabOutlined/>} href={link.gitlab} target={"_blank"}>
                                 {link.label}
                             </HoverButton>
                         </Col>

@@ -60,7 +60,7 @@ function AuthorComponent(props: AuthorComponentProps) {
     
     function imageLinkBtnOnClick() {
         if (!isEmpty(image.link)) {
-            window.open(image.link + unsplashUrl, "_self");
+            window.open(image.link + unsplashUrl, "_blank");
         } else {
             themedMessage.error("无跳转链接");
         }

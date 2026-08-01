@@ -122,7 +122,7 @@ export function getDeviceType(): string {
         "iPhone": ua.includes("iPhone"),
         "iPad": ua.includes("iPad"),
         "Android": ua.includes("Android"),
-    }, "");
+    }, "Other");
 }
 
 // 判断浏览器型号

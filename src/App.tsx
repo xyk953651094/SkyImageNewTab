@@ -21,8 +21,6 @@ import WallpaperComponent from "./Components/WallpaperComponent";
 import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
 import HistoryComponent from "./Components/HistoryComponent";
-// import WeatherComponent from "./Components/WeatherComponent";
-// import GreetComponent from "./Components/GreetComponent";
 import RefreshWallpaperComponent from "./Components/RefreshWallpaperComponent";
 
 const {Header, Content, Footer} = Layout;
@@ -79,10 +77,7 @@ function App() {
             <Header className={"layoutHeader"}>
                 <Row justify={"center"}>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10}>
-                        {/*<Space>*/}
-                        {/*    <GreetComponent theme={theme}/>*/}
-                        {/*    <WeatherComponent theme={theme}/>*/}
-                        {/*</Space>*/}
+                    
                     </Col>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
                         <Space>

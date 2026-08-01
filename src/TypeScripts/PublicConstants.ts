@@ -1,4 +1,4 @@
-import {ExtensionDataInterface, PreferenceInterface} from './PublicInterface';
+import {PreferenceInterface} from './PublicInterface';
 import {getBrowserType, getDeviceType} from "./PublicFunctions";
 
 // 常用变量
@@ -9,7 +9,6 @@ export const clientId = process.env.REACT_APP_UNSPLASH_ACCESS_KEY ?? "";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
 export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
-export const environment = process.env.NODE_ENV ?? "development";
 
 export const defaultPreference: PreferenceInterface = {
     customTopic: false,
@@ -17,11 +16,6 @@ export const defaultPreference: PreferenceInterface = {
     imageBrightness: 1,
     imageHighQuality: false,
     accessKey: "",
-}
-
-// TODO:如果后续不再增加别的功能，例如数据导入导出、待办、倒数日之类的，这个常量可以删除。
-export const defaultExtensionData: ExtensionDataInterface = {
-    preference: defaultPreference
 }
 
 // 主题颜色

@@ -22,7 +22,7 @@ function HistoryComponent(props: HistoryComponentProps) {
     
     function imageLinkBtnOnClick() {
         if (!isEmpty(imageLink)) {
-            window.open(imageLink + unsplashUrl, "_self");
+            window.open(imageLink + unsplashUrl, "_blank");
         } else {
             themedMessage.error("无跳转链接");
         }

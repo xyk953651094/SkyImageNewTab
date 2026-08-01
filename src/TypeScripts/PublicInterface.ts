@@ -13,10 +13,6 @@ export interface PreferenceInterface {
     accessKey: string;
 }
 
-export interface ExtensionDataInterface {
-    preference: PreferenceInterface;
-}
-
 // 历史记录的每一条
 export interface ImageHistoryItemInterface {
     index: number;

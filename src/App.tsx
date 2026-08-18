@@ -1,12 +1,12 @@
 import {useEffect, useState, useCallback} from "react";
-import {Col, Flex, Layout, Row, Space} from "antd";
+import {Col, Flex, Layout, notification, Row, Space} from "antd";
 import "./StyleSheets/PublicStyles.scss"
 import {
     getFontColor,
     getReverseColor,
     getRandomTheme
 } from "./TypeScripts/PublicFunctions";
-import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
+import {getExtensionStorage, fixPreference, setExtensionStorage} from "./TypeScripts/StorageFunctions";
 import {
     PreferenceInterface,
     ThemeInterface,
@@ -60,6 +60,28 @@ function App() {
             const [preferenceStorage] = result;
             if (preferenceStorage) {
                 setPreference(fixPreference(preferenceStorage));
+            }
+        });
+    }, []);
+    
+    // 版本更新通知
+    useEffect(() => {
+        const currentVersion = require("../package.json").version;
+        getExtensionStorage(["lastNotifiedVersion"]).then(([lastNotifiedVersion]) => {
+            if (lastNotifiedVersion !== currentVersion) {
+                notification.open({
+                    icon: null,
+                    title: "已更新至版本 V" + currentVersion,
+                    description: "新增：鼠标视差、版本更新提醒等功能",
+                    placement: "bottomLeft",
+                    duration: 10,
+                    styles : {
+                        root: {backgroundColor: theme.secondaryColor},
+                        title: {color: theme.secondaryFontColor},
+                        description: {color: theme.secondaryFontColor},
+                    }
+                });
+                setExtensionStorage("lastNotifiedVersion", currentVersion);
             }
         });
     }, []);

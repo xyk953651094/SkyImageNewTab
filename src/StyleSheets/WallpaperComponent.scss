@@ -53,18 +53,8 @@
     to { opacity: 0; visibility: hidden;}
 }
 
-/* 壁纸缓慢放大效果：前 2 秒静止，后 5 秒缓慢放大 */
-.wallpaperZoom {
-    position: fixed;
-    top: -1%;
-    left: -1%;
-    width: 102%;
-    height: 102%;
-    overflow: hidden;
-    animation: wallpaperZoom 7s ease-out forwards;
-}
-
+/* 壁纸缓慢放大效果：前 1 秒静止，后 3 秒缓慢放大 */
 @keyframes wallpaperZoom {
-    0%, 28% { transform: scale(1); }
-    100% { transform: scale(1.05); }
+    0%, 25% { transform: scale(1) translate(var(--tx, 0%), var(--ty, 0%)); }
+    100% { transform: scale(1.05) translate(var(--tx, 0%), var(--ty, 0%)); }
 }

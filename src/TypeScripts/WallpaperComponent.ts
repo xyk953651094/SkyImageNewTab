@@ -1,73 +1,76 @@
-type EffectFn = (rxRatio: number, ryRatio: number) => string;
-
-const effects: Record<string, EffectFn> = {
-    translate: (rx, ry) => {
-        const tx = (-rx / 4).toFixed(2);
-        const ty = (-ry / 4).toFixed(2);
-        return `scale(1.05, 1.05) translate(${tx}%, ${ty}%)`;
-    },
-    rotate: (rx, ry) => {
-        const rotX = (rx / 4).toFixed(2);
-        const rotY = (-ry / 4).toFixed(2);
-        return `scale(1.05, 1.05) rotateX(${rotY}deg) rotateY(${rotX}deg)`;
-    },
-    all: (rx, ry) => {
-        const skew = (rx / 10).toFixed(2);
-        const rotX = (rx / 2).toFixed(2);
-        const rotY = (-ry / 2).toFixed(2);
-        const tx = (-rx / 2).toFixed(2);
-        const ty = (-ry / 2).toFixed(2);
-        return `scale(1.05, 1.05) skew(${skew}deg) rotateX(${rotY}deg) rotateY(${rotX}deg) translate(${tx}%, ${ty}%)`;
-    },
-    close: () => "scale(1.05, 1.05)",
-};
-
-// 桌面端壁纸动态效果
-export function imageDynamicEffect(
+// 桌面端壁纸动态效果：缩放动画结束后，根据模式决定是否启动鼠标视差
+export function wallpaperDynamicEffect(
     element: HTMLElement,
-    effectType: "translate" | "rotate" | "all" | "close"
+    effectType: "translate" | "close"
 ): () => void {
     let rafId: number | null = null;
-
+    
     let screenWidth = document.body.clientWidth;
     let screenHeight = document.body.clientHeight;
-
-    element.style.transition = "0.3s";
-
+    
+    // 初始化 CSS 自定义属性
+    element.style.setProperty("--tx", "0%");
+    element.style.setProperty("--ty", "0%");
+    element.style.transition = "0.15s";
+    
     function onResize() {
         screenWidth = document.body.clientWidth;
         screenHeight = document.body.clientHeight;
     }
-
+    
     function handler(e: MouseEvent) {
         if (rafId !== null) return;
-
+        
         const mouseX = e.clientX;
         const mouseY = e.clientY;
-
+        
         rafId = requestAnimationFrame(() => {
             const screenMidWidth = screenWidth / 2;
             const screenMidHeight = screenHeight / 2;
-
+            
             if (screenMidWidth === 0 || screenMidHeight === 0) {
                 rafId = null;
                 return;
             }
-
+            
             const relatedX = mouseX - screenMidWidth;
             const relatedY = mouseY - screenMidHeight;
             const relatedXRatio = relatedX / screenMidWidth;
             const relatedYRatio = relatedY / screenMidHeight;
-
-            element.style.transform = effects[effectType](relatedXRatio, relatedYRatio);
-
+            
+            const tx = (-relatedXRatio / 2).toFixed(2);
+            const ty = (-relatedYRatio / 2).toFixed(2);
+            element.style.setProperty("--tx", `${tx}%`);
+            element.style.setProperty("--ty", `${ty}%`);
+            
             rafId = null;
         });
     }
-
-    window.addEventListener("mousemove", handler);
-    window.addEventListener("resize", onResize);
-
+    
+    // 缩放动画结束后，才启动鼠标视差
+    function startParallax() {
+        if (effectType === "translate") {
+            window.addEventListener("mousemove", handler);
+            window.addEventListener("resize", onResize);
+        }
+    }
+    
+    // 检查缩放动画是否仍在运行
+    const animations = element.getAnimations();
+    const isAnimating = animations.some(a => a.playState === "running");
+    
+    if (isAnimating) {
+        // 动画还在跑，等结束再启动视差
+        function onAnimationEnd() {
+            element.removeEventListener("animationend", onAnimationEnd);
+            startParallax();
+        }
+        element.addEventListener("animationend", onAnimationEnd);
+    } else {
+        // 动画已结束（例如切换开关时），立即启动视差
+        startParallax();
+    }
+    
     return () => {
         window.removeEventListener("mousemove", handler);
         window.removeEventListener("resize", onResize);

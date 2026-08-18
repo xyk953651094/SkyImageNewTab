@@ -15,6 +15,7 @@ export const defaultPreference: PreferenceInterface = {
     imageTopics: ["wallpapers"],
     imageBrightness: 1,
     imageHighQuality: false,
+    imageParallax: false,
     accessKey: "",
 }
 

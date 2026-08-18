@@ -10,6 +10,7 @@ export interface PreferenceInterface {
     imageTopics: string[];
     imageBrightness: number;
     imageHighQuality: boolean;
+    imageParallax: boolean;
     accessKey: string;
 }
 

@@ -5,6 +5,7 @@ import {Image, message} from "antd";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import {PreferenceInterface, ThemeInterface, UnsplashImageDataInterface} from "../TypeScripts/PublicInterface";
 import {decode} from "blurhash";
+import {wallpaperDynamicEffect} from "../TypeScripts/WallpaperComponent";
 
 const MESSAGE_KEY = "wallpaper_loading";
 
@@ -20,6 +21,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const [displayCanvas, setDisplayCanvas] = useState("block");
     const [canvasClass, setCanvasClass] = useState("backgroundLayer");
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const imageWrapperRef = useRef<HTMLDivElement>(null);
     const imageStyle = {
         display: displayImage,
         filter: `brightness(${props.preference.imageBrightness})`,
@@ -62,6 +64,13 @@ function WallpaperComponent(props: WallpaperComponentProps) {
         }
     }, [imageLink]);
     
+    // 壁纸鼠标跟随视差效果
+    const effectMode = props.preference.imageParallax ? "translate" : "close";
+    useEffect(() => {
+        if (!imageLink || !imageWrapperRef.current) return;
+        return wallpaperDynamicEffect(imageWrapperRef.current, effectMode);
+    }, [imageLink, effectMode]);
+    
     const handleImageLoad = () => {
         themedMessage.destroy(MESSAGE_KEY);
         setDisplayImage("block");
@@ -70,7 +79,16 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     
     return (
         <>
-            <div key={imageLink} className={"wallpaperZoom"}>
+            <div key={imageLink} ref={imageWrapperRef} style={{
+                position: "fixed",
+                top: "-1%",
+                left: "-1%",
+                width: "102%",
+                height: "102%",
+                overflow: "hidden",
+                animation: "wallpaperZoom 4s ease-out",
+                animationFillMode: "forwards",
+            }}>
                 <Image
                     id={"backgroundImage"}
                     width={"102%"}

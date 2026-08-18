@@ -143,6 +143,15 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         themedMessage.success(checked ? "已开启高清图片，下次更新图片时生效" : "已关闭高清图片，下次更新图片时生效");
     }
     
+    // 鼠标视差
+    function imageParallaxSwitchOnChange(checked: boolean) {
+        const newPreference = changePreference({imageParallax: checked});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success(checked ? "已开启鼠标视差效果" : "已关闭鼠标视差效果");
+    }
+    
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
@@ -282,6 +291,22 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                 },
                                 content: {
                                     color: preference.imageHighQuality ? props.theme.primaryFontColor : ""
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"鼠标视差"} extra={"开启后壁纸会随鼠标轻微偏移，营造立体感"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.imageParallax}
+                            onChange={imageParallaxSwitchOnChange}
+                            styles={{
+                                root: {
+                                    backgroundColor: preference.imageParallax ? props.theme.primaryColor : ""
+                                },
+                                content: {
+                                    color: preference.imageParallax ? props.theme.primaryFontColor : ""
                                 }
                             }}
                         />

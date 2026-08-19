@@ -22,6 +22,8 @@ import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
 import HistoryComponent from "./Components/HistoryComponent";
 import RefreshWallpaperComponent from "./Components/RefreshWallpaperComponent";
+import GreetComponent from "./Components/GreetComponent";
+import WeatherComponent from "./Components/WeatherComponent";
 
 const {Header, Content, Footer} = Layout;
 
@@ -72,7 +74,7 @@ function App() {
                 notification.open({
                     icon: null,
                     title: "已更新至版本 V" + currentVersion,
-                    description: "新增：鼠标视差、版本更新提醒等功能",
+                    description: "新增：鼠标视差、简洁模式、更新提醒等功能",
                     placement: "bottomLeft",
                     duration: 10,
                     styles : {
@@ -99,13 +101,16 @@ function App() {
             <Header className={"layoutHeader"}>
                 <Row justify={"center"}>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10}>
-                    
+                        <Space>
+                            {!preference.simpleMode && <GreetComponent theme={theme}/>}
+                            {!preference.simpleMode && <WeatherComponent theme={theme}/>}
+                        </Space>
                     </Col>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
                         <Space>
-                            <TodoComponent theme={theme}/>
-                            <DailyComponent theme={theme}/>
-                            <FocusComponent theme={theme}/>
+                            {!preference.simpleMode && <TodoComponent theme={theme}/>}
+                            {!preference.simpleMode && <DailyComponent theme={theme}/>}
+                            {!preference.simpleMode && <FocusComponent theme={theme}/>}
                             <MenuComponent
                                 theme={theme}
                                 preference={preference}

@@ -11,6 +11,7 @@ export const imageHistoryMaxSize = 5;
 export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
 
 export const defaultPreference: PreferenceInterface = {
+    simpleMode: false,
     customTopic: false,
     imageTopics: ["wallpapers"],
     imageBrightness: 1,

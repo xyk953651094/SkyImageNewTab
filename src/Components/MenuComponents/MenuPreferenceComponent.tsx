@@ -152,6 +152,15 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         themedMessage.success(checked ? "已开启鼠标视差效果" : "已关闭鼠标视差效果");
     }
     
+    // 简洁模式
+    function simpleModeSwitchOnChange(checked: boolean) {
+        const newPreference = changePreference({simpleMode: checked});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success(checked ? "已开启简洁模式" : "已关闭简洁模式");
+    }
+    
     
     // 重置设置
     function resetPreferenceBtnOnClick() {
@@ -275,7 +284,8 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             value={preference.imageBrightness}
                             onChange={imageBrightnessSliderOnChange}
                             styles={{
-                                rail: {backgroundColor: props.theme.secondaryFontColor},
+                                // rail: {backgroundColor: props.theme.secondaryFontColor},
+                                track: {backgroundColor: props.theme.primaryColor},
                             }}
                         />
                     </Form.Item>
@@ -307,6 +317,22 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                 },
                                 content: {
                                     color: preference.imageParallax ? props.theme.primaryFontColor : ""
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"简洁模式"} extra={"开启后隐藏问候、天气、待办、倒数日和专注组件"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.simpleMode}
+                            onChange={simpleModeSwitchOnChange}
+                            styles={{
+                                root: {
+                                    backgroundColor: preference.simpleMode ? props.theme.primaryColor : ""
+                                },
+                                content: {
+                                    color: preference.simpleMode ? props.theme.primaryFontColor : ""
                                 }
                             }}
                         />

@@ -6,6 +6,7 @@ export interface ThemeInterface {
 }
 
 export interface PreferenceInterface {
+    simpleMode: boolean;
     customTopic: boolean,
     imageTopics: string[];
     imageBrightness: number;

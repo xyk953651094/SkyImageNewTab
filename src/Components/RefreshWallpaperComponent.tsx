@@ -175,7 +175,7 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
     }, []);
     
     return (
-        <Tooltip title="换一张" placement="topRight" color={props.theme.secondaryColor} styles={{
+        <Tooltip title="换一张" placement="top" color={props.theme.secondaryColor} styles={{
             container: {color: props.theme.secondaryFontColor},
         }}>
             <Button

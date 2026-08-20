@@ -88,7 +88,9 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     // 自定主题
     function customTopicInputOnChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = e.target.value;
-        setPreference(changePreference({imageTopics: value ? [value] : []}));
+        const newPreference = changePreference({imageTopics: value ? [value] : []});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
     }
     
     // 新增保存函数
@@ -228,6 +230,9 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                 {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},
                                 {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}
                             ]}
+                            // styles: {{
+                            //     icon: {color: props.theme.secondaryFontColor},
+                            // }}
                         />
                     </Form.Item>
                     {!disableImageTopic && (

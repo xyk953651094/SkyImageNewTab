@@ -1,11 +1,7 @@
 import {useEffect, useState, useCallback} from "react";
 import {Col, Flex, Layout, notification, Row, Space} from "antd";
 import "./StyleSheets/PublicStyles.scss"
-import {
-    getFontColor,
-    getReverseColor,
-    getRandomTheme
-} from "./TypeScripts/PublicFunctions";
+import {themeFromColor} from "./TypeScripts/PublicFunctions";
 import {getExtensionStorage, fixPreference, setExtensionStorage} from "./TypeScripts/StorageFunctions";
 import {
     PreferenceInterface,
@@ -24,28 +20,21 @@ import HistoryComponent from "./Components/HistoryComponent";
 import RefreshWallpaperComponent from "./Components/RefreshWallpaperComponent";
 import GreetComponent from "./Components/GreetComponent";
 import WeatherComponent from "./Components/WeatherComponent";
+import defaultImageData from "./Assets/DefaultImages/defaultImageData-1.json";
 
 const {Header, Content, Footer} = Layout;
 
 function App() {
-    const [theme, setTheme] = useState<ThemeInterface>(getRandomTheme);
+    const [theme, setTheme] = useState<ThemeInterface>(() => themeFromColor(defaultImageData.color));
     const [imageData, setImageData] = useState<UnsplashImageDataInterface | null>(null);
     const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [preference, setPreference] = useState<PreferenceInterface>(defaultPreference);
+    const [preferenceLoaded, setPreferenceLoaded] = useState(false);
     
     const getImageData = useCallback((data: UnsplashImageDataInterface) => {
         setImageData(data);
         if (data.color !== null) {
-            const primaryColor = data.color;
-            const secondaryColor = getReverseColor(data.color);
-            const primaryFontColor = getFontColor(data.color);
-            const secondaryFontColor = getFontColor(secondaryColor);
-            setTheme({
-                primaryColor,
-                secondaryColor,
-                primaryFontColor,
-                secondaryFontColor,
-            });
+            setTheme(themeFromColor(data.color));
         }
     }, []);
     
@@ -63,6 +52,7 @@ function App() {
             if (preferenceStorage) {
                 setPreference(fixPreference(preferenceStorage));
             }
+            setPreferenceLoaded(true);
         });
     }, []);
     
@@ -141,12 +131,14 @@ function App() {
                                 theme={theme}
                                 imageHistory={imageHistory}
                             />
-                            <RefreshWallpaperComponent
-                                theme={theme}
-                                preference={preference}
-                                getImageData={getImageData}
-                                getImageHistory={setImageHistory}
-                            />
+                            {preferenceLoaded && (
+                                <RefreshWallpaperComponent
+                                    theme={theme}
+                                    preference={preference}
+                                    getImageData={getImageData}
+                                    getImageHistory={setImageHistory}
+                                />
+                            )}
                         </Space>
                     </Col>
                 </Row>

@@ -1,4 +1,4 @@
-import {colorRegExp, darkColors, lightColors} from "./PublicConstants"
+import {colorRegExp} from "./PublicConstants"
 import {ThemeInterface} from "./PublicInterface";
 
 // 获取日期与时间
@@ -54,23 +54,15 @@ export function isEmpty(param: unknown): boolean {
     return false;
 }
 
-// 请求unsplash图片前随机显示多彩颜色主题
-export function getRandomTheme() {
-    const currentHour = new Date().getHours();
-    const lightIndex = Math.floor(Math.random() * lightColors.length);
-    const darkIndex = Math.floor(Math.random() * darkColors.length);
-    
-    const isNight = currentHour > 18 || currentHour < 6;  // 夜间显示深色背景
-    const primary = isNight ? darkColors[darkIndex] : lightColors[lightIndex];
-    const secondary = isNight ? lightColors[lightIndex] : darkColors[darkIndex];
-    
-    const theme: ThemeInterface = {
-        primaryColor: primary,
-        secondaryColor: secondary,
-        primaryFontColor: getFontColor(primary),
-        secondaryFontColor: getFontColor(secondary),
+// 根据图片主色计算完整主题
+export function themeFromColor(color: string): ThemeInterface {
+    const secondaryColor = getReverseColor(color);
+    return {
+        primaryColor: color,
+        secondaryColor,
+        primaryFontColor: getFontColor(color),
+        secondaryFontColor: getFontColor(secondaryColor),
     };
-    return theme;
 }
 
 // 根据图片背景颜色获取元素反色效果

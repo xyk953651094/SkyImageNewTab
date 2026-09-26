@@ -80,7 +80,7 @@ async function updateImageHistory(currentImage: UnsplashImageDataInterface): Pro
 }
 
 function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, props.preference.fontFamily, message);
     
     // mount 时加载：缓存优先，过期则请求新图
     useEffect(() => {

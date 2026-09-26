@@ -18,7 +18,7 @@ function HistoryComponent(props: HistoryComponentProps) {
     const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [imageLink, setImageLink] = useState<string>("");
     
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, undefined, message);
     
     function imageLinkBtnOnClick() {
         if (!isEmpty(imageLink)) {

@@ -1,5 +1,6 @@
 import {useEffect, useState, useCallback} from "react";
-import {Col, Flex, Layout, notification, Row, Space} from "antd";
+import {Col, ConfigProvider, Flex, Layout, notification, Row, Space} from "antd";
+import zhCN from "antd/locale/zh_CN";
 import "./StyleSheets/PublicStyles.scss"
 import {themeFromColor} from "./TypeScripts/PublicFunctions";
 import {getExtensionStorage, fixPreference, setExtensionStorage} from "./TypeScripts/StorageFunctions";
@@ -68,7 +69,7 @@ function App() {
                     placement: "bottomLeft",
                     duration: 10,
                     styles : {
-                        root: {backgroundColor: theme.secondaryColor},
+                        root: {backgroundColor: theme.secondaryColor, fontFamily: preference.fontFamily},
                         title: {color: theme.secondaryFontColor},
                         description: {color: theme.secondaryFontColor},
                     }
@@ -87,6 +88,7 @@ function App() {
     }, [theme.primaryColor, theme.primaryFontColor]);
     
     return (
+        <ConfigProvider locale={zhCN} theme={{token: {fontFamily: preference.fontFamily}}}>
         <Layout>
             <Header className={"layoutHeader"}>
                 <Row justify={"center"}>
@@ -144,6 +146,7 @@ function App() {
                 </Row>
             </Footer>
         </Layout>
+        </ConfigProvider>
     );
 }
 

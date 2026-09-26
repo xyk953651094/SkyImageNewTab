@@ -18,4 +18,5 @@ export const defaultPreference: PreferenceInterface = {
     imageHighQuality: false,
     imageParallax: false,
     accessKey: "",
+    fontFamily: "LXGWWenKai",
 }

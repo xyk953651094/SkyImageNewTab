@@ -115,6 +115,12 @@ export function fixPreference(preference: PreferenceInterface): PreferenceInterf
         }
     }
 
+    const validFonts = ["LXGWWenKai", "LXGWMarkerGothic"];
+    if (!validFonts.includes((preference as any).fontFamily)) {
+        (preference as any).fontFamily = "LXGWWenKai";
+        isFixed = true;
+    }
+
     if (isFixed) {
         setExtensionStorage("preference", preference);
     }

@@ -19,7 +19,8 @@
         "storage"
     ],
     "host_permissions": [
-        "https://api.unsplash.com/*"
+        "https://api.unsplash.com/*",
+        "https://www.mxnzp.com/*"
     ],
     "icons": {
         "16": "Assets/icon-16.png",

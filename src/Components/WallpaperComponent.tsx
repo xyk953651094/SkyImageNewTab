@@ -28,7 +28,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     };
     const canvasStyle = {display: displayCanvas};
     
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, props.preference.fontFamily, message);
     
     // 当 imageData 变化时（首次加载或手动刷新），展示新壁纸
     useEffect(() => {

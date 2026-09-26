@@ -39,7 +39,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     const [disableImageTopic, setDisableImageTopic] = useState<boolean>(props.preference.customTopic);
     const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | "accessKey" | null>(null);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, preference.fontFamily, message);
     
     function refreshWindow() {
         setTimeout(() => {
@@ -162,6 +162,15 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         props.getPreference(newPreference);
         themedMessage.success(checked ? "已开启简洁模式" : "已关闭简洁模式");
     }
+
+    // 字体类型
+    function fontFamilySelectOnChange(value: PreferenceInterface["fontFamily"]) {
+        const newPreference = changePreference({fontFamily: value});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success("已更换字体类型");
+    }
     
     
     // 重置设置
@@ -280,7 +289,17 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
-                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"字体类型"}>
+                        <Select
+                            style={{width: "100%"}}
+                            value={preference.fontFamily}
+                            onChange={fontFamilySelectOnChange}
+                            options={[
+                                {value: "LXGWWenKai", label: "霞鹜文楷"},
+                                {value: "LXGWMarkerGothic", label: "霞鹜漫黑"},
+                            ]}
+                        />
+                    </Form.Item>
                     <Form.Item label={"壁纸亮度"} extra={"降低亮度可减少强光刺眼，1 为原始亮度"}>
                         <Slider
                             min={0}

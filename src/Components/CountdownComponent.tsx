@@ -47,7 +47,7 @@ function CountdownComponent(props: DailyComponentProps) {
     const [inputValue, setInputValue] = useState<string>("");
     const [selectedTimeStamp, setSelectedTimeStamp] = useState<number>(0);
 
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, undefined, message);
 
     // 持久化倒数日列表
     async function saveDailyList(list: DailyItem[]) {

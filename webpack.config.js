@@ -64,6 +64,13 @@ module.exports = (env, argv) => ({
                 use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
             },
             {
+                test: /\.(png|jpe?g|gif|svg|webp)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'Assets/[name][ext]'
+                }
+            },
+            {
                 test: /\.mp3$/,
                 type: 'asset/resource',
                 generator: {

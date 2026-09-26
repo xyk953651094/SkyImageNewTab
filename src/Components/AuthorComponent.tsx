@@ -56,7 +56,7 @@ function AuthorComponent(props: AuthorComponentProps) {
     const [author, setAuthor] = useState<AuthorInfo>(defaultAuthor);
     const [image, setImage] = useState<ImageInfo>(defaultImage);
     
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, undefined, message);
     
     function imageLinkBtnOnClick() {
         if (!isEmpty(image.link)) {
@@ -129,11 +129,11 @@ function AuthorComponent(props: AuthorComponentProps) {
                 <Space>
                     <Avatar size={90} shape={"square"} src={image.previewUrl} alt={"信息"}/>
                     <Space orientation={"vertical"}>
-                        <HoverButton theme={props.theme} icon={<InfoCircleOutlined/>}>
-                            {truncateText(image.description, btnMaxSize)}
-                        </HoverButton>
                         <HoverButton theme={props.theme} icon={<EnvironmentOutlined/>}>
                             {truncateText(image.location, btnMaxSize)}
+                        </HoverButton>
+                        <HoverButton theme={props.theme} icon={<InfoCircleOutlined/>}>
+                            {truncateText(image.description, btnMaxSize)}
                         </HoverButton>
                     </Space>
                 </Space>

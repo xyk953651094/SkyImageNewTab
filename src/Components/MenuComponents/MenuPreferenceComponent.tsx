@@ -15,6 +15,7 @@ import type {RadioChangeEvent} from "antd";
 import {
     RedoOutlined,
     SettingOutlined,
+    IdcardOutlined,
 } from "@ant-design/icons";
 import {createThemedMessage} from "../../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from "../../TypeScripts/StorageFunctions";
@@ -36,9 +37,9 @@ interface MenuPreferenceComponentProps {
 function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     const [formDisabled, setFormDisabled] = useState<boolean>(false);
     const [disableImageTopic, setDisableImageTopic] = useState<boolean>(props.preference.customTopic);
-    const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | null>(null);
+    const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | "accessKey" | null>(null);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, preference.fontFamily, message);
     
     function refreshWindow() {
         setTimeout(() => {
@@ -87,7 +88,9 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     // 自定主题
     function customTopicInputOnChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = e.target.value;
-        setPreference(changePreference({imageTopics: value ? [value] : []}));
+        const newPreference = changePreference({imageTopics: value ? [value] : []});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
     }
     
     // 新增保存函数
@@ -98,6 +101,31 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         if (value) {
             themedMessage.success("已保存主题：" + value + "，下次更新图片时生效");
         }
+    }
+    
+    // 自定密钥
+    function accessKeyInputOnChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        setPreference(changePreference({accessKey: e.target.value}));
+    }
+    
+    function saveAccessKey() {
+        const value = preference.accessKey;
+        setExtensionStorage("preference", preference);
+        props.getPreference(preference);
+        if (value) {
+            themedMessage.success("已保存访问密钥，下次获取图片时生效");
+        } else {
+            themedMessage.info("已清除自定义密钥，将使用默认密钥");
+        }
+    }
+    
+    function accessKeyOkBtnOnClick() {
+        saveAccessKey();
+        setActiveModal(null);
+    }
+    
+    function accessKeyCancelBtnOnClick() {
+        setActiveModal(null);
     }
     
     // 壁纸亮度
@@ -115,6 +143,33 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         setExtensionStorage("preference", newPreference);
         props.getPreference(newPreference);
         themedMessage.success(checked ? "已开启高清图片，下次更新图片时生效" : "已关闭高清图片，下次更新图片时生效");
+    }
+    
+    // 鼠标视差
+    function imageParallaxSwitchOnChange(checked: boolean) {
+        const newPreference = changePreference({imageParallax: checked});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success(checked ? "已开启鼠标视差效果" : "已关闭鼠标视差效果");
+    }
+    
+    // 简洁模式
+    function simpleModeSwitchOnChange(checked: boolean) {
+        const newPreference = changePreference({simpleMode: checked});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success(checked ? "已开启简洁模式" : "已关闭简洁模式");
+    }
+
+    // 字体类型
+    function fontFamilySelectOnChange(value: PreferenceInterface["fontFamily"]) {
+        const newPreference = changePreference({fontFamily: value});
+        setPreference(newPreference);
+        setExtensionStorage("preference", newPreference);
+        props.getPreference(newPreference);
+        themedMessage.success("已更换字体类型");
     }
     
     
@@ -184,6 +239,9 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                 {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},
                                 {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}
                             ]}
+                            // styles: {{
+                            //     icon: {color: props.theme.secondaryFontColor},
+                            // }}
                         />
                     </Form.Item>
                     {!disableImageTopic && (
@@ -231,7 +289,17 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             />
                         </Form.Item>
                     )}
-                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"字体类型"}>
+                        <Select
+                            style={{width: "100%"}}
+                            value={preference.fontFamily}
+                            onChange={fontFamilySelectOnChange}
+                            options={[
+                                {value: "LXGWWenKai", label: "霞鹜文楷"},
+                                {value: "LXGWMarkerGothic", label: "霞鹜漫黑"},
+                            ]}
+                        />
+                    </Form.Item>
                     <Form.Item label={"壁纸亮度"} extra={"降低亮度可减少强光刺眼，1 为原始亮度"}>
                         <Slider
                             min={0}
@@ -240,7 +308,8 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             value={preference.imageBrightness}
                             onChange={imageBrightnessSliderOnChange}
                             styles={{
-                                rail: {backgroundColor: props.theme.secondaryFontColor},
+                                // rail: {backgroundColor: props.theme.secondaryFontColor},
+                                track: {backgroundColor: props.theme.primaryColor},
                             }}
                         />
                     </Form.Item>
@@ -259,6 +328,44 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                 }
                             }}
                         />
+                    </Form.Item>
+                    <Form.Item label={"鼠标视差"} extra={"开启后壁纸会随鼠标轻微偏移，营造立体感"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.imageParallax}
+                            onChange={imageParallaxSwitchOnChange}
+                            styles={{
+                                root: {
+                                    backgroundColor: preference.imageParallax ? props.theme.primaryColor : ""
+                                },
+                                content: {
+                                    color: preference.imageParallax ? props.theme.primaryFontColor : ""
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"简洁模式"} extra={"开启后隐藏问候、天气、待办、倒数日和专注组件"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.simpleMode}
+                            onChange={simpleModeSwitchOnChange}
+                            styles={{
+                                root: {
+                                    backgroundColor: preference.simpleMode ? props.theme.primaryColor : ""
+                                },
+                                content: {
+                                    color: preference.simpleMode ? props.theme.primaryFontColor : ""
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"访问密钥"} extra={"使用自己的 Unsplash Access Key，可解除切换频率限制"}>
+                        <HoverButton theme={props.theme} icon={<IdcardOutlined/>}
+                                     onClick={() => setActiveModal("accessKey")}>
+                            自定义 Unsplash 访问密钥
+                        </HoverButton>
                     </Form.Item>
                     <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
                     <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>
@@ -296,6 +403,26 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
             >
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
                     {"将设置项重置为默认值，并删除其他数据"}
+                </Text>
+            </PublicModal>
+            <PublicModal
+                theme={props.theme}
+                open={activeModal === "accessKey"}
+                titleText={"自定义 Unsplash 访问密钥"}
+                titleIcon={<IdcardOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
+                onOk={accessKeyOkBtnOnClick}
+                onCancel={accessKeyCancelBtnOnClick}
+            >
+                <Input.TextArea
+                    rows={3}
+                    placeholder="请输入你的 Unsplash Access Key，留空则使用默认密钥"
+                    autoSize={{ minRows: 1, maxRows: 5 }}
+                    value={preference.accessKey}
+                    onChange={accessKeyInputOnChange}
+                    allowClear
+                />
+                <Text style={{color: props.theme.secondaryFontColor, fontSize: "12px", marginTop: "8px", display: "block"}}>
+                    {"前往 unsplash.com/developers 申请专属 Access Key，使用自己的密钥可解除图片切换频率限制"}
                 </Text>
             </PublicModal>
         </>

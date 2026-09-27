@@ -1,12 +1,9 @@
 import {useEffect, useState, useCallback} from "react";
-import {Col, Flex, Layout, Row, Space} from "antd";
+import {Col, ConfigProvider, Flex, Layout, notification, Row, Space} from "antd";
+import zhCN from "antd/locale/zh_CN";
 import "./StyleSheets/PublicStyles.scss"
-import {
-    getFontColor,
-    getReverseColor,
-    getRandomTheme
-} from "./TypeScripts/PublicFunctions";
-import {getExtensionStorage, fixPreference} from "./TypeScripts/StorageFunctions";
+import {themeFromColor} from "./TypeScripts/PublicFunctions";
+import {getExtensionStorage, fixPreference, setExtensionStorage} from "./TypeScripts/StorageFunctions";
 import {
     PreferenceInterface,
     ThemeInterface,
@@ -21,31 +18,24 @@ import WallpaperComponent from "./Components/WallpaperComponent";
 import MenuComponent from "./Components/MenuComponent";
 import AuthorComponent from "./Components/AuthorComponent";
 import HistoryComponent from "./Components/HistoryComponent";
-// import WeatherComponent from "./Components/WeatherComponent";
-// import GreetComponent from "./Components/GreetComponent";
 import RefreshWallpaperComponent from "./Components/RefreshWallpaperComponent";
+import GreetComponent from "./Components/GreetComponent";
+import WeatherComponent from "./Components/WeatherComponent";
+import defaultImageData from "./Assets/DefaultImages/defaultImageData-1.json";
 
 const {Header, Content, Footer} = Layout;
 
 function App() {
-    const [theme, setTheme] = useState<ThemeInterface>(getRandomTheme);
+    const [theme, setTheme] = useState<ThemeInterface>(() => themeFromColor(defaultImageData.color));
     const [imageData, setImageData] = useState<UnsplashImageDataInterface | null>(null);
     const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [preference, setPreference] = useState<PreferenceInterface>(defaultPreference);
+    const [preferenceLoaded, setPreferenceLoaded] = useState(false);
     
     const getImageData = useCallback((data: UnsplashImageDataInterface) => {
         setImageData(data);
         if (data.color !== null) {
-            const primaryColor = data.color;
-            const secondaryColor = getReverseColor(data.color);
-            const primaryFontColor = getFontColor(data.color);
-            const secondaryFontColor = getFontColor(secondaryColor);
-            setTheme({
-                primaryColor,
-                secondaryColor,
-                primaryFontColor,
-                secondaryFontColor,
-            });
+            setTheme(themeFromColor(data.color));
         }
     }, []);
     
@@ -63,6 +53,29 @@ function App() {
             if (preferenceStorage) {
                 setPreference(fixPreference(preferenceStorage));
             }
+            setPreferenceLoaded(true);
+        });
+    }, []);
+    
+    // 版本更新通知
+    useEffect(() => {
+        const currentVersion = require("../package.json").version;
+        getExtensionStorage(["lastNotifiedVersion"]).then(([lastNotifiedVersion]) => {
+            if (lastNotifiedVersion !== currentVersion) {
+                notification.open({
+                    icon: null,
+                    title: "已更新至版本 V" + currentVersion,
+                    description: "新增：鼠标视差、简洁模式、更新提醒等功能",
+                    placement: "bottomLeft",
+                    duration: 10,
+                    styles : {
+                        root: {backgroundColor: theme.secondaryColor, fontFamily: preference.fontFamily},
+                        title: {color: theme.secondaryFontColor},
+                        description: {color: theme.secondaryFontColor},
+                    }
+                });
+                setExtensionStorage("lastNotifiedVersion", currentVersion);
+            }
         });
     }, []);
     
@@ -75,20 +88,21 @@ function App() {
     }, [theme.primaryColor, theme.primaryFontColor]);
     
     return (
+        <ConfigProvider locale={zhCN} theme={{token: {fontFamily: preference.fontFamily}}}>
         <Layout>
             <Header className={"layoutHeader"}>
                 <Row justify={"center"}>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10}>
-                        {/*<Space>*/}
-                        {/*    <GreetComponent theme={theme}/>*/}
-                        {/*    <WeatherComponent theme={theme}/>*/}
-                        {/*</Space>*/}
+                        <Space>
+                            {!preference.simpleMode && <GreetComponent theme={theme}/>}
+                            {!preference.simpleMode && <WeatherComponent theme={theme}/>}
+                        </Space>
                     </Col>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
                         <Space>
-                            <TodoComponent theme={theme}/>
-                            <DailyComponent theme={theme}/>
-                            <FocusComponent theme={theme}/>
+                            {!preference.simpleMode && <TodoComponent theme={theme}/>}
+                            {!preference.simpleMode && <DailyComponent theme={theme}/>}
+                            {!preference.simpleMode && <FocusComponent theme={theme}/>}
                             <MenuComponent
                                 theme={theme}
                                 preference={preference}
@@ -119,17 +133,20 @@ function App() {
                                 theme={theme}
                                 imageHistory={imageHistory}
                             />
-                            <RefreshWallpaperComponent
-                                theme={theme}
-                                preference={preference}
-                                getImageData={getImageData}
-                                getImageHistory={setImageHistory}
-                            />
+                            {preferenceLoaded && (
+                                <RefreshWallpaperComponent
+                                    theme={theme}
+                                    preference={preference}
+                                    getImageData={getImageData}
+                                    getImageHistory={setImageHistory}
+                                />
+                            )}
                         </Space>
                     </Col>
                 </Row>
             </Footer>
         </Layout>
+        </ConfigProvider>
     );
 }
 

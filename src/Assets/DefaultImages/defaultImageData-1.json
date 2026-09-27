@@ -1,0 +1,166 @@
+{
+    "id": "bXI_74lvZyI",
+    "alternative_slugs": {
+        "en": "a-notepad-pencil-and-pencil-sharpener-on-a-blue-surface-bXI_74lvZyI",
+        "es": "un-bloc-de-notas-un-lapiz-y-un-sacapuntas-sobre-una-superficie-azul-bXI_74lvZyI",
+        "ja": "青い表面のメモ帳鉛筆鉛筆削り-bXI_74lvZyI",
+        "fr": "un-bloc-notes-un-crayon-et-un-taille-crayon-sur-une-surface-bleue-bXI_74lvZyI",
+        "it": "un-blocco-note-una-matita-e-un-temperamatite-su-una-superficie-blu-bXI_74lvZyI",
+        "ko": "파란색-표면에-메모장-연필-및-연필-깎기-bXI_74lvZyI",
+        "de": "notizblock-bleistift-und-bleistiftspitzer-auf-blauer-oberflache-bXI_74lvZyI",
+        "pt": "um-bloco-de-notas-lapis-e-apontador-de-lapis-em-uma-superficie-azul-bXI_74lvZyI",
+        "id": "buku-catatan-pensil-dan-rautan-pensil-pada-permukaan-biru-bXI_74lvZyI"
+    },
+    "created_at": "2023-03-24T09:02:11Z",
+    "updated_at": "2026-08-20T02:04:47Z",
+    "promoted_at": null,
+    "width": 5314,
+    "height": 3542,
+    "color": "#73a6c0",
+    "blur_hash": "LKH3O0~qKkE2s+V[WYbbAbNH#+-U",
+    "description": null,
+    "breadcrumbs": [],
+    "urls": {
+        "raw": "https://images.unsplash.com/photo-1679648370654-2e5e1b4ebe2f?ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8\u0026ixlib=rb-4.1.0",
+        "full": "https://images.unsplash.com/photo-1679648370654-2e5e1b4ebe2f?crop=entropy\u0026cs=srgb\u0026fm=jpg\u0026ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8\u0026ixlib=rb-4.1.0\u0026q=85",
+        "regular": "https://images.unsplash.com/photo-1679648370654-2e5e1b4ebe2f?crop=entropy\u0026cs=tinysrgb\u0026fit=max\u0026fm=jpg\u0026ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8\u0026ixlib=rb-4.1.0\u0026q=80\u0026w=1080",
+        "small": "https://images.unsplash.com/photo-1679648370654-2e5e1b4ebe2f?crop=entropy\u0026cs=tinysrgb\u0026fit=max\u0026fm=jpg\u0026ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8\u0026ixlib=rb-4.1.0\u0026q=80\u0026w=400",
+        "thumb": "https://images.unsplash.com/photo-1679648370654-2e5e1b4ebe2f?crop=entropy\u0026cs=tinysrgb\u0026fit=max\u0026fm=jpg\u0026ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8\u0026ixlib=rb-4.1.0\u0026q=80\u0026w=200",
+        "small_s3": "https://s3.us-west-2.amazonaws.com/images.unsplash.com/small/photo-1679648370654-2e5e1b4ebe2f"
+    },
+    "likes": 27,
+    "liked_by_user": false,
+    "bookmarked": false,
+    "current_user_collections": [],
+    "sponsorship": null,
+    "topic_submissions": {},
+    "asset_type": "photo",
+    "slug": "a-notepad-pencil-and-pencil-sharpener-on-a-blue-surface-bXI_74lvZyI",
+    "alt_description": "a notepad, pencil, and pencil sharpener on a blue surface",
+    "short_description": null,
+    "links": {
+        "self": "https://api.unsplash.com/photos/a-notepad-pencil-and-pencil-sharpener-on-a-blue-surface-bXI_74lvZyI",
+        "html": "https://unsplash.com/photos/a-notepad-pencil-and-pencil-sharpener-on-a-blue-surface-bXI_74lvZyI",
+        "download": "https://unsplash.com/photos/bXI_74lvZyI/download?ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8",
+        "download_location": "https://api.unsplash.com/photos/bXI_74lvZyI/download?ixid=M3wzMDIwODF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODcxOTc2MDZ8"
+    },
+    "user": {
+        "id": "HYM6z_6kF3I",
+        "updated_at": "2026-08-19T08:09:13Z",
+        "username": "nataliekinnear",
+        "name": "Natalie Kinnear",
+        "first_name": "Natalie",
+        "last_name": "Kinnear",
+        "twitter_username": null,
+        "portfolio_url": "http://www.nataliekinnearphotography.co.uk",
+        "bio": "Photographer / Photographic Artist.",
+        "location": "United Kingdom",
+        "links": {
+            "self": "https://api.unsplash.com/users/nataliekinnear",
+            "photos": "https://api.unsplash.com/users/nataliekinnear/photos",
+            "likes": "https://api.unsplash.com/users/nataliekinnear/likes",
+            "html": "https://unsplash.com/@nataliekinnear"
+        },
+        "profile_image": {
+            "small": "https://images.unsplash.com/profile-1674495181975-9c46019fa43cimage?ixlib=rb-4.1.0\u0026crop=faces\u0026fit=crop\u0026w=32\u0026h=32",
+            "medium": "https://images.unsplash.com/profile-1674495181975-9c46019fa43cimage?ixlib=rb-4.1.0\u0026crop=faces\u0026fit=crop\u0026w=64\u0026h=64",
+            "large": "https://images.unsplash.com/profile-1674495181975-9c46019fa43cimage?ixlib=rb-4.1.0\u0026crop=faces\u0026fit=crop\u0026w=128\u0026h=128"
+        },
+        "instagram_username": null,
+        "total_collections": 12,
+        "total_likes": 48,
+        "total_photos": 380,
+        "total_free_photos": 380,
+        "total_promoted_photos": 36,
+        "total_illustrations": 0,
+        "total_free_illustrations": 0,
+        "total_promoted_illustrations": 0,
+        "accepted_tos": true,
+        "for_hire": false,
+        "social": {
+            "instagram_username": null,
+            "portfolio_url": "http://www.nataliekinnearphotography.co.uk",
+            "twitter_username": null,
+            "paypal_email": null
+        }
+    },
+    "exif": {
+        "make": null,
+        "model": null,
+        "name": null,
+        "exposure_time": null,
+        "aperture": null,
+        "focal_length": null,
+        "iso": null
+    },
+    "location": {
+        "name": null,
+        "city": null,
+        "country": null,
+        "position": {
+            "latitude": 0.0,
+            "longitude": 0.0
+        }
+    },
+    "meta": {
+        "index": true
+    },
+    "public_domain": false,
+    "tags": [
+        {
+            "type": "search",
+            "title": "blue"
+        },
+        {
+            "type": "search",
+            "title": "red"
+        },
+        {
+            "type": "search",
+            "title": "minimalist"
+        },
+        {
+            "type": "search",
+            "title": "minimal"
+        },
+        {
+            "type": "search",
+            "title": "hello"
+        },
+        {
+            "type": "search",
+            "title": "minimalism"
+        },
+        {
+            "type": "search",
+            "title": "note"
+        },
+        {
+            "type": "search",
+            "title": "handwriting"
+        },
+        {
+            "type": "search",
+            "title": "negative space"
+        },
+        {
+            "type": "search",
+            "title": "handwritten note"
+        },
+        {
+            "type": "search",
+            "title": "handwritten"
+        },
+        {
+            "type": "search",
+            "title": "pencil sharpener"
+        },
+        {
+            "type": "search",
+            "title": "pencil"
+        }
+    ],
+    "views": 322977,
+    "downloads": 2489,
+    "topics": []
+}

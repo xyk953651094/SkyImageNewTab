@@ -5,6 +5,7 @@ import {Image, message} from "antd";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import {PreferenceInterface, ThemeInterface, UnsplashImageDataInterface} from "../TypeScripts/PublicInterface";
 import {decode} from "blurhash";
+import {wallpaperDynamicEffect} from "../TypeScripts/WallpaperComponent";
 
 const MESSAGE_KEY = "wallpaper_loading";
 
@@ -27,7 +28,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     };
     const canvasStyle = {display: displayCanvas};
     
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, props.preference.fontFamily, message);
     
     // 当 imageData 变化时（首次加载或手动刷新），展示新壁纸
     useEffect(() => {
@@ -54,33 +55,40 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 }
             }
         }
-    }, [props.imageData]);
+    }, [props.imageData, props.preference.imageHighQuality]);
     
     // 图片加载中提示
     useEffect(() => {
         if (imageLink) {
             themedMessage.loading({content: "正在加载图片", duration: 0, key: MESSAGE_KEY});
         }
-    }, [props.theme]);
+    }, [imageLink]);
+    
+    // 壁纸鼠标跟随视差效果
+    const effectMode = props.preference.imageParallax ? "translate" : "close";
+    useEffect(() => {
+        if (!imageLink || !imageWrapperRef.current) return;
+        return wallpaperDynamicEffect(imageWrapperRef.current, effectMode);
+    }, [imageLink, effectMode]);
     
     const handleImageLoad = () => {
         themedMessage.destroy(MESSAGE_KEY);
-        const img = imageWrapperRef.current?.querySelector<HTMLImageElement>("img");
-        if (img) {
-            img.style.width = "102%";
-            img.classList.add("wallpaperFadeIn");
-            setTimeout(() => {
-                img.style.transform = "scale(1.05, 1.05)";
-                img.style.transition = "5s";
-            }, 2000);
-        }
         setDisplayImage("block");
         setCanvasClass("backgroundLayer wallpaperFadeOut");
     };
     
     return (
         <>
-            <div ref={imageWrapperRef}>
+            <div key={imageLink} ref={imageWrapperRef} style={{
+                position: "fixed",
+                top: "-1%",
+                left: "-1%",
+                width: "102%",
+                height: "102%",
+                overflow: "hidden",
+                animation: "wallpaperZoom 4s ease-out",
+                animationFillMode: "forwards",
+            }}>
                 <Image
                     id={"backgroundImage"}
                     width={"102%"}

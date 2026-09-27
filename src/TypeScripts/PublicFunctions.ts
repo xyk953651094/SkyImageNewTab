@@ -1,4 +1,4 @@
-import {colorRegExp, darkColors, lightColors} from "./PublicConstants"
+import {colorRegExp} from "./PublicConstants"
 import {ThemeInterface} from "./PublicInterface";
 
 // 获取日期与时间
@@ -54,23 +54,15 @@ export function isEmpty(param: unknown): boolean {
     return false;
 }
 
-// 请求unsplash图片前随机显示多彩颜色主题
-export function getRandomTheme() {
-    const currentHour = new Date().getHours();
-    const lightIndex = Math.floor(Math.random() * lightColors.length);
-    const darkIndex = Math.floor(Math.random() * darkColors.length);
-    
-    const isNight = currentHour > 18 || currentHour < 6;  // 夜间显示深色背景
-    const primary = isNight ? darkColors[darkIndex] : lightColors[lightIndex];
-    const secondary = isNight ? lightColors[lightIndex] : darkColors[darkIndex];
-    
-    const theme: ThemeInterface = {
-        primaryColor: primary,
-        secondaryColor: secondary,
-        primaryFontColor: getFontColor(primary),
-        secondaryFontColor: getFontColor(secondary),
+// 根据图片主色计算完整主题
+export function themeFromColor(color: string): ThemeInterface {
+    const secondaryColor = getReverseColor(color);
+    return {
+        primaryColor: color,
+        secondaryColor,
+        primaryFontColor: getFontColor(color),
+        secondaryFontColor: getFontColor(secondaryColor),
     };
-    return theme;
 }
 
 // 根据图片背景颜色获取元素反色效果
@@ -122,7 +114,7 @@ export function getDeviceType(): string {
         "iPhone": ua.includes("iPhone"),
         "iPad": ua.includes("iPad"),
         "Android": ua.includes("Android"),
-    }, "");
+    }, "Other");
 }
 
 // 判断浏览器型号
@@ -154,9 +146,9 @@ export function truncateText(text: string, maxLength: number): string {
 // 创建带主题样式的 message 调用器，避免每次调用都重复写 styles 配置
 // 注意：在 useEffect(fn, []) 的异步函数中使用时，需通过 ref 读取最新的 themedMessage，
 // 否则捕获的是首次渲染时的空 theme。
-export function createThemedMessage(theme: ThemeInterface, message: any) {
+export function createThemedMessage(theme: ThemeInterface, fontFamily: string | undefined, message: any) {
     const themedStyles = {
-        root: {backgroundColor: theme.secondaryColor},
+        root: {backgroundColor: theme.secondaryColor, ...(fontFamily && {fontFamily})},
         icon: {color: theme.secondaryFontColor},
         title: {color: theme.secondaryFontColor}
     };

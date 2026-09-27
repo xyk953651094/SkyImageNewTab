@@ -18,11 +18,11 @@ function HistoryComponent(props: HistoryComponentProps) {
     const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [imageLink, setImageLink] = useState<string>("");
     
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, undefined, message);
     
     function imageLinkBtnOnClick() {
         if (!isEmpty(imageLink)) {
-            window.open(imageLink + unsplashUrl, "_self");
+            window.open(imageLink + unsplashUrl, "_blank");
         } else {
             themedMessage.error("无跳转链接");
         }

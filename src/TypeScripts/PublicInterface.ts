@@ -6,14 +6,14 @@ export interface ThemeInterface {
 }
 
 export interface PreferenceInterface {
+    simpleMode: boolean;
     customTopic: boolean,
     imageTopics: string[];
     imageBrightness: number;
     imageHighQuality: boolean;
-}
-
-export interface ExtensionDataInterface {
-    preference: PreferenceInterface;
+    imageParallax: boolean;
+    accessKey: string;
+    fontFamily: "LXGWWenKai" | "LXGWMarkerGothic";
 }
 
 // 历史记录的每一条

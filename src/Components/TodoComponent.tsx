@@ -38,7 +38,7 @@ function TodoComponent(props: TodoComponentProps) {
     const [displayModal, setDisplayModal] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>("");
 
-    const themedMessage = createThemedMessage(props.theme, message);
+    const themedMessage = createThemedMessage(props.theme, undefined, message);
 
     // 持久化待办列表
     async function saveTodoList(list: TodoItem[]) {
@@ -137,7 +137,7 @@ function TodoComponent(props: TodoComponentProps) {
                                 {"完成"}
                             </HoverButton>
                         </Flex>
-                        {index < todoList.length - 1 && <Divider style={{margin: "0px", borderColor: props.theme.secondaryFontColor}}/>}
+                        {index < todoList.length - 1 && <Divider size="small" style={{margin: "0px", borderColor: props.theme.secondaryFontColor}}/>}
                     </React.Fragment>
                 ))
             )}

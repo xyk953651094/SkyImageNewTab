@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useCallback} from "react";
+import React, {useEffect} from "react";
 import {Button, message, Tooltip} from "antd";
 import {ReloadOutlined} from "@ant-design/icons";
 import {createThemedMessage, isEmpty} from "../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage} from "../TypeScripts/StorageFunctions";
-import {httpRequest} from "../TypeScripts/RequestFunctions";
+import {httpRequest, HttpRequestError} from "../TypeScripts/RequestFunctions";
 import {clientId, deviceType, imageHistoryMaxSize, imageSwitchingInterval} from "../TypeScripts/PublicConstants";
 import {
     ImageHistoryItemInterface,
@@ -11,9 +11,20 @@ import {
     ThemeInterface,
     UnsplashImageDataInterface
 } from "../TypeScripts/PublicInterface";
+import defaultImage from "../Assets/DefaultImages/defaultImage-1.jpg";
+import defaultImageJson from "../Assets/DefaultImages/defaultImageData-1.json";
 
 const MESSAGE_KEY = "wallpaper_fetching";
-const COOLDOWN_MS = 5 * 60 * 1000;  // 5 * 60 * 1000
+const COOLDOWN_MS = 5 * 60 * 1000;
+
+/** 兜底图片：无缓存且请求失败时使用，URL 指向本地打包的资源 */
+const fallbackImageData: UnsplashImageDataInterface = {
+    ...(defaultImageJson as UnsplashImageDataInterface),
+    urls: {
+        full: defaultImage,
+        regular: defaultImage,
+    },
+};
 
 interface RefreshWallpaperComponentProps {
     theme: ThemeInterface;
@@ -25,14 +36,16 @@ interface RefreshWallpaperComponentProps {
 /** 纯请求函数 —— 只管从 Unsplash 拿数据 */
 async function fetchWallpaper(preference: PreferenceInterface): Promise<UnsplashImageDataInterface> {
     const topicsParam = preference.imageTopics.join(",");
+    
     return httpRequest<UnsplashImageDataInterface>("https://api.unsplash.com/photos/random?", {
         method: "GET",
         headers: {},
         data: {
-            client_id: clientId,
+            client_id: preference.accessKey || clientId,
             orientation: (deviceType === "iPhone" || deviceType === "Android") ? "portrait" : "landscape",
-            topics: preference.customTopic ? "" : topicsParam,
-            query: preference.customTopic ? topicsParam : "",
+            ...(preference.customTopic
+                ? {query: topicsParam}
+                : {topics: topicsParam}),
             content_filter: "high",
         },
     });
@@ -67,17 +80,16 @@ async function updateImageHistory(currentImage: UnsplashImageDataInterface): Pro
 }
 
 function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
-    const themedMessage = createThemedMessage(props.theme, message);
-    const preferenceRef = useRef(props.preference);
-    preferenceRef.current = props.preference;
+    const themedMessage = createThemedMessage(props.theme, props.preference.fontFamily, message);
     
     // mount 时加载：缓存优先，过期则请求新图
     useEffect(() => {
         let cancelled = false;
         
         async function loadWallpaper() {
-            const [cached, cachedTime] = await getExtensionStorage(["lastWallpaper", "lastWallpaperRequestTime"]);
-            const pref = preferenceRef.current;
+            const [cached, cachedTime] = await getExtensionStorage(
+                ["lastWallpaper", "lastWallpaperRequestTime"]
+            );
             
             if (!isEmpty(cached)) {
                 props.getImageData(cached);
@@ -96,6 +108,7 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
             }
             
             const needsRefresh = isEmpty(cached) ||
+                props.preference.accessKey ||
                 (Date.now() - cachedTime > imageSwitchingInterval);
             
             if (!needsRefresh) return;
@@ -107,13 +120,17 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
             }
             
             try {
-                const newData = await fetchWallpaper(pref);
+                const newData = await fetchWallpaper(props.preference);
                 setExtensionStorage("lastWallpaper", newData);
                 setExtensionStorage("lastWallpaperRequestTime", Date.now());
                 if (!cancelled) props.getImageData(newData);
-            } catch {
+            } catch (error: any) {
                 if (isEmpty(cached)) {
-                    themedMessage.error("获取图片失败，请检查网络连接");
+                    // 无缓存 + 请求失败 → 加载默认图片兜底
+                    if (!cancelled) props.getImageData(fallbackImageData);
+                    themedMessage.warning("网络连接失败，已加载默认壁纸");
+                } else if (error instanceof HttpRequestError && (error.status === 401 || error.status === 403)) {
+                    themedMessage.error("访问密钥无效，请检查后重试");
                 }
             } finally {
                 themedMessage.destroy(MESSAGE_KEY);
@@ -128,12 +145,21 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
     }, []);  // 忽略这个警告
     
     // 手动刷新：换一张
-    const handleRefresh = useCallback(async () => {
-        // 检查距上次请求是否不足 5 分钟
-        const [, cachedTime] = await getExtensionStorage(["lastWallpaper", "lastWallpaperRequestTime"]);
-        if (cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
+    async function handleRefresh() {
+        const [cached, cachedTime] = await getExtensionStorage(
+            ["lastWallpaper", "lastWallpaperRequestTime"]
+        );
+        
+        // 检查距上次请求是否不足 5 分钟（自定义密钥不受限制）
+        if (!props.preference.accessKey && cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
             themedMessage.error("操作太频繁，请稍后再试");
             return;
+        }
+        
+        // 将当前壁纸写入历史记录
+        if (!isEmpty(cached)) {
+            const history = await updateImageHistory(cached);
+            props.getImageHistory(history);
         }
         
         themedMessage.loading({
@@ -149,20 +175,23 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
         });
         
         try {
-            const newData = await fetchWallpaper(preferenceRef.current);
-            // 更新缓存，同时重置 timestamp（影响自动切换计时和请求频率限制）
+            const newData = await fetchWallpaper(props.preference);
             setExtensionStorage("lastWallpaper", newData);
             setExtensionStorage("lastWallpaperRequestTime", Date.now());
             props.getImageData(newData);
-        } catch {
-            themedMessage.error("获取图片失败，请检查网络连接");
+        } catch (error: any) {
+            if (error instanceof HttpRequestError && (error.status === 401 || error.status === 403)) {
+                themedMessage.error("访问密钥无效，请检查后重试");
+            } else {
+                themedMessage.error("获取图片失败，请检查网络连接");
+            }
         } finally {
             themedMessage.destroy(MESSAGE_KEY);
         }
-    }, []);
+    }
     
     return (
-        <Tooltip title="换一张" placement="topRight" color={props.theme.secondaryColor} styles={{
+        <Tooltip title="换一张" placement="top" color={props.theme.secondaryColor} styles={{
             container: {color: props.theme.secondaryFontColor},
         }}>
             <Button

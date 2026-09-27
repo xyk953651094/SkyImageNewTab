@@ -67,10 +67,10 @@ function FocusComponent(props: FocusComponentProps) {
             stopSound();
             setFocusMode(false);
             setFocusSound("none");
-            themedMessage.info("已关闭专注模式");
+            themedMessage.info("已结束专注");
         } else {
             setFocusMode(true);
-            themedMessage.success("已开启专注模式");
+            themedMessage.success("已开始专注");
         }
     }
 
@@ -82,12 +82,12 @@ function FocusComponent(props: FocusComponentProps) {
             stopSound();
             if (focusMode) {
                 setFocusMode(false);
-                themedMessage.info("已关闭专注模式");
+                themedMessage.info("已结束专注");
             }
         } else {
             if (!focusMode) {
                 setFocusMode(true);
-                themedMessage.success("已开启专注模式");
+                themedMessage.success("已开始专注");
             }
             playSound(value);
         }
@@ -95,7 +95,7 @@ function FocusComponent(props: FocusComponentProps) {
     
     const popoverTitle = (
         <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-            {"专注模式"}
+            {"专注"}
         </Text>
     );
 

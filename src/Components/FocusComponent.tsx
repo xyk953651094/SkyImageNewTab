@@ -122,7 +122,7 @@ function FocusComponent(props: FocusComponentProps) {
             content={popoverContent}
             placement="bottomRight"
             color={props.theme.secondaryColor}
-            styles={{root: {minWidth: "350px"}}}
+            styles={{root: {width: "290px"}}}
         >
             <Button
                 icon={focusMode ? <CustomerServiceFilled /> : <CustomerServiceOutlined />}

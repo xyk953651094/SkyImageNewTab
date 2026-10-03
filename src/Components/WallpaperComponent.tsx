@@ -20,6 +20,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
     const [displayImage, setDisplayImage] = useState("block");
     const [displayCanvas, setDisplayCanvas] = useState("block");
     const [canvasClass, setCanvasClass] = useState("backgroundLayer");
+    const [zoomActive, setZoomActive] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imageWrapperRef = useRef<HTMLDivElement>(null);
     const imageStyle = {
@@ -39,6 +40,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
         setDisplayImage("none");
         setDisplayCanvas("block");
         setCanvasClass("backgroundLayer wallpaperFadeIn");
+        setZoomActive(false);
         
         setImageLink(props.preference.imageHighQuality ? data.urls.full : data.urls.regular);
         
@@ -75,6 +77,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
         themedMessage.destroy(MESSAGE_KEY);
         setDisplayImage("block");
         setCanvasClass("backgroundLayer wallpaperFadeOut");
+        setZoomActive(true);
     };
     
     return (
@@ -86,9 +89,7 @@ function WallpaperComponent(props: WallpaperComponentProps) {
                 width: "102%",
                 height: "102%",
                 overflow: "hidden",
-                animation: "wallpaperZoom 4s ease-out",
-                animationFillMode: "forwards",
-            }}>
+            }} className={zoomActive ? "wallpaperZoomActive" : ""}>
                 <Image
                     id={"backgroundImage"}
                     width={"102%"}

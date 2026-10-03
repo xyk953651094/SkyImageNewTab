@@ -247,6 +247,7 @@ function CountdownComponent(props: DailyComponentProps) {
                         onChange={datePickerOnChange}
                         allowClear={false}
                         style={{width: "100%"}}
+                        showNow={false}
                     />
                 </Space>
             </PublicModal>

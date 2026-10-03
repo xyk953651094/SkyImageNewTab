@@ -1,7 +1,7 @@
 {
     "name": "__MSG_extensionName__",
     "description": "__MSG_extensionDescription__",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "manifest_version": 3,
     "browser_specific_settings": {
         "gecko": {
@@ -20,6 +20,7 @@
     ],
     "host_permissions": [
         "https://api.unsplash.com/*",
+        "https://v2.jinrishici.com/*",
         "https://www.mxnzp.com/*"
     ],
     "icons": {

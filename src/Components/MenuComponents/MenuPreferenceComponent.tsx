@@ -245,7 +245,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                         />
                     </Form.Item>
                     {!disableImageTopic && (
-                        <Form.Item label={"预设主题"}>
+                        <Form.Item label={"预设主题（可多选）"}>
                             <Select<string[]> size={"large"} mode="multiple"
                                               value={preference.imageTopics}
                                               onChange={imageTopicsSelectOnChange}

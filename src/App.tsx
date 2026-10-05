@@ -94,15 +94,15 @@ function App() {
                 <Row justify={"center"}>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10}>
                         <Space>
-                            {!preference.simpleMode && <GreetComponent theme={theme}/>}
-                            {!preference.simpleMode && <WeatherComponent theme={theme}/>}
+                            {preference.showGreet && <GreetComponent theme={theme}/>}
+                            {preference.showWeather && <WeatherComponent theme={theme}/>}
                         </Space>
                     </Col>
                     <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
                         <Space>
-                            {!preference.simpleMode && <TodoComponent theme={theme}/>}
-                            {!preference.simpleMode && <DailyComponent theme={theme}/>}
-                            {!preference.simpleMode && <FocusComponent theme={theme}/>}
+                            {preference.showTodo && <TodoComponent theme={theme}/>}
+                            {preference.showCountdown && <DailyComponent theme={theme}/>}
+                            {preference.showFocus && <FocusComponent theme={theme}/>}
                             <MenuComponent
                                 theme={theme}
                                 preference={preference}

@@ -154,13 +154,12 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         themedMessage.success(checked ? "已开启鼠标视差效果" : "已关闭鼠标视差效果");
     }
     
-    // 简洁模式
-    function simpleModeSwitchOnChange(checked: boolean) {
-        const newPreference = changePreference({simpleMode: checked});
+    // 组件显示
+    function componentSwitchOnChange(key: "showGreet" | "showWeather" | "showTodo" | "showCountdown" | "showFocus", checked: boolean) {
+        const newPreference = changePreference({[key]: checked});
         setPreference(newPreference);
         setExtensionStorage("preference", newPreference);
         props.getPreference(newPreference);
-        themedMessage.success(checked ? "已开启简洁模式" : "已关闭简洁模式");
     }
 
     // 字体类型
@@ -245,7 +244,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                         />
                     </Form.Item>
                     {!disableImageTopic && (
-                        <Form.Item label={"预设主题（可多选）"}>
+                        <Form.Item label={"预设主题（可多选）"} extra={"刷新间隔为 1 小时"}>
                             <Select<string[]> size={"large"} mode="multiple"
                                               value={preference.imageTopics}
                                               onChange={imageTopicsSelectOnChange}
@@ -280,7 +279,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                     )}
                     
                     {disableImageTopic && (
-                        <Form.Item label={"自定主题"} extra={"实际图片可能与输入的主题不相符"}>
+                        <Form.Item label={"自定主题"} extra={"实际图片可能与主题不符，刷新间隔为 1 小时"}>
                             <Input size="large" placeholder="请输入自定主题，回车保存"
                                    value={preference.imageTopics[0] || ""}
                                    onChange={customTopicInputOnChange}
@@ -345,27 +344,72 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label={"简洁模式"} extra={"开启后隐藏问候、天气、待办、倒数日和专注组件"}>
+                    <Form.Item label={"访问密钥"} extra={"使用自己的 Access Key，可解除切换频率限制"}>
+                        <HoverButton theme={props.theme} icon={<IdcardOutlined/>}
+                                     onClick={() => setActiveModal("accessKey")}>
+                            自定义 Unsplash Access Key
+                        </HoverButton>
+                    </Form.Item>
+                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"问候组件"} extra={"开启后展示问候组件，关闭则隐藏"}>
                         <Switch
                             checkedChildren="已开启"
                             unCheckedChildren="已关闭"
-                            checked={preference.simpleMode}
-                            onChange={simpleModeSwitchOnChange}
+                            checked={preference.showGreet}
+                            onChange={(checked) => componentSwitchOnChange("showGreet", checked)}
                             styles={{
-                                root: {
-                                    backgroundColor: preference.simpleMode ? props.theme.primaryColor : ""
-                                },
-                                content: {
-                                    color: preference.simpleMode ? props.theme.primaryFontColor : ""
-                                }
+                                root: {backgroundColor: preference.showGreet ? props.theme.primaryColor : ""},
+                                content: {color: preference.showGreet ? props.theme.primaryFontColor : ""}
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label={"访问密钥"} extra={"使用自己的 Unsplash Access Key，可解除切换频率限制"}>
-                        <HoverButton theme={props.theme} icon={<IdcardOutlined/>}
-                                     onClick={() => setActiveModal("accessKey")}>
-                            自定义 Unsplash 访问密钥
-                        </HoverButton>
+                    <Form.Item label={"天气组件"} extra={"开启后展示天气组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showWeather}
+                            onChange={(checked) => componentSwitchOnChange("showWeather", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showWeather ? props.theme.primaryColor : ""},
+                                content: {color: preference.showWeather ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"待办组件"} extra={"开启后展示待办组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showTodo}
+                            onChange={(checked) => componentSwitchOnChange("showTodo", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showTodo ? props.theme.primaryColor : ""},
+                                content: {color: preference.showTodo ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"倒数日组件"} extra={"开启后展示倒数日组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showCountdown}
+                            onChange={(checked) => componentSwitchOnChange("showCountdown", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showCountdown ? props.theme.primaryColor : ""},
+                                content: {color: preference.showCountdown ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"专注组件"} extra={"开启后展示专注组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showFocus}
+                            onChange={(checked) => componentSwitchOnChange("showFocus", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showFocus ? props.theme.primaryColor : ""},
+                                content: {color: preference.showFocus ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
                     </Form.Item>
                     <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
                     <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>

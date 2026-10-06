@@ -239,18 +239,32 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                           extra: {color: props.theme.secondaryFontColor}
                       }}>
                     <Form.Item label={"主题类型"}>
+                        {/*<Radio.Group*/}
+                        {/*    value={preference.customTopic}*/}
+                        {/*    size={"large"}*/}
+                        {/*    onChange={topicRadioOnChange}*/}
+                        {/*    options={[*/}
+                        {/*        {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},*/}
+                        {/*        {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}*/}
+                        {/*    ]}*/}
+                        {/*    // styles: {{*/}
+                        {/*    //     icon: {color: props.theme.secondaryFontColor},*/}
+                        {/*    // }}*/}
+                        {/*/>*/}
                         <Radio.Group
                             value={preference.customTopic}
                             size={"large"}
                             onChange={topicRadioOnChange}
-                            options={[
-                                {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},
-                                {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}
-                            ]}
-                            // styles: {{
-                            //     icon: {color: props.theme.secondaryFontColor},
-                            // }}
-                        />
+                        >
+                            <Radio value={false} styles={{
+                                icon: {backgroundColor: preference.customTopic ? undefined : props.theme.primaryColor},
+                                label: {color: props.theme.secondaryFontColor}
+                            }}>{"预设主题"}</Radio>
+                            <Radio value={true} styles={{
+                                icon: {backgroundColor: preference.customTopic ? props.theme.primaryColor : undefined},
+                                label: {color: props.theme.secondaryFontColor}
+                            }}>{"自定主题"}</Radio>
+                        </Radio.Group>
                     </Form.Item>
                     {!disableImageTopic && (
                         <Form.Item label={"预设主题（可多选）"} extra={"刷新间隔为 1 小时"}>

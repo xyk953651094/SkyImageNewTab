@@ -71,7 +71,7 @@ function MenuComponent(props: MenuComponentProps) {
                     </HoverButton>
                 }
             >
-                <Space orientation={"vertical"} size={"large"} ref={drawerContentRef}>
+                <Space orientation={"vertical"} size={"large"} ref={drawerContentRef} style={{width: "375px"}}>
                     <MenuPreferenceComponent
                         theme={props.theme}
                         preference={props.preference}

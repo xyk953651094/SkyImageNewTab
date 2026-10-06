@@ -6,7 +6,11 @@ export interface ThemeInterface {
 }
 
 export interface PreferenceInterface {
-    simpleMode: boolean;
+    showGreet: boolean;
+    showWeather: boolean;
+    showTodo: boolean;
+    showCountdown: boolean;
+    showFocus: boolean;
     customTopic: boolean,
     imageTopics: string[];
     imageBrightness: number;

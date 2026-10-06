@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Card,
     Divider,
@@ -39,7 +39,13 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     const [disableImageTopic, setDisableImageTopic] = useState<boolean>(props.preference.customTopic);
     const [activeModal, setActiveModal] = useState<"resetPreference" | "clearStorage" | "accessKey" | null>(null);
     const [preference, setPreference] = useState<PreferenceInterface>(props.preference);
+    const [tempAccessKey, setTempAccessKey] = useState<string>("");
     const themedMessage = createThemedMessage(props.theme, preference.fontFamily, message);
+
+    useEffect(() => {
+        setPreference(props.preference);
+        setDisableImageTopic(props.preference.customTopic);
+    }, [props.preference]);
     
     function refreshWindow() {
         setTimeout(() => {
@@ -104,27 +110,30 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     // 自定密钥
-    function accessKeyInputOnChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        setPreference(changePreference({accessKey: e.target.value}));
-    }
-    
-    function saveAccessKey() {
-        const value = preference.accessKey;
-        setExtensionStorage("preference", preference);
-        props.getPreference(preference);
-        if (value) {
-            themedMessage.success("已保存访问密钥，下次获取图片时生效");
-        } else {
-            themedMessage.info("已清除自定义密钥，将使用默认密钥");
+    async function saveAccessKey() {
+        const value = tempAccessKey.trim();
+        const newPreference = changePreference({accessKey: value});
+        try {
+            await setExtensionStorage("preference", newPreference);
+            setPreference(newPreference);
+            props.getPreference(newPreference);
+            if (value) {
+                themedMessage.success("已保存访问密钥，下次获取图片时生效");
+            } else {
+                themedMessage.info("已清除自定义密钥，将使用默认密钥");
+            }
+        } catch {
+            themedMessage.error("保存失败，请重试");
         }
     }
-    
+
     function accessKeyOkBtnOnClick() {
         saveAccessKey();
         setActiveModal(null);
     }
-    
+
     function accessKeyCancelBtnOnClick() {
+        setTempAccessKey("");
         setActiveModal(null);
     }
     
@@ -154,13 +163,12 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         themedMessage.success(checked ? "已开启鼠标视差效果" : "已关闭鼠标视差效果");
     }
     
-    // 简洁模式
-    function simpleModeSwitchOnChange(checked: boolean) {
-        const newPreference = changePreference({simpleMode: checked});
+    // 组件显示
+    function componentSwitchOnChange(key: "showGreet" | "showWeather" | "showTodo" | "showCountdown" | "showFocus", checked: boolean) {
+        const newPreference = changePreference({[key]: checked});
         setPreference(newPreference);
         setExtensionStorage("preference", newPreference);
         props.getPreference(newPreference);
-        themedMessage.success(checked ? "已开启简洁模式" : "已关闭简洁模式");
     }
 
     // 字体类型
@@ -231,21 +239,36 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                           extra: {color: props.theme.secondaryFontColor}
                       }}>
                     <Form.Item label={"主题类型"}>
+                        {/*<Radio.Group*/}
+                        {/*    value={preference.customTopic}*/}
+                        {/*    size={"large"}*/}
+                        {/*    onChange={topicRadioOnChange}*/}
+                        {/*    options={[*/}
+                        {/*        {value: false, label: "预设主题"},*/}
+                        {/*        {value: true, label: "自定主题"}*/}
+                        {/*    ]}*/}
+                        {/*    styles: {{*/}
+                        {/*        icon: {color: props.theme.primaryColor},*/}
+                        {/*        label: {color: props.theme.secondaryFontColor}*/}
+                        {/*    }}*/}
+                        {/*/>*/}
                         <Radio.Group
                             value={preference.customTopic}
                             size={"large"}
                             onChange={topicRadioOnChange}
-                            options={[
-                                {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},
-                                {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}
-                            ]}
-                            // styles: {{
-                            //     icon: {color: props.theme.secondaryFontColor},
-                            // }}
-                        />
+                        >
+                            <Radio value={false} styles={{
+                                icon: {backgroundColor: preference.customTopic ? undefined : props.theme.primaryColor},
+                                label: {color: props.theme.secondaryFontColor}
+                            }}>{"预设主题"}</Radio>
+                            <Radio value={true} styles={{
+                                icon: {backgroundColor: preference.customTopic ? props.theme.primaryColor : undefined},
+                                label: {color: props.theme.secondaryFontColor}
+                            }}>{"自定主题"}</Radio>
+                        </Radio.Group>
                     </Form.Item>
                     {!disableImageTopic && (
-                        <Form.Item label={"预设主题"}>
+                        <Form.Item label={"预设主题（可多选）"} extra={"刷新间隔为 1 小时"}>
                             <Select<string[]> size={"large"} mode="multiple"
                                               value={preference.imageTopics}
                                               onChange={imageTopicsSelectOnChange}
@@ -280,7 +303,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                     )}
                     
                     {disableImageTopic && (
-                        <Form.Item label={"自定主题"} extra={"实际图片可能与输入的主题不相符"}>
+                        <Form.Item label={"自定主题"} extra={"实际图片可能与主题不符，刷新间隔为 1 小时"}>
                             <Input size="large" placeholder="请输入自定主题，回车保存"
                                    value={preference.imageTopics[0] || ""}
                                    onChange={customTopicInputOnChange}
@@ -345,27 +368,75 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label={"简洁模式"} extra={"开启后隐藏问候、天气、待办、倒数日和专注组件"}>
+                    <Form.Item label={"访问密钥（实验性功能，可能存在问题）"} extra={"使用自己的 Access Key，可解除切换频率限制"}>
+                        <HoverButton theme={props.theme} icon={<IdcardOutlined/>}
+                                     onClick={() => {
+                                         setTempAccessKey(preference.accessKey);
+                                         setActiveModal("accessKey");
+                                     }}>
+                            自定义 Unsplash Access Key
+                        </HoverButton>
+                    </Form.Item>
+                    <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
+                    <Form.Item label={"问候组件"} extra={"开启后展示问候组件，关闭则隐藏"}>
                         <Switch
                             checkedChildren="已开启"
                             unCheckedChildren="已关闭"
-                            checked={preference.simpleMode}
-                            onChange={simpleModeSwitchOnChange}
+                            checked={preference.showGreet}
+                            onChange={(checked) => componentSwitchOnChange("showGreet", checked)}
                             styles={{
-                                root: {
-                                    backgroundColor: preference.simpleMode ? props.theme.primaryColor : ""
-                                },
-                                content: {
-                                    color: preference.simpleMode ? props.theme.primaryFontColor : ""
-                                }
+                                root: {backgroundColor: preference.showGreet ? props.theme.primaryColor : ""},
+                                content: {color: preference.showGreet ? props.theme.primaryFontColor : ""}
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label={"访问密钥"} extra={"使用自己的 Unsplash Access Key，可解除切换频率限制"}>
-                        <HoverButton theme={props.theme} icon={<IdcardOutlined/>}
-                                     onClick={() => setActiveModal("accessKey")}>
-                            自定义 Unsplash 访问密钥
-                        </HoverButton>
+                    <Form.Item label={"天气组件"} extra={"开启后展示天气组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showWeather}
+                            onChange={(checked) => componentSwitchOnChange("showWeather", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showWeather ? props.theme.primaryColor : ""},
+                                content: {color: preference.showWeather ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"待办组件"} extra={"开启后展示待办组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showTodo}
+                            onChange={(checked) => componentSwitchOnChange("showTodo", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showTodo ? props.theme.primaryColor : ""},
+                                content: {color: preference.showTodo ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"倒数日组件"} extra={"开启后展示倒数日组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showCountdown}
+                            onChange={(checked) => componentSwitchOnChange("showCountdown", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showCountdown ? props.theme.primaryColor : ""},
+                                content: {color: preference.showCountdown ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"专注组件"} extra={"开启后展示专注组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showFocus}
+                            onChange={(checked) => componentSwitchOnChange("showFocus", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showFocus ? props.theme.primaryColor : ""},
+                                content: {color: preference.showFocus ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
                     </Form.Item>
                     <Divider style={{borderColor: props.theme.secondaryFontColor}}/>
                     <Form.Item label={"危险设置"} extra={"出现异常时可尝试重置设置或插件"}>
@@ -408,7 +479,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
             <PublicModal
                 theme={props.theme}
                 open={activeModal === "accessKey"}
-                titleText={"自定义 Unsplash 访问密钥"}
+                titleText={"自定义 Unsplash Access Key"}
                 titleIcon={<IdcardOutlined style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}/>}
                 onOk={accessKeyOkBtnOnClick}
                 onCancel={accessKeyCancelBtnOnClick}
@@ -417,12 +488,12 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                     rows={3}
                     placeholder="请输入你的 Unsplash Access Key，留空则使用默认密钥"
                     autoSize={{ minRows: 1, maxRows: 5 }}
-                    value={preference.accessKey}
-                    onChange={accessKeyInputOnChange}
+                    value={tempAccessKey}
+                    onChange={(e) => setTempAccessKey(e.target.value)}
                     allowClear
                 />
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "12px", marginTop: "8px", display: "block"}}>
-                    {"前往 unsplash.com/developers 申请专属 Access Key，使用自己的密钥可解除图片切换频率限制"}
+                    {"前往 unsplash.com/developers 申请专属 Access Key"}
                 </Text>
             </PublicModal>
         </>

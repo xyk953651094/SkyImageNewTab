@@ -152,7 +152,7 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
         
         // 检查距上次请求是否不足 5 分钟（自定义密钥不受限制）
         if (!props.preference.accessKey && cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
-            themedMessage.error("操作太频繁，请稍后再试");
+            themedMessage.error("操作太频繁，请 5 分钟后再试");
             return;
         }
         

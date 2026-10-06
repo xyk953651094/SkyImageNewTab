@@ -244,12 +244,13 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                         {/*    size={"large"}*/}
                         {/*    onChange={topicRadioOnChange}*/}
                         {/*    options={[*/}
-                        {/*        {value: false, label: "预设主题", style: {color: props.theme.secondaryFontColor}},*/}
-                        {/*        {value: true, label: "自定主题", style: {color: props.theme.secondaryFontColor}}*/}
+                        {/*        {value: false, label: "预设主题"},*/}
+                        {/*        {value: true, label: "自定主题"}*/}
                         {/*    ]}*/}
-                        {/*    // styles: {{*/}
-                        {/*    //     icon: {color: props.theme.secondaryFontColor},*/}
-                        {/*    // }}*/}
+                        {/*    styles: {{*/}
+                        {/*        icon: {color: props.theme.primaryColor},*/}
+                        {/*        label: {color: props.theme.secondaryFontColor}*/}
+                        {/*    }}*/}
                         {/*/>*/}
                         <Radio.Group
                             value={preference.customTopic}

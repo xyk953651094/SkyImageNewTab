@@ -11,10 +11,10 @@ import {
 } from "@ant-design/icons";
 import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
-import focusSoundOne from "../Assets/FocusSounds/古镇雨滴.mp3";
-import focusSoundTwo from "../Assets/FocusSounds/松树林小雪.mp3";
-import focusSoundThree from "../Assets/FocusSounds/漓江水.mp3";
-import focusSoundFour from "../Assets/FocusSounds/泉水水滴.mp3";
+import focusSoundOne from "../Assets/FocusSounds/guzhenyudi.mp3";
+import focusSoundTwo from "../Assets/FocusSounds/songshulinxiaoxue.mp3";
+import focusSoundThree from "../Assets/FocusSounds/lijiangshui.mp3";
+import focusSoundFour from "../Assets/FocusSounds/quanshishuidi.mp3";
 import "../StyleSheets/PublicStyles.scss";
 
 const {Text} = Typography;
@@ -33,10 +33,10 @@ function FocusComponent(props: FocusComponentProps) {
     // 白噪音选项
     const SOUND_OPTIONS = [
         {value: "none", label: "静音", src: ""},
-        {value: "古镇雨滴", label: "声谷 - 古镇雨滴", src: focusSoundOne},
-        {value: "松树林小雪", label: "声谷 - 松树林小雪", src: focusSoundTwo},
-        {value: "漓江水", label: "声谷 - 漓江水", src: focusSoundThree},
-        {value: "泉水水滴", label: "声谷 - 泉水水滴", src: focusSoundFour},
+        {value: "guzhenyudi", label: "声谷 - 古镇雨滴", src: focusSoundOne},
+        {value: "songshulinxiaoxue", label: "声谷 - 松树林小雪", src: focusSoundTwo},
+        {value: "lijiangshui", label: "声谷 - 漓江水", src: focusSoundThree},
+        {value: "quanshishuidi", label: "声谷 - 泉水水滴", src: focusSoundFour},
     ];
 
     // 获取音频 src
@@ -95,7 +95,7 @@ function FocusComponent(props: FocusComponentProps) {
     
     const popoverTitle = (
         <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-            {"专注"}
+            {"专注（实验性功能，可能存在问题）"}
         </Text>
     );
 

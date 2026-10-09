@@ -11,6 +11,7 @@ export interface PreferenceInterface {
     showTodo: boolean;
     showCountdown: boolean;
     showFocus: boolean;
+    showQuickLink: boolean;
     customTopic: boolean,
     imageTopics: string[];
     imageBrightness: number;

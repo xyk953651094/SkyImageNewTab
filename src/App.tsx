@@ -22,6 +22,7 @@ import RefreshWallpaperComponent from "./Components/RefreshWallpaperComponent";
 import GreetComponent from "./Components/GreetComponent";
 import WeatherComponent from "./Components/WeatherComponent";
 import defaultImageData from "./Assets/DefaultImages/defaultImageData-1.json";
+import QuickLinkComponent from "./Components/QuickLinkComponent";
 
 const {Header, Content, Footer} = Layout;
 
@@ -92,17 +93,14 @@ function App() {
         <Layout>
             <Header className={"layoutHeader"}>
                 <Row justify={"center"}>
-                    <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10}>
-                        <Space>
+                    <Col span={20} style={{textAlign: "right"}}>
+                        <Space align={"center"}>
                             {preference.showGreet && <GreetComponent theme={theme}/>}
                             {preference.showWeather && <WeatherComponent theme={theme}/>}
-                        </Space>
-                    </Col>
-                    <Col xs={0} sm={0} md={10} lg={10} xl={10} xxl={10} style={{textAlign: "right"}}>
-                        <Space>
                             {preference.showTodo && <TodoComponent theme={theme}/>}
                             {preference.showCountdown && <DailyComponent theme={theme}/>}
                             {preference.showFocus && <FocusComponent theme={theme}/>}
+                            {preference.showQuickLink && <QuickLinkComponent theme={theme}/>}
                             <MenuComponent
                                 theme={theme}
                                 preference={preference}

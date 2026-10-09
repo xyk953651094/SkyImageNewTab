@@ -164,7 +164,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     // 组件显示
-    function componentSwitchOnChange(key: "showGreet" | "showWeather" | "showTodo" | "showCountdown" | "showFocus", checked: boolean) {
+    function componentSwitchOnChange(key: "showGreet" | "showWeather" | "showTodo" | "showCountdown" | "showFocus" | "showQuickLink", checked: boolean) {
         const newPreference = changePreference({[key]: checked});
         setPreference(newPreference);
         setExtensionStorage("preference", newPreference);
@@ -435,6 +435,18 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             styles={{
                                 root: {backgroundColor: preference.showFocus ? props.theme.primaryColor : ""},
                                 content: {color: preference.showFocus ? props.theme.primaryFontColor : ""}
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item label={"快速链接组件"} extra={"开启后展示快速链接组件，关闭则隐藏"}>
+                        <Switch
+                            checkedChildren="已开启"
+                            unCheckedChildren="已关闭"
+                            checked={preference.showQuickLink}
+                            onChange={(checked) => componentSwitchOnChange("showQuickLink", checked)}
+                            styles={{
+                                root: {backgroundColor: preference.showQuickLink ? props.theme.primaryColor : ""},
+                                content: {color: preference.showQuickLink ? props.theme.primaryFontColor : ""}
                             }}
                         />
                     </Form.Item>

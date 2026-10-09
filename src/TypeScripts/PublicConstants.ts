@@ -16,6 +16,7 @@ export const defaultPreference: PreferenceInterface = {
     showTodo: true,
     showCountdown: true,
     showFocus: true,
+    showQuickLink: true,
     customTopic: false,
     imageTopics: ["wallpapers"],
     imageBrightness: 1,

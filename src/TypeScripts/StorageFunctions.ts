@@ -133,6 +133,31 @@ export function fixPreference(preference: PreferenceInterface): PreferenceInterf
         isFixed = true;
     }
 
+    // 旧版 topic slug 迁移为 Unsplash topic id
+    const slugToIdMap: Record<string, string> = {
+        "travel": "Fzo3zuOHN6w",
+        "wallpapers": "bo8jQKTaE0Y",
+        "3d-renders": "CDwuwXJAbEw",
+        "textures-patterns": "iUIsnVtjB0Y",
+        "experimental": "qPYsDzvJOYc",
+        "architecture-interior": "M8jVbLbTRws",
+        "nature": "6sMVjTLSkeQ",
+        "fashion-beauty": "S4MKLAsBB74",
+        "film": "hmenvQhUmxM",
+        "people": "towJZFskpGg",
+        "street-photography": "xHxYTMHLgOc",
+        "animals": "Jpg6Kidl-Hk",
+    };
+    if (!preference.customTopic && Array.isArray(preference.imageTopics)) {
+        const migrated = preference.imageTopics
+            .map(slug => slugToIdMap[slug] ?? slug)
+            .filter((v, i, arr) => arr.indexOf(v) === i);
+        if (migrated.join(",") !== preference.imageTopics.join(",")) {
+            preference.imageTopics = migrated;
+            isFixed = true;
+        }
+    }
+
     if (isFixed) {
         setExtensionStorage("preference", preference);
     }

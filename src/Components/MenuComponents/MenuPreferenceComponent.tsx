@@ -61,7 +61,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
         const isCustom = e.target.value;
         const newPreference = changePreference({
             customTopic: isCustom,
-            imageTopics: isCustom ? [] : ["wallpapers"]
+            imageTopics: isCustom ? [] : ["bo8jQKTaE0Y"]
         });
         setPreference(newPreference);
         setDisableImageTopic(isCustom);
@@ -279,24 +279,18 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                                                   itemRemove: {color: props.theme.secondaryFontColor},
                                               }}
                                               options={[
-                                                  {value: "travel", label: "旅游"},
-                                                  {value: "wallpapers", label: "壁纸"},
-                                                  {value: "3d-renders", label: "3D 渲染"},
-                                                  {value: "textures-patterns", label: "纹理 & 图案"},
-                                                  {value: "experimental", label: "实验"},
-                                                  {value: "architecture-interior", label: "建筑 & 室内"},
-                                                  {value: "nature", label: "自然"},
-                                                  {value: "business-work", label: "商业 & 工作"},
-                                                  {value: "fashion-beauty", label: "时尚 & 美容"},
-                                                  {value: "film", label: "电影"},
-                                                  {value: "food-drink", label: "饮食"},
-                                                  {value: "health", label: "健康"},
-                                                  {value: "people", label: "人物"},
-                                                  {value: "interiors", label: "室内"},
-                                                  {value: "street-photography", label: "街头摄影"},
-                                                  {value: "animals", label: "动物"},
-                                                  {value: "spirituality", label: "灵性"},
-                                                  {value: "sports", label: "体育"},
+                                                  {value: "Fzo3zuOHN6w", label: "旅行"},
+                                                  {value: "bo8jQKTaE0Y", label: "壁纸"},
+                                                  {value: "CDwuwXJAbEw", label: "3D渲染"},
+                                                  {value: "iUIsnVtjB0Y", label: "纹理"},
+                                                  {value: "qPYsDzvJOYc", label: "创意"},
+                                                  {value: "M8jVbLbTRws", label: "建筑"},
+                                                  {value: "6sMVjTLSkeQ", label: "自然"},
+                                                  {value: "S4MKLAsBB74", label: "时尚美妆"},
+                                                  {value: "hmenvQhUmxM", label: "胶片"},
+                                                  {value: "towJZFskpGg", label: "人物"},
+                                                  {value: "xHxYTMHLgOc", label: "街头摄影"},
+                                                  {value: "Jpg6Kidl-Hk", label: "动物"},
                                               ]}
                             />
                         </Form.Item>

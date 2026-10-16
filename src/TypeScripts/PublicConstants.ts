@@ -18,7 +18,7 @@ export const defaultPreference: PreferenceInterface = {
     showFocus: true,
     showQuickLink: true,
     customTopic: false,
-    imageTopics: ["wallpapers"],
+    imageTopics: ["bo8jQKTaE0Y"],
     imageBrightness: 1,
     imageHighQuality: false,
     imageParallax: false,

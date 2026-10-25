@@ -1,5 +1,5 @@
-import {useEffect, useState, useCallback} from "react";
-import {Col, ConfigProvider, Flex, Layout, notification, Row, Space} from "antd";
+import {useEffect, useState, useCallback, useRef} from "react";
+import {Col, ConfigProvider, Flex, Layout, notification, Row, Space, Typography} from "antd";
 import zhCN from "antd/locale/zh_CN";
 import "./StyleSheets/PublicStyles.scss"
 import {themeFromColor} from "./TypeScripts/PublicFunctions";
@@ -25,6 +25,13 @@ import defaultImageData from "./Assets/DefaultImages/defaultImageData-1.json";
 import QuickLinkComponent from "./Components/QuickLinkComponent";
 
 const {Header, Content, Footer} = Layout;
+const {Text} = Typography;
+
+// 每次发版手动更新此数组
+const updateNotes: string[] = [
+    "新增快速链接功能",
+    "修复已知问题，提升使用体验",
+];
 
 function App() {
     const [theme, setTheme] = useState<ThemeInterface>(() => themeFromColor(defaultImageData.color));
@@ -32,6 +39,7 @@ function App() {
     const [imageHistory, setImageHistory] = useState<ImageHistoryItemInterface[]>([]);
     const [preference, setPreference] = useState<PreferenceInterface>(defaultPreference);
     const [preferenceLoaded, setPreferenceLoaded] = useState(false);
+    const hasNotifiedRef = useRef(false);
     
     const getImageData = useCallback((data: UnsplashImageDataInterface) => {
         setImageData(data);
@@ -58,15 +66,31 @@ function App() {
         });
     }, []);
     
-    // 版本更新通知
+    // 版本更新通知：等首张壁纸加载完成后再弹，保证主题色和字体正确；加载失败则不弹、不记录版本，下次重试
     useEffect(() => {
+        if (hasNotifiedRef.current || !imageData) {
+            return;
+        }
+        hasNotifiedRef.current = true;
         const currentVersion = require("../package.json").version;
         getExtensionStorage(["lastNotifiedVersion"]).then(([lastNotifiedVersion]) => {
             if (lastNotifiedVersion !== currentVersion) {
                 notification.open({
                     icon: null,
                     title: "已更新至版本 V" + currentVersion,
-                    description: "修复已知问题，提升使用体验",
+                    description: (
+                        <Typography style={{marginBottom: 0}}>
+                            <ul style={{marginBottom: 0}}>
+                                {updateNotes.map((note) => (
+                                    <li key={note}>
+                                        <Text style={{color: theme.secondaryFontColor}}>
+                                            {note}
+                                        </Text>
+                                    </li>
+                                ))}
+                            </ul>
+                        </Typography>
+                    ),
                     placement: "bottomLeft",
                     duration: 10,
                     styles : {
@@ -78,7 +102,7 @@ function App() {
                 setExtensionStorage("lastNotifiedVersion", currentVersion);
             }
         });
-    }, []);
+    }, [imageData, theme, preference]);
     
     useEffect(() => {
         if (theme.primaryColor && theme.primaryFontColor) {

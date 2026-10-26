@@ -71,6 +71,16 @@ module.exports = (env, argv) => ({
                 }
             },
             {
+                test: /\.(ttf|otf|woff2?|eot)$/i,
+                type: 'asset/resource',
+                include: [
+                    path.resolve(__dirname, 'src/Assets/Fonts')
+                ],
+                generator: {
+                    filename: 'Assets/Fonts/[name][ext]'
+                }
+            },
+            {
                 test: /\.mp3$/,
                 type: 'asset/resource',
                 generator: {
@@ -107,6 +117,11 @@ module.exports = (env, argv) => ({
                 {
                     from: path.resolve(__dirname, 'src/Assets'),
                     to: path.resolve(__dirname, 'dist/Assets'),
+                    globOptions: {
+                        // Fonts 与 DefaultImages 已由 webpack 作为 asset/resource 产出，
+                        // 再复制一份会让包体多出十余兆的重复二进制
+                        ignore: ['**/Fonts/**', '**/DefaultImages/**', '**/.DS_Store'],
+                    },
                 },
                 {
                     from: path.resolve(__dirname, 'src/ExtensionFiles'),

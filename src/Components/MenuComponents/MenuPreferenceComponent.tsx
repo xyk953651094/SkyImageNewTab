@@ -313,8 +313,12 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             onChange={fontFamilySelectOnChange}
                             options={[
                                 {value: "LXGWWenKai", label: "霞鹜文楷"},
+                                {value: "LXGWWenKaiLight", label: "霞鹜文楷 Light"},
+                                {value: "LXGWNeoXiHei", label: "霞鹜新晰黑"},
+                                {value: "LXGWNeoZhiSong", label: "霞鹜新致宋"},
                                 {value: "LXGWMarkerGothic", label: "霞鹜漫黑"},
                             ]}
+                            size={"large"}
                         />
                     </Form.Item>
                     <Form.Item label={"壁纸亮度"} extra={"降低亮度可减少强光刺眼，1 为原始亮度"}>

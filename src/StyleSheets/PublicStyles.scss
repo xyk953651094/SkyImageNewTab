@@ -7,6 +7,27 @@
     font-display: swap;
 }
 
+// 霞鹜文楷 Light
+@font-face {
+    font-family: 'LXGWWenKaiLight';
+    src: url('../Assets/Fonts/LXGWWenKai-Light.ttf') format('truetype');
+    font-display: swap;
+}
+
+// 霞鹜新晰黑
+@font-face {
+    font-family: 'LXGWNeoXiHei';
+    src: url('../Assets/Fonts/LXGWNeoXiHei.ttf') format('truetype');
+    font-display: swap;
+}
+
+// 霞鹜新致宋
+@font-face {
+    font-family: 'LXGWNeoZhiSong';
+    src: url('../Assets/Fonts/LXGWNeoZhiSong.ttf') format('truetype');
+    font-display: swap;
+}
+
 // 霞鹜漫黑
 @font-face {
     font-family: 'LXGWMarkerGothic';

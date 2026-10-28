@@ -97,7 +97,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
         <Row align={"middle"}>
             <Col span={8}>
                 <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                    {`快速链接 ${linkList.length} / ${QUICK_LINK_MAX_SIZE}`}
+                    {`链接 ${linkList.length} / ${QUICK_LINK_MAX_SIZE}`}
                 </Text>
             </Col>
             <Col span={16} style={{textAlign: "right"}}>

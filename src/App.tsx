@@ -25,12 +25,10 @@ import defaultImageData from "./Assets/DefaultImages/defaultImageData-1.json";
 import QuickLinkComponent from "./Components/QuickLinkComponent";
 
 const {Header, Content, Footer} = Layout;
-const {Text} = Typography;
+const {Paragraph, Text} = Typography;
 
 // 每次发版手动更新此数组
 const updateNotes: string[] = [
-    "新增快速链接功能",
-    "新增更多字体",
     "修复已知问题",
     "提升使用体验"
 ];
@@ -79,18 +77,21 @@ function App() {
             if (lastNotifiedVersion !== currentVersion) {
                 notification.open({
                     icon: null,
-                    title: "已更新至版本 V" + currentVersion,
+                    closable: false,
+                    title: "已更新至版本 V" + currentVersion + "，更新内容：",
                     description: (
                         <Typography style={{marginBottom: 0}}>
-                            <ul style={{marginBottom: 0}}>
-                                {updateNotes.map((note) => (
-                                    <li key={note}>
-                                        <Text style={{color: theme.secondaryFontColor}}>
-                                            {note}
-                                        </Text>
-                                    </li>
-                                ))}
-                            </ul>
+                            <Paragraph>
+                                <ul style={{marginBottom: 0}}>
+                                    {updateNotes.map((note) => (
+                                        <li key={note}>
+                                            <Text style={{color: theme.secondaryFontColor}}>
+                                                {note}
+                                            </Text>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </Paragraph>
                         </Typography>
                     ),
                     placement: "bottomLeft",

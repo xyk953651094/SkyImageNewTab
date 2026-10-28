@@ -95,7 +95,7 @@ function FocusComponent(props: FocusComponentProps) {
     
     const popoverTitle = (
         <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-            {"专注（实验性功能，可能存在问题）"}
+            {"专注"}
         </Text>
     );
 

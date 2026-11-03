@@ -131,7 +131,6 @@ function FocusComponent(props: FocusComponentProps) {
                 className={"floatingButton"}
                 onClick={toggleFocusMode}
                 style={{
-                    cursor: "default",
                     backgroundColor: props.theme.secondaryColor,
                     color: props.theme.secondaryFontColor,
                 }}

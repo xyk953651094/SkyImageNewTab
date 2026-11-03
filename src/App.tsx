@@ -23,14 +23,17 @@ import GreetComponent from "./Components/GreetComponent";
 import WeatherComponent from "./Components/WeatherComponent";
 import defaultImageData from "./Assets/DefaultImages/defaultImageData-1.json";
 import QuickLinkComponent from "./Components/QuickLinkComponent";
+import SearchComponent from "./Components/SearchComponent";
 
 const {Header, Content, Footer} = Layout;
 const {Paragraph, Text} = Typography;
 
 // 每次发版手动更新此数组
 const updateNotes: string[] = [
-    "修复已知问题",
-    "提升使用体验"
+    "新增搜索框组件，并优化快速链接组件",
+    "新增小赖字体、悠哉字体",
+    "入静组件取消‘实验性功能’描述",
+    "修复已知问题，提升使用体验"
 ];
 
 function App() {
@@ -127,7 +130,6 @@ function App() {
                             {preference.showTodo && <TodoComponent theme={theme}/>}
                             {preference.showCountdown && <DailyComponent theme={theme}/>}
                             {preference.showFocus && <FocusComponent theme={theme}/>}
-                            {preference.showQuickLink && <QuickLinkComponent theme={theme}/>}
                             <MenuComponent
                                 theme={theme}
                                 preference={preference}
@@ -144,6 +146,10 @@ function App() {
                         preference={preference}
                         imageData={imageData}
                     />
+                    <Flex vertical align="center" gap="middle">
+                        {preference.showSearch && <SearchComponent theme={theme}/>}
+                        {preference.showSearch && <QuickLinkComponent theme={theme}/>}
+                    </Flex>
                 </Flex>
             </Content>
             <Footer className={"layoutFooter"}>

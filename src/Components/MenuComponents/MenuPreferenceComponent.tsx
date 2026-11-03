@@ -20,7 +20,7 @@ import {
 import {createThemedMessage} from "../../TypeScripts/PublicFunctions";
 import {getExtensionStorage, setExtensionStorage, clearExtensionStorage} from "../../TypeScripts/StorageFunctions";
 import {PreferenceInterface, ThemeInterface} from "../../TypeScripts/PublicInterface";
-import {defaultPreference} from "../../TypeScripts/PublicConstants";
+import {defaultPreference, fontFamilyLabels} from "../../TypeScripts/PublicConstants";
 import {PublicModal} from "../PublicComponents/PublicModal";
 import {HoverButton} from "../PublicComponents/PublicButton";
 
@@ -164,7 +164,7 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
     }
     
     // 组件显示
-    function componentSwitchOnChange(key: "showGreet" | "showWeather" | "showTodo" | "showCountdown" | "showFocus" | "showQuickLink", checked: boolean) {
+    function componentSwitchOnChange(key: "showGreet" | "showWeather" | "showTodo" | "showCountdown" | "showFocus" | "showSearch", checked: boolean) {
         const newPreference = changePreference({[key]: checked});
         setPreference(newPreference);
         setExtensionStorage("preference", newPreference);
@@ -311,13 +311,8 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             style={{width: "100%"}}
                             value={preference.fontFamily}
                             onChange={fontFamilySelectOnChange}
-                            options={[
-                                {value: "LXGWWenKai", label: "霞鹜文楷"},
-                                {value: "LXGWWenKaiLight", label: "霞鹜文楷 Light"},
-                                {value: "LXGWNeoXiHei", label: "霞鹜新晰黑"},
-                                {value: "LXGWNeoZhiSong", label: "霞鹜新致宋"},
-                                {value: "LXGWMarkerGothic", label: "霞鹜漫黑"},
-                            ]}
+                            options={(Object.keys(fontFamilyLabels) as PreferenceInterface["fontFamily"][])
+                                .map(value => ({value, label: fontFamilyLabels[value]}))}
                             size={"large"}
                         />
                     </Form.Item>
@@ -436,15 +431,15 @@ function MenuPreferenceComponent(props: MenuPreferenceComponentProps) {
                             }}
                         />
                     </Form.Item>
-                    <Form.Item label={"快速链接组件"} extra={"开启后展示快速链接组件，关闭则隐藏"}>
+                    <Form.Item label={"搜索框组件"} extra={"开启后展示搜索框和快速链接，关闭则隐藏"}>
                         <Switch
                             checkedChildren="已开启"
                             unCheckedChildren="已关闭"
-                            checked={preference.showQuickLink}
-                            onChange={(checked) => componentSwitchOnChange("showQuickLink", checked)}
+                            checked={preference.showSearch}
+                            onChange={(checked) => componentSwitchOnChange("showSearch", checked)}
                             styles={{
-                                root: {backgroundColor: preference.showQuickLink ? props.theme.primaryColor : ""},
-                                content: {color: preference.showQuickLink ? props.theme.primaryFontColor : ""}
+                                root: {backgroundColor: preference.showSearch ? props.theme.primaryColor : ""},
+                                content: {color: preference.showSearch ? props.theme.primaryFontColor : ""}
                             }}
                         />
                     </Form.Item>

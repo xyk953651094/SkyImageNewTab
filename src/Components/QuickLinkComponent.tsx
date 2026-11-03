@@ -1,24 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {
-    Button,
-    Col,
-    Empty,
-    Flex,
-    Input,
-    message,
-    Popover,
-    Row,
-    Typography
-} from "antd";
+import {Button, Divider, Flex, Input, message, Tooltip} from "antd";
 import {DeleteOutlined, LinkOutlined, PlusOutlined} from "@ant-design/icons";
 import {createThemedMessage} from "../TypeScripts/PublicFunctions";
 import {ThemeInterface} from "../TypeScripts/PublicInterface";
 import {getExtensionStorage, setExtensionStorage, removeExtensionStorage} from "../TypeScripts/StorageFunctions";
-import {HoverButton} from "./PublicComponents/PublicButton";
 import {PublicModal} from "./PublicComponents/PublicModal";
 import "../StyleSheets/QuickLinkComponent.scss";
 
-const {Text} = Typography;
+// 存储 key 常量
 const QUICK_LINK_MAX_SIZE = 5;
 const STORAGE_KEY_QUICK_LINKS = "quickLinks";
 
@@ -40,6 +29,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
 
     const themedMessage = createThemedMessage(props.theme, undefined, message);
 
+    // 持久化链接列表
     async function saveLinkList(list: QuickLinkItem[]) {
         if (list.length === 0) {
             await removeExtensionStorage(STORAGE_KEY_QUICK_LINKS);
@@ -48,6 +38,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
         }
     }
 
+    // 删除单条
     function deleteBtnOnClick(item: QuickLinkItem) {
         const newList = linkList.filter(l => l.timeStamp !== item.timeStamp);
         setLinkList(newList);
@@ -55,6 +46,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
         themedMessage.success("已删除");
     }
 
+    // 打开添加弹窗
     function showAddModalBtnOnClick() {
         if (linkList.length < QUICK_LINK_MAX_SIZE) {
             setDisplayModal(true);
@@ -65,6 +57,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
         }
     }
 
+    // 确认添加
     function modalOkBtnOnClick() {
         if (!inputName.trim() || !inputUrl.trim()) {
             themedMessage.error("表单不能为空");
@@ -84,6 +77,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
         themedMessage.success("添加成功");
     }
 
+    // 初始化：从 storage 读取数据
     useEffect(() => {
         async function loadFromStorage() {
             const [storedLinks] = await getExtensionStorage([STORAGE_KEY_QUICK_LINKS]);
@@ -93,71 +87,57 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
         loadFromStorage();
     }, []);
 
-    const popoverTitle = (
-        <Row align={"middle"}>
-            <Col span={8}>
-                <Text style={{color: props.theme.secondaryFontColor, fontSize: "16px"}}>
-                    {`链接 ${linkList.length} / ${QUICK_LINK_MAX_SIZE}`}
-                </Text>
-            </Col>
-            <Col span={16} style={{textAlign: "right"}}>
-                <HoverButton theme={props.theme} icon={<PlusOutlined/>} onClick={showAddModalBtnOnClick}>
-                    {"添加链接"}
-                </HoverButton>
-            </Col>
-        </Row>
-    );
-
-    const popoverContent = (
-        <Flex wrap="wrap" gap="small" style={linkList.length === 0 ? {minHeight: "100px", alignContent: "center", justifyContent: "center"} : undefined}>
-            {linkList.length === 0 ? (
-                <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    styles={{description: {color: props.theme.secondaryFontColor}}}
-                />
-            ) : (
-                linkList.map((item) => (
-                    <Flex
-                        key={item.timeStamp}
-                        align="center"
-                        className="quickLinkGroup"
-                        style={{
-                            "--ql-primary": props.theme.primaryColor,
-                            "--ql-primary-font": props.theme.primaryFontColor,
-                            "--ql-secondary-font": props.theme.secondaryFontColor,
-                        } as React.CSSProperties}
-                    >
-                        <Button type={"text"} size={"large"} className="quickLinkBtn quickLinkBtnWithBorder" onClick={() => window.open(item.url, "_blank")}>
-                            {item.name}
-                        </Button>
-                        <Button type={"text"} size={"large"} icon={<DeleteOutlined/>} className="quickLinkBtn" onClick={() => deleteBtnOnClick(item)}/>
-                    </Flex>
-                ))
-            )}
-        </Flex>
-    );
-
     return (
         <>
-            <Popover
-                title={popoverTitle}
-                content={popoverContent}
-                placement="bottomRight"
-                color={props.theme.secondaryColor}
-                styles={{root: {minWidth: "400px"}}}
+            <Flex
+                wrap="wrap"
+                justify="center"
+                align="center"
+                gap="small"
+                style={{
+                    "--qlb-bg": props.theme.secondaryColor,
+                    "--qlb-font": props.theme.secondaryFontColor,
+                } as React.CSSProperties}
             >
-                <Button
-                    icon={<LinkOutlined/>}
-                    size={"large"}
-                    type={"primary"}
-                    className={"floatingButton"}
-                    style={{
-                        cursor: "default",
-                        backgroundColor: props.theme.secondaryColor,
-                        color: props.theme.secondaryFontColor,
-                    }}
-                />
-            </Popover>
+                {linkList.map((item) => (
+                    <Flex key={item.timeStamp} align="center" className="quickLinkGroup floatingButton">
+                        <Tooltip
+                            title={`点击前往 ${item.name}`}
+                            placement={"bottom"}
+                            color={props.theme.secondaryColor}
+                            styles={{container: {color: props.theme.secondaryFontColor}}}
+                        >
+                            <Button type={"text"} size={"large"} className="quickLinkBtn" onClick={() => window.open(item.url, "_blank")}>
+                                {item.name}
+                            </Button>
+                        </Tooltip>
+                        <Divider orientation={"vertical"}/>
+                        <Tooltip
+                            title={"删除链接"}
+                            placement={"bottom"}
+                            color={props.theme.secondaryColor}
+                            styles={{container: {color: props.theme.secondaryFontColor}}}
+                        >
+                            <Button type={"text"} size={"large"} icon={<DeleteOutlined/>} className="quickLinkBtn" onClick={() => deleteBtnOnClick(item)}/>
+                        </Tooltip>
+                    </Flex>
+                ))}
+                <Tooltip
+                    title={"添加快速链接"}
+                    placement={"bottom"}
+                    color={props.theme.secondaryColor}
+                    styles={{container: {color: props.theme.secondaryFontColor}}}
+                >
+                    <Button
+                        type={"text"}
+                        size={"large"}
+                        className="quickLinkBtn floatingButton"
+                        icon={<PlusOutlined/>}
+                        onClick={showAddModalBtnOnClick}
+                    />
+                </Tooltip>
+            </Flex>
+
             <PublicModal
                 theme={props.theme}
                 open={displayModal}
@@ -172,7 +152,7 @@ function QuickLinkComponent(props: QuickLinkComponentProps) {
                         size={"large"}
                         value={inputName}
                         onChange={(e) => setInputName(e.target.value)}
-                        maxLength={10}
+                        maxLength={5}
                         showCount
                         allowClear
                     />

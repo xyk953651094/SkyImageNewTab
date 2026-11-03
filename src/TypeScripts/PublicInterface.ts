@@ -11,14 +11,14 @@ export interface PreferenceInterface {
     showTodo: boolean;
     showCountdown: boolean;
     showFocus: boolean;
-    showQuickLink: boolean;
+    showSearch: boolean;
     customTopic: boolean,
     imageTopics: string[];
     imageBrightness: number;
     imageHighQuality: boolean;
     imageParallax: boolean;
     accessKey: string;
-    fontFamily: "LXGWWenKai" | "LXGWWenKaiLight" | "LXGWNeoXiHei" | "LXGWNeoZhiSong" | "LXGWMarkerGothic";
+    fontFamily: "LXGWWenKai" | "LXGWWenKaiLight" | "LXGWNeoXiHei" | "LXGWNeoZhiSong" | "LXGWMarkerGothic" | "Xiaolai" | "Yozai" | "YozaiLight";
 }
 
 // 历史记录的每一条

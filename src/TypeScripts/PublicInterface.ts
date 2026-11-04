@@ -18,7 +18,7 @@ export interface PreferenceInterface {
     imageHighQuality: boolean;
     imageParallax: boolean;
     accessKey: string;
-    fontFamily: "LXGWWenKai" | "LXGWWenKaiLight" | "LXGWNeoXiHei" | "LXGWNeoZhiSong" | "LXGWMarkerGothic" | "Xiaolai" | "Yozai" | "YozaiLight";
+    fontFamily: "LXGWWenKai" | "LXGWNeoXiHei" | "LXGWNeoZhiSong" | "LXGWMarkerGothic" | "Xiaolai" | "Yozai";
 }
 
 // 历史记录的每一条

@@ -81,6 +81,8 @@ async function updateImageHistory(currentImage: UnsplashImageDataInterface): Pro
 
 function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
     const themedMessage = createThemedMessage(props.theme, props.preference.fontFamily, message);
+    // 内置密钥明文打进产物，任何人可读；把它填回设置框不算自定密钥，否则能绕开下面的频率限制
+    const hasCustomAccessKey = !isEmpty(props.preference.accessKey) && props.preference.accessKey.trim() !== clientId;
     
     // mount 时加载：缓存优先，过期则请求新图
     useEffect(() => {
@@ -108,7 +110,7 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
             }
             
             const needsRefresh = isEmpty(cached) ||
-                props.preference.accessKey ||
+                hasCustomAccessKey ||
                 (Date.now() - cachedTime > imageSwitchingInterval);
             
             if (!needsRefresh) return;
@@ -150,8 +152,8 @@ function RefreshWallpaperComponent(props: RefreshWallpaperComponentProps) {
             ["lastWallpaper", "lastWallpaperRequestTime"]
         );
         
-        // 检查距上次请求是否不足 5 分钟（自定义密钥不受限制）
-        if (!props.preference.accessKey && cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
+        // 检查距上次请求是否不足 5 分钟（真正的自定密钥不受限制）
+        if (!hasCustomAccessKey && cachedTime && Date.now() - cachedTime < COOLDOWN_MS) {
             themedMessage.error("操作太频繁，请 5 分钟后再试");
             return;
         }

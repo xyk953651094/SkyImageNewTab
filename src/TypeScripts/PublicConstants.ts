@@ -8,7 +8,7 @@ export const colorRegExp = /^#[0-9A-Fa-f]{6}$/;
 export const clientId = process.env.REACT_APP_UNSPLASH_ACCESS_KEY ?? "";
 export const unsplashUrl = "?utm_source=SkyNewTab&utm_medium=referral";  // Unsplash API规范
 export const imageHistoryMaxSize = 5;
-export const imageSwitchingInterval = 3600000;  // 图片切换间隔默认一小时 3600000
+export const imageSwitchingInterval = 0;  // 临时：截图用，每次加载都换新图（正式值 3600000，一小时）
 
 export const defaultPreference: PreferenceInterface = {
     showGreet: true,
